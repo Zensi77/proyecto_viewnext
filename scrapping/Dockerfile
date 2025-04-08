@@ -1,46 +1,37 @@
-# Usar una imagen base de Python
-FROM python:3.13-slim
+FROM python:3.11-slim
 
-# Establecer el directorio de trabajo
-WORKDIR /scrapping
-
-# Instalar dependencias del sistema operativo necesarias para Chrome y Selenium
+# Instalar dependencias del sistema necesarias para Chrome
 RUN apt-get update && apt-get install -y \
     wget \
     curl \
+    gnupg \
     unzip \
+    fonts-liberation \
+    libnss3 \
     libxss1 \
     libappindicator3-1 \
-    libindicator7 \
-    libgdk-pixbuf2.0-0 \
-    libnspr4 \
-    libnss3 \
-    libatk-bridge2.0-0 \
-    libxcomposite1 \
-    libxrandr2 \
-    libgdk-pixbuf2.0-0 \
-    xvfb \
-    fonts-liberation \
-    libappindicator3-1 \
     libasound2 \
-    libgconf-2-4 \
-    libnss3 \
-    libx11-xcb1 \
+    libatk-bridge2.0-0 \
+    libgtk-3-0 \
+    libgbm-dev \
+    libxshmfence-dev \
+    xdg-utils \
     && rm -rf /var/lib/apt/lists/*
 
-# Instalar Google Chrome (si no está instalado previamente)
-RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-RUN dpkg -i google-chrome-stable_current_amd64.deb || apt-get install -fy
+# Añadir la clave de Google y repositorio de Chrome
+RUN mkdir -p /etc/apt/keyrings && \
+    curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/keyrings/google.gpg && \
+    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list && \
+    apt-get update && \
+    apt-get install -y google-chrome-stable && \
+    rm -rf /var/lib/apt/lists/*
 
-# Instalar Selenium y webdriver-manager
-RUN pip install --upgrade pip
-RUN pip install selenium webdriver-manager
+# Copiar dependencias Python
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Descargar chromedriver usando webdriver-manager
-RUN python -m webdriver_manager.chrome
+# Copiar tu script
+COPY scrap.py .
 
-# Copiar tu código Python al contenedor
-COPY . /scrapping
-
-# Ejecutar el script de scraping
-CMD ["python", "scrap.py"]
+# Ejecutar y dejar contenedor en ejecución
+CMD true && tail -f /dev/null

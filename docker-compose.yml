@@ -48,21 +48,25 @@ services:
     ports:
       - '8161:8161'
 
-  # TODO se para el servicio
   infinispan:
     image: infinispan/server:14.0.5.Final
     container_name: infinispan
     ports:
       - '11222:11222'
-    command: '-c infinispan-demo.xml'
+    environment:
+      USER: admin
+      PASS: password
     volumes:
       - ./infinispan/infinispan.xml:/opt/infinispan/server/conf/infinispan-demo.xml:z
+    command: ['-c', 'infinispan-demo.xml']
     healthcheck:
       test:
         [
           'CMD',
           'curl',
           '-f',
+          '-u',
+          'admin:password',
           'http://localhost:11222/rest/v2/cache-managers/default/health/status',
         ]
       interval: 1s
