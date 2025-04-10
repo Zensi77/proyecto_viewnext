@@ -1,0 +1,48 @@
+    {
+        "fonts": {
+            "pcbox": "https://www.pcbox.com/",
+            "coolmod": "https://www.coolmod.com/"
+        },
+        "inputSearch": {
+            "pcbox": "input#FastIntelligentSearchInput",
+            "coolmod": "input#dfd-searchbox-id-597y9-input"
+        },
+        "cardProduct": {
+            "pcbox": "article.vtex-product-summary-2-x-element",
+            "coolmod": "a.dfd-card-link"
+        },
+        "searchterms": {
+            "0": "ordenador",
+            "1": "portátil",
+            "2": "gaming",
+            "3": "monitor",
+            "4": "placa base",
+            "5": "procesador",
+            "6": "memoria ram",
+            "7": "ratón gaming",
+            "8": "teclado gaming",
+            "9": "silla gaming"
+        },
+        "data": {
+            "nombre": {
+                "pcbox": "span.vtex-store-components-3-x-productBrand.vtex-store-components-3-x-productBrand--quickview",
+                "coolmod": "h1.text-2xl.font-bold"
+            },
+            "precio": {
+                "pcbox": "div.ticnova-commons-components-0-x-price",
+                "coolmod": "span.product_price.int_price"
+            },
+            "decimal": {
+                "pcbox": "",
+                "coolmod": "span.dec_price"
+            },
+            "enlace": {
+                "pcbox": "",
+                "coolmod": ""
+            },
+            "imagen": {
+                "pcbox": "img.image-gallery-image",
+                "coolmod": "img.mx-auto"
+            }
+        }
+    }
