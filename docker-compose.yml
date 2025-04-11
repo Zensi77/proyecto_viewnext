@@ -1,13 +1,13 @@
 services:
   python:
-    build: ./scrapping
+    build: ./scraping
     container_name: python
     tty: true # Para evitar que el contenedor se detenga
     ports:
       - 8080:8080
-    working_dir: /scrapping
+    working_dir: /scraping
     volumes:
-      - ./scrapping:/scrapping
+      - ./scraping:/scraping
   db-sql:
     image: mysql:8.0
     container_name: db-sql
@@ -54,11 +54,11 @@ services:
     ports:
       - '11222:11222'
     environment:
-      USER: admin
-      PASS: password
+      USER: ${INFINISPAN_USER}
+      PASS: ${INFINISPAN_PASSWORD}
     volumes:
-      - ./infinispan/infinispan.xml:/opt/infinispan/server/conf/infinispan-demo.xml:z
-    command: ['-c', 'infinispan-demo.xml']
+      - ./infinispan/infinispan.yml:/opt/infinispan/server/conf/infinispan.yml
+    command: ['-c', 'infinispan.xml']
     healthcheck:
       test:
         [
