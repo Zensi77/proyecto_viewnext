@@ -1,7 +1,9 @@
 package com.juanma.proyecto_vn.models;
 
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -15,10 +17,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Entity
-@Data
 @AllArgsConstructor
-@SQLDelete(sql = "UPDATE almacen SET is_deleted = true WHERE id_almacen = ?")
-@Where(clause = "is_deleted = false")
+@Data
+@SQLDelete(sql = "UPDATE product SET is_deleted = true WHERE id = ?")
+@FilterDef(name = "deletedFilter", parameters = @ParamDef(name = "isDeleted", type = Boolean.class))
+@Filter(name = "deletedFilter", condition = "is_deleted = :isDeleted")
 public class Product {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
@@ -35,11 +38,11 @@ public class Product {
     @Column(name = "image", nullable = false)
     private String image;
 
-    @ManyToOne(cascade = { CascadeType.ALL })
+    @ManyToOne(cascade = { CascadeType.ALL }) // Hace que se elimine el producto si se elimina el proveedor
     @JoinColumn(name = "id")
     private Provider provider;
 
-    @ManyToOne(cascade = { CascadeType.ALL })
+    @ManyToOne(cascade = { CascadeType.ALL }) // Hace que se elimine el producto si se elimina la categoria
     @JoinColumn(name = "id")
     private Category category;
 
