@@ -1,5 +1,6 @@
 package com.juanma.proyecto_vn.models;
 
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
@@ -16,34 +17,35 @@ import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Entity
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
 @SQLDelete(sql = "UPDATE product SET is_deleted = true WHERE id = ?")
-@FilterDef(name = "deletedFilter", parameters = @ParamDef(name = "isDeleted", type = Boolean.class))
 @Filter(name = "deletedFilter", condition = "is_deleted = :isDeleted")
-public class Product {
+public class Product extends BaseEntity {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     @Column(name = "id", nullable = false, updatable = false)
-    private Long id;
+    private UUID id;
 
     @Column(name = "nombre", nullable = false)
     private String nombre;
 
     @Column(name = "price", nullable = false)
-    @Min(0)
     private Long price;
 
     @Column(name = "image", nullable = false)
     private String image;
 
     @ManyToOne(cascade = { CascadeType.ALL }) // Hace que se elimine el producto si se elimina el proveedor
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "id_provider")
     private Provider provider;
 
     @ManyToOne(cascade = { CascadeType.ALL }) // Hace que se elimine el producto si se elimina la categoria
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "id_category")
     private Category category;
 
     @Column(name = "is_deleted", columnDefinition = "boolean default false")

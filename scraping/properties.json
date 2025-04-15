@@ -13,7 +13,25 @@
         },
         "searchterms": {
             "0": "ordenador",
-            "1": "portátil"
+            "1": "portátil",
+            "2": "monitor",
+            "3": "ratón",
+            "4": "teclado",
+            "5": "auriculares",
+            "6": "altavoces",
+            "7": "webcam",
+            "8": "microfono",
+            "9": "disco duro",
+            "10": "ssd",
+            "11": "placa base",
+            "12": "fuente de alimentación",
+            "13": "tarjeta gráfica",
+            "14": "procesador",
+            "15": "memoria ram",
+            "17": "ventilador",
+            "18": "refrigeración liquida",
+            "19": "camara de fotos",
+            "20": "mini pc"
         },
         "data": {
             "nombre": {

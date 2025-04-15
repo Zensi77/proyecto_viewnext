@@ -1,134 +1,169 @@
+import json
+import time
+import mysql
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import StaleElementReferenceException
-import time
-import json
+from webdriver_manager.chrome import ChromeDriverManager
+import os
 
-# Configuración de Selenium
-options = Options()
-options.add_argument('--headless')  # Ejecutar en segundo plano sin interfaz gráfica
-options.add_argument('--no-sandbox')  # Desactivar el sandbox
-options.add_argument('--disable-dev-shm-usage')  # Desactivar el uso de memoria compartida
+# ---------- Configuración Global ----------
+def setup_driver():
+    options = Options()
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=options)
+    driver.set_page_load_timeout(60)
+    return driver
 
-# Usar el ChromeDriver con WebDriverManager
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-
-# Cargar el archivo JSON
-with open('properties.json', 'r') as f:
-    data = json.load(f)
-
-# Función para manejar la espera y la interacción con los elementos
-def interact_with_search_input(font, searchTerm):
-    try:
-        # Localizar el campo de búsqueda
-        searchInput = WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, data['inputSearch'][font]))
-        )
-        
-        # Limpiar y enviar el término de búsqueda
-        searchInput.clear()
-        searchInput.send_keys(searchTerm)
-        searchInput.submit() if font == 'pcbox' else None  # Enviar el formulario si es necesario
-
-        WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.TAG_NAME, 'body'))
-        )
-        print(f'Buscando: {searchTerm}')
-
-    except StaleElementReferenceException:
-        print("Search input obsoleto. Reintentando...")
-        interact_with_search_input(font, searchTerm)  # Intentar nuevamente si el elemento es obsoleto
+def load_config(path='properties.json'):
+    with open(path, 'r') as f:
+        return json.load(f)
 
 def saveOnDatabase(data):
-    # Guardar datos en la base de datos
-    print(f"Guardando datos: {data}")
+    try:
+        conn = mysql.connector.connect({
+            "host": "localhost",
+            "user": "root",
+            "password": "root",
+            "database": "tienda-vn"
+        })
 
-cookiesAccepted = False
-# Iterar sobre las fuentes
-for font in data['fonts']:
-    print(f"Scraping en la fuente: {font}")
-
-    for key, searchTerm in data['searchterms'].items():  # Iterar sobre los términos de búsqueda
-        time.sleep(10)  # Espera breve antes de cada búsqueda
-        driver.get(data['fonts'][font])  # Cargar la página de la fuente
+        if not conn.is_connected():
+            print("[ERROR] No se pudo conectar a la base de datos.")
+            return
         
-        # Aceptar cookies si es necesario
-        if(font == 'pcbox' and not cookiesAccepted):
-            cookies = WebDriverWait(driver, 30).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, 'div#cookiescript_accept'))
-            )
-            cookies.click() if cookies else None
-            cookiesAccepted = True
-            print("Cookies aceptadas.")
-        elif(font == 'coolmod' and not cookiesAccepted):
-            cookies = WebDriverWait(driver, 30).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, 'button#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll'))
-            )
-            cookies.click() if cookies else None
-            cookiesAccepted = True
-            print("Cookies aceptadas.")
+        cursor = conn.cursor()
 
+        sql = '''
+            INSERT INTO articulos (provider, nombre, precio, imagen, enlace)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        '''
+
+        precio = data.get("precio").concat(".", data.get("decimal")) if data.get("decimal") else data.get("precio")
+        if precio:
+            precio = precio.replace(",", ".")
+        else:
+            precio = 0
+        
+        values = (
+            data.get("provider"),
+            data.get("nombre"),
+            data.get("imagen"),
+            data.get("enlace")
+        )
+
+        cursor.execute(sql, values)
+        conn.commit()
+
+        print(f"Guardado en la base de datos: {data.get('nombre')}")
+
+    except mysql.connector.Error as err:
+        print("Error al guardar en la base de datos:", err)
+
+    finally:
+        if conn.is_connected():
+            cursor.close()
+            conn.close()
+
+def accept_cookies(driver, font):
+    try:
+        selectors = {
+            "pcbox": 'div#cookiescript_accept',
+            "coolmod": 'button#CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll'
+        }
+        if font in selectors:
+            cookie_btn = WebDriverWait(driver, 15).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, selectors[font]))
+            )
+            cookie_btn.click()
+            print("[Info] Cookies aceptadas")
+    except Exception as e:
+        print(f"[Warn] No se pudieron aceptar cookies o ya estaban aceptadas en {font}")
+
+def interact_with_search_input(driver, selectors, font, search_term):
+    try:
+        search_input = WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, selectors[font]))
+        )
+        search_input.clear()
+        search_input.send_keys(search_term)
+        if font == "pcbox": # Ya que en esta web el boton es un formulario
+            search_input.submit()
+        WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located((By.TAG_NAME, 'body'))
+        )
+    except StaleElementReferenceException:
+        print("[Retry] Search input obsoleto. Reintentando...")
+        interact_with_search_input(driver, selectors, font, search_term)
+
+def extract_product_data(product, selectors, font, current_url):
+    result = {
+        "provider": 1 if font == "pcbox" else 2
+    }
+    for key, sel in selectors.items():
         try:
-            # Interactuar con el campo de búsqueda
-            interact_with_search_input(font, searchTerm)
+            if sel[font]:
+                if key == "imagen":
+                    result[key] = product.find_element(By.CSS_SELECTOR, sel[font]).get_attribute('src')
+                elif key == "enlace":
+                    result[key] = current_url
+                else:
+                    result[key] = product.find_element(By.CSS_SELECTOR, sel[font]).text
+            else:
+                result[key] = None
+        except Exception as e:
+            print(f"[Error] Al extraer '{key}': {e}")
+            result[key] = None
+    return result
 
-            # Esperar a que los resultados se carguen
-            WebDriverWait(driver, 30).until(
-                EC.presence_of_all_elements_located((By.CSS_SELECTOR, data['cardProduct'][font])))
+def scrape_font(driver, data, font):
+    print(f"[Inicio] Scrapeando {font}")
+    for _, search_term in data['searchterms'].items():
+        try:
+            driver.get(data['fonts'][font])
+            time.sleep(3)
+            accept_cookies(driver, font)
+            interact_with_search_input(driver, data['inputSearch'], font, search_term)
 
-            print('Resultados cargados correctamente, realizando recuento...')
-
-            # Extraer información de los productos
+            WebDriverWait(driver, 20).until(
+                EC.presence_of_all_elements_located((By.CSS_SELECTOR, data['cardProduct'][font]))
+            )
             products = driver.find_elements(By.CSS_SELECTOR, data['cardProduct'][font])
-            print('------------------------------------------')
-            print(f'Número de productos encontrados: {len(products)}')
-            print('------------------------------------------')
+            print(f"[OK] {len(products)} productos encontrados para '{search_term}' en {font}")
 
             for product in products:
-                # Diccionario vacío para almacenar los datos del artículo
-                data_articulo = {
-                    "provider": 1 if font == 'pcbox' else 2,
-                }
+                item_data = extract_product_data(product, data['data'], font, driver.current_url)
+                # saveOnDatabase(item_data)
+                print(f"[Info] Extraído: {item_data}")
 
-                for key, selector in data['data'].items():
-                    # key = "imagen" o "enlace" o "nombre" o "precio"
-                    # selector = Objeto JSON con los selectores CSS
-                    # selector = data['data'][key][font]
-                    try:
-                        # Verificar si el selector no está vacío
-                        if selector[font]:
-                            if key == "imagen":
-                                # Obtener el atributo 'src' para imágenes
-                                data_articulo[key] = product.find_element(By.CSS_SELECTOR, selector[font]).get_attribute('src')
-                            elif key == "enlace":
-                                # Usar la URL actual para el enlace
-                                data_articulo[key] = driver.current_url
-                            else:
-                                # Obtener el texto del elemento
-                                data_articulo[key] = product.find_element(By.CSS_SELECTOR, selector[font]).text
-                        else:
-                            data_articulo[key] = None  # Si el selector está vacío, asignar None
-                            
-                    except Exception as e:
-                        print(f"Error al extraer {key}: {e}")
-                        data_articulo[key] = None  # Asignar None si ocurre un error
-
-                # Guardar los datos del artículo en la base de datos
-                saveOnDatabase(data_articulo)
         except Exception as e:
-            print(f'Error al cargar la página: {font} - {searchTerm}')
+            print(f"[Error] En búsqueda '{search_term}' en {font}: {e}")
+            os.makedirs('/scraping/errors', exist_ok=True)
+            filename = f"/scraping/errors/{font}_{search_term.replace(' ', '_')}.png"
+            driver.save_screenshot(filename)
+            print(f"[Captura] Guardada en {filename}")
 
-            screenshot_path = f"/errors/screenshot_error_{font}_{key}.png"
-            driver.save_screenshot(screenshot_path)
-            print(f"Captura de pantalla guardada en: {screenshot_path}")
-            print(e)
-    
-    cookiesAccepted = False  # Reiniciar la aceptación de cookies para la siguiente fuente
+# ---------- Ejecución principal ----------
+if __name__ == '__main__':
+    print("[WARNING] Se borrarán todos los datos de la base de datos, desea continuar? (s/n)")
+    respuesta = input().strip().lower()
+    if respuesta != 's':
+        print("[FIN] Proceso cancelado.")
+        exit(0)
 
-# Cerrar el navegador después de terminar
-driver.quit()
+    data = load_config()
+    driver = setup_driver()
+    driver.get("https://www.google.com")  # Carga inicial para evitar errores de WebDriver
+
+    for font in data['fonts']:
+        scrape_font(driver, data, font)
+
+    driver.quit()
+    print("[FIN] Scraping completado.")

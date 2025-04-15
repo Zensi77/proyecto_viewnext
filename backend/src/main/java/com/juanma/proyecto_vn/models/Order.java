@@ -1,43 +1,37 @@
 package com.juanma.proyecto_vn.models;
 
-import java.util.Date;
-import java.util.Map;
-
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
-import org.hibernate.annotations.SQLDelete;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.SQLDelete;
+
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 @Entity
+@Table(name = "orders")
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
-@SQLDelete(sql = "UPDATE order SET is_deleted = true WHERE id = ?")
-@FilterDef(name = "deletedFilter", parameters = @ParamDef(name = "isDeleted", type = Boolean.class))
-@Filter(name = "deletedFilter", condition = "is_deleted = :isDeleted")
-public class Order {
+@SQLDelete(sql = "UPDATE orders SET is_deleted = true WHERE id = ?")@Filter(name = "deletedFilter", condition = "is_deleted = :isDeleted")
+public class Order extends BaseEntity{
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     @Column(name = "id", nullable = false, updatable = false)
-    private Long id;
+    private UUID id;
 
     @ManyToOne
-    @Column(name = "user", nullable = false)
+    @JoinColumn(name = "user", nullable = false)
     private User user;
 
-    @ManyToOne
-    @Column(name = "products", nullable = false)
-    private Map<Integer, Product> products;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ProductOrder> productOrder;
 
-    @Column(name = "order_date", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private Date order_date;
+    @Column(name = "order_date", nullable = false)
+    private Date order_date = new Date();
 
     @Column(name = "total_price", nullable = false)
     private Long total_price;

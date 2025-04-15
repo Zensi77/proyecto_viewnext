@@ -3,8 +3,6 @@ services:
     build: ./scraping
     container_name: python
     tty: true # Para evitar que el contenedor se detenga
-    ports:
-      - 8080:8080
     working_dir: /scraping
     volumes:
       - ./scraping:/scraping
@@ -34,6 +32,20 @@ services:
       timeout: 5s
       retries: 5
     restart: always
+
+  php-myadmin:
+    image: phpmyadmin
+    container_name: myadmin
+    ports:
+      - 8081:80
+    environment:
+      - PMA_HOST=db-sql
+      - PMA_PORT=3306
+      - PMA_USER=${MYSQL_USER}
+      - PMA_PASSWORD=${MYSQL_PASSWORD}
+    depends_on:
+      db-sql:
+        condition: service_healthy
 
   artemis-mq:
     image: vromero/activemq-artemis:2.6.1
