@@ -1,15 +1,10 @@
 package com.juanma.proyecto_vn.models;
 
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import org.hibernate.annotations.SQLDelete;
 
 import java.util.UUID;
 
@@ -19,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @SQLDelete(sql = "UPDATE user SET is_deleted = true WHERE id = ?")
 @Filter(name = "deletedFilter", condition = "is_deleted = :isDeleted")
-public class User extends BaseEntity{
+public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false, updatable = false)
@@ -30,6 +25,13 @@ public class User extends BaseEntity{
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @Column(name = "role", nullable = false, updatable = false, columnDefinition = "enum('USER', 'ADMIN')")
+    @Enumerated(EnumType.STRING)
+    private RoleEnum role = RoleEnum.USER;
+
+    @Column(name = "enabled", nullable = false, columnDefinition = "boolean default false")
+    private boolean enabled;
 
     @Column(name = "is_deleted", columnDefinition = "boolean default false")
     private boolean isDeleted;

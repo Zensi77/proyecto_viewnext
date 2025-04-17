@@ -31,20 +31,20 @@ public class Product extends BaseEntity {
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
 
-    @Column(name = "nombre", nullable = false)
+    @Column(name = "name", nullable = false)
     private String nombre;
 
-    @Column(name = "price", nullable = false)
-    private Long price;
+    @Column(name = "price", nullable = false, columnDefinition = "decimal(10,2)")
+    private double price;
 
     @Column(name = "image", nullable = false)
     private String image;
 
-    @ManyToOne(cascade = { CascadeType.ALL }) // Hace que se elimine el producto si se elimina el proveedor
+    @ManyToOne() // Hace que se elimine el producto si se elimina el proveedor
     @JoinColumn(name = "id_provider")
     private Provider provider;
 
-    @ManyToOne(cascade = { CascadeType.ALL }) // Hace que se elimine el producto si se elimina la categoria
+    @ManyToOne() // Hace que se elimine el producto si se elimina la categoria
     @JoinColumn(name = "id_category")
     private Category category;
 

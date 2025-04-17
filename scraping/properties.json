@@ -12,26 +12,7 @@
             "coolmod": "div.dfd-card.dfd-card-preset-product.dfd-card-type-indiceproductos"
         },
         "searchterms": {
-            "0": "ordenador",
-            "1": "portátil",
-            "2": "monitor",
-            "3": "ratón",
-            "4": "teclado",
-            "5": "auriculares",
-            "6": "altavoces",
-            "7": "webcam",
-            "8": "microfono",
-            "9": "disco duro",
-            "10": "ssd",
-            "11": "placa base",
-            "12": "fuente de alimentación",
-            "13": "tarjeta gráfica",
-            "14": "procesador",
-            "15": "memoria ram",
-            "17": "ventilador",
-            "18": "refrigeración liquida",
-            "19": "camara de fotos",
-            "20": "mini pc"
+            "0": "ordenador"
         },
         "data": {
             "nombre": {
@@ -49,6 +30,7 @@
             "imagen": {
                 "pcbox": "img.vtex-product-summary-2-x-imageNormal.vtex-product-summary-2-x-image",
                 "coolmod": "div.dfd-card-media div.dfd-card-thumbnail img"
-            }
+            },
+            "category": {}
         }
     }

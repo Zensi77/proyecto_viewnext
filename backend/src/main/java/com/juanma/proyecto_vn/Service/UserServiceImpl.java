@@ -1,2 +1,107 @@
-package com.juanma.proyecto_vn.Service;public class UserServiceImpl {
+package com.juanma.proyecto_vn.Service;
+
+import com.juanma.proyecto_vn.Dtos.Auth.LoginDto;
+import com.juanma.proyecto_vn.Dtos.Auth.UserCreateDto;
+import com.juanma.proyecto_vn.Dtos.Auth.UserResponseDto;
+import com.juanma.proyecto_vn.Repositorys.UserRepository;
+import com.juanma.proyecto_vn.Security.JwtUtil;
+import com.juanma.proyecto_vn.models.RoleEnum;
+import com.juanma.proyecto_vn.models.User;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@Service
+public class UserServiceImpl {
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Transactional
+    public Map<String, Object> saveUser(UserCreateDto user) {
+        User newUser = new User(
+                null,
+                user.getEmail(),
+                passwordEncoder.encode(user.getPassword()),
+                RoleEnum.USER,
+                false,
+                false);
+
+        User savedUser = userRepository.save(newUser);
+
+        // Cargar detalles del usuario para generar token
+        UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getEmail());
+        String token = jwtUtil.generateToken(userDetails, savedUser.getRole().toString());
+
+        // Crear respuesta con token y datos del usuario
+        Map<String, Object> response = new HashMap<>();
+        response.put("user", new UserResponseDto(savedUser.getEmail(), savedUser.getRole().toString()));
+        response.put("token", token);
+
+        return response;
+    }
+
+    @Transactional
+    public Map<String, Object> login(LoginDto user) {
+        // Intentar autenticar al usuario
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
+
+        // Si llegamos aquí, la autenticación fue exitosa
+        User userFind = userRepository.findByEmail(user.getEmail());
+
+        // Generar token JWT
+        UserDetails userDetails = userDetailsService.loadUserByUsername(userFind.getEmail());
+        String token = jwtUtil.generateToken(userDetails, userFind.getRole().toString());
+
+        // Crear respuesta con token y datos del usuario
+        Map<String, Object> response = new HashMap<>();
+        response.put("user", new UserResponseDto(userFind.getEmail(), userFind.getRole().toString()));
+        response.put("token", token);
+
+        return response;
+    }
+
+    @Transactional
+    public Map<String, Object> saveAdmin(UserCreateDto user) {
+        User newUser = new User(
+                null,
+                user.getEmail(),
+                passwordEncoder.encode(user.getPassword()),
+                RoleEnum.ADMIN,
+                false,
+                false);
+
+        User savedUser = userRepository.save(newUser);
+
+        // Cargar detalles del usuario para generar token
+        UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getEmail());
+        String token = jwtUtil.generateToken(userDetails, savedUser.getRole().toString());
+
+        // Crear respuesta con token y datos del usuario
+        Map<String, Object> response = new HashMap<>();
+        response.put("user", new UserResponseDto(savedUser.getEmail(), savedUser.getRole().toString()));
+        response.put("token", token);
+
+        return response;
+    }
 }
