@@ -15,6 +15,7 @@ import os
 
 # ---------- Configuración de la DB ----------
 try:
+    # TODO pasar a variables de entorno
     config = {
             "host": "db-sql",
             "user": "root",

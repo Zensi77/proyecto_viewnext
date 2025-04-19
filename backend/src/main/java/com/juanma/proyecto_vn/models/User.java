@@ -10,6 +10,8 @@ import java.util.UUID;
 
 @Entity
 @Data
+@EqualsAndHashCode(callSuper = true) // Para que no de error al hacer equals y hashCode
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @SQLDelete(sql = "UPDATE user SET is_deleted = true WHERE id = ?")

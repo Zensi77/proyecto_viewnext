@@ -5,6 +5,7 @@ import com.juanma.proyecto_vn.Dtos.Auth.UserCreateDto;
 import com.juanma.proyecto_vn.Dtos.Auth.UserResponseDto;
 import com.juanma.proyecto_vn.Repositorys.UserRepository;
 import com.juanma.proyecto_vn.Security.JwtUtil;
+import com.juanma.proyecto_vn.interfaces.IUserService;
 import com.juanma.proyecto_vn.models.RoleEnum;
 import com.juanma.proyecto_vn.models.User;
 import jakarta.transaction.Transactional;
@@ -20,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class UserServiceImpl {
+public class UserServiceImpl implements IUserService {
     @Autowired
     private UserRepository userRepository;
 

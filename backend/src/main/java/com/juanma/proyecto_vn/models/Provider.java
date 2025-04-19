@@ -9,12 +9,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.UUID;
 
 @Entity
 @Data
+@Builder
+@EqualsAndHashCode(callSuper = true) // Para que no de error al hacer equals y hashCode
 @AllArgsConstructor
 @NoArgsConstructor
 @SQLDelete(sql = "UPDATE provider SET is_deleted = true WHERE id = ?")

@@ -3,17 +3,19 @@ package com.juanma.proyecto_vn.models;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.SQLDelete;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.UUID;
 
 @Entity
 @Data
+@EqualsAndHashCode(callSuper = true) // Para que no de error al hacer equals y hashCode
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @SQLDelete(sql = "UPDATE category SET is_deleted = true WHERE id = ?")
