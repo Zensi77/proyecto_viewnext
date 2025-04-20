@@ -30,7 +30,6 @@
             "imagen": {
                 "pcbox": "img.vtex-product-summary-2-x-imageNormal.vtex-product-summary-2-x-image",
                 "coolmod": "div.dfd-card-media div.dfd-card-thumbnail img"
-            },
-            "category": {}
+            }
         }
     }

@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import com.juanma.proyecto_vn.Dtos.Auth.LoginDto;
 import com.juanma.proyecto_vn.Dtos.Auth.UserCreateDto;
-import com.juanma.proyecto_vn.Dtos.Auth.UserResponseDto;
 import com.juanma.proyecto_vn.Service.UserServiceImpl;
 
 @RestController

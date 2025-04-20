@@ -23,7 +23,7 @@ import java.util.UUID;
 public class Cart extends BaseEntity {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
-    @Column(name = "id", nullable = false, updatable = false)
+    @Column(name = "id", nullable = false, updatable = false, columnDefinition = "char(36)")
     private UUID id;
 
     @OneToOne(fetch = FetchType.LAZY)

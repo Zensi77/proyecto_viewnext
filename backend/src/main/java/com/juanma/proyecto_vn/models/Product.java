@@ -1,6 +1,8 @@
 package com.juanma.proyecto_vn.models;
 
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Filter;
 
@@ -21,6 +23,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@ToString
 @EqualsAndHashCode(callSuper = true) // Para que no de error al hacer equals y hashCode
 @Builder
 @SQLDelete(sql = "UPDATE product SET is_deleted = true WHERE id = ?")
@@ -28,11 +31,11 @@ import java.util.UUID;
 public class Product extends BaseEntity {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
-    @Column(name = "id", nullable = false, updatable = false)
+    @Column(name = "id", nullable = false, updatable = false, columnDefinition = "char(36)")
     private UUID id;
 
     @Column(name = "name", nullable = false)
-    private String nombre;
+    private String name;
 
     @Column(name = "price", nullable = false, columnDefinition = "decimal(10,2)")
     private double price;
@@ -40,11 +43,14 @@ public class Product extends BaseEntity {
     @Column(name = "image", nullable = false)
     private String image;
 
-    @ManyToOne() // Hace que se elimine el producto si se elimina el proveedor
+    @Column(name = "description", nullable = false, columnDefinition = "text")
+    private String description;
+
+    @ManyToOne()
     @JoinColumn(name = "id_provider")
     private Provider provider;
 
-    @ManyToOne() // Hace que se elimine el producto si se elimina la categoria
+    @ManyToOne()
     @JoinColumn(name = "id_category")
     private Category category;
 

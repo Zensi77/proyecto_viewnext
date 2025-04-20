@@ -12,15 +12,18 @@ from selenium.common.exceptions import StaleElementReferenceException
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import TimeoutException
 import os
+import dotenv
+
+dotenv.load_dotenv()
 
 # ---------- Configuración de la DB ----------
 try:
     # TODO pasar a variables de entorno
     config = {
-            "host": "db-sql",
+            "host": os.getenv("DB_HOST"),
             "user": "root",
-            "password": "root",
-            "database": "tienda-vn"
+            "password": os.getenv("DB_PASSWORD"),
+            "database": os.getenv("DB_NAME"),
         }
     conn = mysql.connector.connect(**config)
 
@@ -68,7 +71,7 @@ def saveCategoriesAndProvider(categories, providers):
             VALUES (%s, %s, %s)
         '''
         for provider in providers.values():
-            cursor.execute(sql, (uuid.uuid4().bytes, provider.split(".")[1], provider))
+            cursor.execute(sql, (str(uuid.uuid4()), provider.split(".")[1], provider))
             conn.commit()
         cursor = conn.cursor()
         sql = '''
@@ -76,7 +79,7 @@ def saveCategoriesAndProvider(categories, providers):
             VALUES (%s, %s)
         '''
         for category in categories.values():
-            cursor.execute(sql, (uuid.uuid4().bytes, category))
+            cursor.execute(sql, (str(uuid.uuid4()), category))
             conn.commit()
         print("[INFO] Categorías y proveedores guardados.")
     except mysql.connector.Error as err:
@@ -85,6 +88,107 @@ def saveCategoriesAndProvider(categories, providers):
         if conn.is_connected():
             cursor.close()
 
+import requests
+import json
+
+def getDescription(data, search_term):
+    try:
+        # Cambiar la URL a ollama en lugar de ollama-llm para mantener consistencia
+        OLLAMA_HOST = os.getenv("OLLAMA_HOST")
+        OLLAMA_URL = f"http://{OLLAMA_HOST}:11434/api/generate"
+
+        print(f"[INFO] Generando descripción para: {data.get('nombre', 'Producto desconocido')}")
+        
+        # Crear prompt para el modelo salida muy buena pero lenta 50-60s
+        # prompt = f"""
+        # Eres un **copywriter de élite** especializado en e‑commerce tecnológico. Tu meta es generar **solo la descripción** de **300–350 palabras** en **español impecable**, sin **ningún** encabezado, prefacio, nota o introducción adicional. Obedece estas reglas al pie de la letra:
+
+        # 1. No comiences con frases como “Aquí tienes”, “A continuación”, “Te dejo”, ni nada similar.
+        # 2. No hagas referencias al proceso de redacción, al modelo de IA, ni a instrucciones internas.
+        # 3. Escribe una **micro‑escena inmersiva** (2–3 frases) distinta cada vez, usando metáforas sensoriales, variando el inicio.
+        # 4. Incluye una **propuesta de valor** renovada (2 frases) con gancho único (estadística, analogía, pregunta).
+        # 5. Detalla en un único párrafo las **5 características** (CPU, GPU, RAM, SSD, refrigeración) **en orden distinto** y con **benchmark** o cifras concretas.
+        # 6. Añade una **prueba social** (1–2 frases) con un dato o cita fresca.
+        # 7. Cierra con una **llamada a la acción** distinta cada vez (urgencia, oferta, garantía, soporte).
+
+        # **Datos del producto:**
+        # - Nombre: {data.get('nombre', 'Ordenador Gaming')}
+        # - Categoría: {search_term or 'Gaming PC'}
+        # - Precio: {data.get('precio', '0')}€
+        # - Proveedor: {data.get('provider', 'ProveedorX')}
+
+        # **Instrucciones de estilo y originalidad:**
+        # - Varía estructura, longitud de oraciones y puntuación.
+        # - Emplea sinónimos y evita repetir adjetivos exactos.
+        # - No uses términos genéricos sin datos concretos.
+        # - La salida **debe ser única**, sin copiar plantillas anteriores.
+        # """
+        
+
+        # prompt = f""" 28,5 seg aprox
+        # Eres un **copywriter de élite** en tecnología. Redacta una descripción **única** de **80–100 palabras** en **español impecable**, sin encabezados ni notas extra, que incluya:
+
+        # 1. Una **frase inicial** sensorial que evoque la experiencia de uso.
+        # 2. Un **bloque breve** (2–3 frases) con las **3 características clave** (CPU, GPU, RAM) y su beneficio cuantificado.
+        # 3. Una **frase** sobre almacenamiento o refrigeración.
+        # 4. Una **llamada a la acción** clara al final.
+
+        # Datos:
+        # - Nombre: {data.get('nombre', 'Ordenador Gaming')}
+        # - Categoría: {search_term or 'Gaming PC'}
+        # - Precio: {data.get('precio', '0')}€  
+        # - Proveedor: {data.get('provider', 'ProveedorX')}
+
+        # **Instrucciones**:  
+        # - Sé directo y conciso.  
+        # - Usa cifras reales y evita adjetivos vagos.  
+        # - Mantén la salida entre 80–100 palabras EXACTAS.  
+        # - No repitas estructuras ni frases de ejemplos anteriores.  
+        # """
+
+        prompt = f"""
+        Como experto en marketing tecnológico, escribe una descripción concisa y persuasiva de 60-80 palabras para:
+        
+        Producto: {data.get('nombre', 'Ordenador Gaming')}
+        Categoría: {search_term or 'Gaming PC'}
+        Precio: {data.get('precio', '0')}€
+        
+        Incluye: frase inicial impactante, 2 características principales con beneficios, y llamada a la acción.
+        Sé directo, usa lenguaje técnico preciso y persuasivo.
+        Usa un lenguaje **En un castellano perfecto**
+        """
+
+        
+        # Configurar la petición a Ollama
+        payload = {
+            "model": "llama3",
+            "prompt": prompt,
+            "stream": False
+        }
+        
+        time1 = time.time()
+        # Realizar la petición a Ollama
+        response = requests.post(OLLAMA_URL, json=payload, timeout=120)
+        time2 = time.time()
+
+        # Verificar la respuesta
+        if response.status_code == 200:
+            result = response.json()
+            description = result.get("response", "").strip()
+                
+            print(f"[INFO] Descripción generada correctamente ({len(description)} caracteres, {time2 - time1:.2f}s)")
+            return description
+        else:
+            print(f"[ERROR] Ollama respondió con código {response.status_code}: {response.text}")
+            return ""
+            
+    except requests.exceptions.RequestException as e:
+        print(f"[ERROR] Al conectar con Ollama: {e}")
+        return ""
+    except Exception as e:
+        print(f"[ERROR] Al generar descripción: {e}")
+        return ""
+    
 def saveProduct(data, search_term):
     try: 
         cursor = conn.cursor()
@@ -109,8 +213,8 @@ def saveProduct(data, search_term):
             data["provider"] = None
 
         sql_insert = '''
-            INSERT INTO product (id, id_provider, name, image, price, id_category)
-            VALUES (%s, %s, %s, %s, %s, %s)
+            INSERT INTO product (id, id_provider, name, image, price, id_category, description)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
         '''
 
         # Manejo del precio
@@ -134,13 +238,16 @@ def saveProduct(data, search_term):
         else:
             precio = "0"
 
+        description = getDescription(data, search_term)
+        
         values = (
-            uuid.uuid4().bytes,
+            str(uuid.uuid4()),
             data.get("provider"),
             data.get("nombre"),
             data.get("imagen"),
             precio,
             category[0] if category else None,
+            description if description else "Descripción no disponible"
         )
 
         cursor.execute(sql_insert, values)

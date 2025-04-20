@@ -6,7 +6,7 @@ import java.util.UUID;
 import com.juanma.proyecto_vn.models.ProductCart;
 
 public interface ICartService {
-    List<ProductCart> getCartByUserId(UUID userId);
+    List<ProductCart> getCartByUserId(String email);
 
     ProductCart addProductToCart(ProductCart productCart);
 

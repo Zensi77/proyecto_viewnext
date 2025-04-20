@@ -26,7 +26,7 @@ import java.util.UUID;
 public class Order extends BaseEntity {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
-    @Column(name = "id", nullable = false, updatable = false)
+    @Column(name = "id", nullable = false, updatable = false, columnDefinition = "char(36)")
     private UUID id;
 
     @ManyToOne
@@ -34,10 +34,7 @@ public class Order extends BaseEntity {
     private User user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Map<Product, Integer> productOrder;
-
-    @Column(name = "order_date", nullable = false)
-    private Date order_date = new Date();
+    private List<ProductOrder> productOrder;
 
     @Column(name = "total_price", nullable = false)
     private Long total_price;

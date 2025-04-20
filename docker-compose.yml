@@ -4,8 +4,54 @@ services:
     container_name: python
     tty: true # Para evitar que el contenedor se detenga
     working_dir: /scraping
+    environment:
+      - DB_NAME=${MYSQL_DATABASE}
+      - DB_USER=root
+      - DB_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - DB_HOST=db-sql
+      - DB_PORT=3306
+      - OLLAMA_HOST=ollama
     volumes:
       - ./scraping:/scraping
+    networks:
+      - ollama-net
+      - backend-net
+
+  openWebUI:
+    image: open-webui/open-webui:latest
+    restart: always
+    ports:
+      - '3000:8080'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    volumes:
+      - open-webui-local:/app/backend/data
+    networks:
+      - ollama-net
+
+  ollama:
+    image: ollama/ollama:latest
+    restart: always
+    ports:
+      - '11434:11434'
+    networks:
+      - ollama-net
+    volumes:
+      - ollama-local:/root/.ollama
+    dns: 8.8.8.8 # DNS de Google
+    environment:
+      - OLLAMA_INSECURE=true # Solo para entornos de prueba
+      - TZ=UTC # Forzar zona horaria
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1 # Deshabilitar IPv6
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:11434 || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    entrypoint: ['/bin/ollama']
+    command: ['serve'] # Comando principal sin shell
+
   db-sql:
     image: mysql:8.0
     container_name: db-sql
@@ -16,6 +62,8 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - '3306:3306'
+    networks:
+      - backend-net
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
@@ -38,6 +86,8 @@ services:
     container_name: myadmin
     ports:
       - 8081:80
+    networks:
+      - backend-net
     environment:
       - PMA_HOST=db-sql
       - PMA_PORT=3306
@@ -110,7 +160,12 @@ volumes:
   db_data:
   artemis:
   elasticsearch-data:
+  ollama-local:
+  open-webui-local:
+    external: true
 
 networks:
   infinispan:
     driver: bridge
+  ollama-net:
+  backend-net:
