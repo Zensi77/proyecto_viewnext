@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class CreateProductDto {
+    @Builder.Default
     private UUID id = UUID.randomUUID();
 
     @NotBlank(message = "El nombre no puede estar vacío")

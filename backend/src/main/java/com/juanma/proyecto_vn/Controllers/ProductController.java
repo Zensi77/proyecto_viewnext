@@ -5,15 +5,14 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.juanma.proyecto_vn.Dtos.Product.CreateProductDto;
 import com.juanma.proyecto_vn.Dtos.Product.GetProductDto;
-import com.juanma.proyecto_vn.Service.ProductServiceImpl;
 import com.juanma.proyecto_vn.interfaces.IProductService;
-import com.juanma.proyecto_vn.models.Product;
 
 import jakarta.validation.Valid;
 
@@ -37,7 +36,9 @@ public class ProductController {
             @RequestParam(defaultValue = "asc") String orderBy,
             @RequestParam(defaultValue = "") String filterBy,
             @RequestParam(defaultValue = "") String filterValue) {
-        return ResponseEntity.ok(productService.getAllProducts(page, size, sortBy, orderBy, filterBy, filterValue));
+        List<GetProductDto> products = productService.getAllProducts(page, size, sortBy, orderBy, filterBy,
+                filterValue);
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping("/{id}")
@@ -53,6 +54,12 @@ public class ProductController {
     @PutMapping("/{id}")
     public GetProductDto editProduct(@PathVariable UUID id, @RequestBody @Valid CreateProductDto product) {
         return productService.updateProduct(product, id);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable UUID id) {
+        productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

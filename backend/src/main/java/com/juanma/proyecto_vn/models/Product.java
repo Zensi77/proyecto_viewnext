@@ -6,12 +6,7 @@ import lombok.ToString;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Filter;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,11 +15,12 @@ import lombok.EqualsAndHashCode;
 import java.util.UUID;
 
 @Entity
+@Table(name = "product")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@ToString
-@EqualsAndHashCode(callSuper = true) // Para que no de error al hacer equals y hashCode
+@ToString(exclude = { "provider", "category" }) // Excluye las relaciones para evitar problemas de serialización
+@EqualsAndHashCode(callSuper = true, exclude = { "provider", "category" })
 @Builder
 @SQLDelete(sql = "UPDATE product SET is_deleted = true WHERE id = ?")
 @Filter(name = "deletedFilter", condition = "is_deleted = :isDeleted")
@@ -46,15 +42,14 @@ public class Product extends BaseEntity {
     @Column(name = "description", nullable = false, columnDefinition = "text")
     private String description;
 
-    @ManyToOne()
-    @JoinColumn(name = "id_provider")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_provider", referencedColumnName = "id")
     private Provider provider;
 
-    @ManyToOne()
-    @JoinColumn(name = "id_category")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_category", referencedColumnName = "id")
     private Category category;
 
     @Column(name = "is_deleted", columnDefinition = "boolean default false")
     private boolean isDeleted;
-
 }

@@ -16,6 +16,7 @@ import java.util.UUID;
 @Data
 @EqualsAndHashCode(callSuper = true) // Para que no de error al hacer equals y hashCode
 @Builder
+@Table(name = "category")
 @AllArgsConstructor
 @NoArgsConstructor
 @SQLDelete(sql = "UPDATE category SET is_deleted = true WHERE id = ?")

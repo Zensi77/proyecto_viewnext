@@ -155,13 +155,13 @@ def getDescription(data, search_term):
         
         Incluye: frase inicial impactante, 2 características principales con beneficios, y llamada a la acción.
         Sé directo, usa lenguaje técnico preciso y persuasivo.
-        Usa un lenguaje **En un castellano perfecto**
+        Usa un lenguaje **en un castellano perfecto**
         """
 
         
         # Configurar la petición a Ollama
         payload = {
-            "model": "llama3",
+            "model": "llama3.2",
             "prompt": prompt,
             "stream": False
         }

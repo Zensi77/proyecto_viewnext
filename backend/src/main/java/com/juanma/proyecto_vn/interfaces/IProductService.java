@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import com.juanma.proyecto_vn.Dtos.Product.CreateProductDto;
 import com.juanma.proyecto_vn.Dtos.Product.GetProductDto;
-import com.juanma.proyecto_vn.models.Product;
 
 public interface IProductService {
     List<GetProductDto> getAllProducts(int page, int size, String sortBy, String orderBy, String filterBy,

@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.SQLDelete;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Entity

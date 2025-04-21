@@ -49,7 +49,10 @@ public class SpringSecurityConfig {
                         .requestMatchers("/api/v1/user/login").permitAll()
                         .requestMatchers("/api/v1/products").permitAll()
                         .requestMatchers("/api/v1/products/**").permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers("/api/v1/category/**").permitAll()
+                        .requestMatchers("/api/v1/category").permitAll()
+                        .anyRequest()
+                        .authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
