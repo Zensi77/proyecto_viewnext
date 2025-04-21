@@ -1,6 +1,7 @@
 package com.juanma.proyecto_vn.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,8 +28,8 @@ public class ProviderServiceImpl implements IProviderService {
     }
 
     @Override
-    public ProviderDto getProvider(String id) {
-        Provider provider = providerRepository.findByIdNative(id)
+    public ProviderDto getProvider(UUID id) {
+        Provider provider = providerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Provider not found"));
         return mapToDto(provider);
     }
@@ -44,8 +45,8 @@ public class ProviderServiceImpl implements IProviderService {
     }
 
     @Override
-    public ProviderDto updateProvider(String id, ProviderDto providerDto) {
-        Provider provider = providerRepository.findByIdNative(id)
+    public ProviderDto updateProvider(UUID id, ProviderDto providerDto) {
+        Provider provider = providerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Provider not found"));
 
         provider.setName(providerDto.getName());
@@ -57,8 +58,8 @@ public class ProviderServiceImpl implements IProviderService {
     }
 
     @Override
-    public void deleteProvider(String id) {
-        Provider provider = providerRepository.findByIdNative(id)
+    public void deleteProvider(UUID id) {
+        Provider provider = providerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Provider not found"));
 
         providerRepository.delete(provider);

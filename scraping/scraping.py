@@ -67,19 +67,19 @@ def saveCategoriesAndProvider(categories, providers):
     try:
         cursor = conn.cursor()
         sql = '''
-            INSERT INTO provider (id, name, address)
-            VALUES (%s, %s, %s)
+            INSERT INTO provider (id, name, address, deleted)
+            VALUES (%s, %s, %s, %s)
         '''
         for provider in providers.values():
-            cursor.execute(sql, (str(uuid.uuid4()), provider.split(".")[1], provider))
+            cursor.execute(sql, (str(uuid.uuid4()), provider.split(".")[1], provider, False))
             conn.commit()
         cursor = conn.cursor()
         sql = '''
-            INSERT INTO category (id, name)
-            VALUES (%s, %s)
+            INSERT INTO category (id, name, deleted)
+            VALUES (%s, %s, %s)
         '''
         for category in categories.values():
-            cursor.execute(sql, (str(uuid.uuid4()), category))
+            cursor.execute(sql, (str(uuid.uuid4()), category, False))
             conn.commit()
         print("[INFO] Categorías y proveedores guardados.")
     except mysql.connector.Error as err:
@@ -161,7 +161,7 @@ def getDescription(data, search_term):
         
         # Configurar la petición a Ollama
         payload = {
-            "model": "llama3.2",
+            "model": "llama3",
             "prompt": prompt,
             "stream": False
         }
@@ -213,8 +213,8 @@ def saveProduct(data, search_term):
             data["provider"] = None
 
         sql_insert = '''
-            INSERT INTO product (id, id_provider, name, image, price, id_category, description)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO product (id, id_provider, name, image, price, id_category, description, deleted)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         '''
 
         # Manejo del precio
@@ -247,7 +247,8 @@ def saveProduct(data, search_term):
             data.get("imagen"),
             precio,
             category[0] if category else None,
-            description if description else "Descripción no disponible"
+            description if description else "Descripción no disponible",
+            False
         )
 
         cursor.execute(sql_insert, values)

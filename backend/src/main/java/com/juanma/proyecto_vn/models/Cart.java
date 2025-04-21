@@ -6,8 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,19 +19,19 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLDelete(sql = "UPDATE cart SET is_deleted = true WHERE id = ?")
-@Filter(name = "deletedFilter", condition = "is_deleted = :isDeleted")
 public class Cart extends BaseEntity {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
+    @UuidGenerator
+    @JdbcTypeCode(SqlTypes.CHAR)
     @Column(name = "id", nullable = false, updatable = false, columnDefinition = "char(36)")
     private UUID id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Column(name = "product_cart")
     private List<ProductCart> productCart;
 }

@@ -33,7 +33,7 @@ public class CategoryServiceImpl implements ICategoryService {
     public CreateCategoryDto getCategory(UUID id) {
         System.out.println("ID recibido: " + id.toString());
 
-        Optional<Category> category = categoryRepository.findByIdNative(id.toString());
+        Optional<Category> category = categoryRepository.findById(id);
 
         if (category.isEmpty()) {
             throw new ResourceNotFoundException("Category not found");

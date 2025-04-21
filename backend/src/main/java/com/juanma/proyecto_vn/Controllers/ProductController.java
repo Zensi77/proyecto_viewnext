@@ -1,10 +1,13 @@
 package com.juanma.proyecto_vn.Controllers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -47,19 +50,40 @@ public class ProductController {
     }
 
     @PostMapping
-    public GetProductDto createProduct(@RequestBody @Valid CreateProductDto product) {
-        return productService.createProduct(product);
+    public ResponseEntity<?> createProduct(@RequestBody @Valid CreateProductDto product, BindingResult result) {
+        if (result.hasErrors()) {
+            return validation(result);
+        }
+
+        GetProductDto createdProduct = productService.createProduct(product);
+
+        return ResponseEntity.status(201).body(createdProduct);
     }
 
     @PutMapping("/{id}")
-    public GetProductDto editProduct(@PathVariable UUID id, @RequestBody @Valid CreateProductDto product) {
-        return productService.updateProduct(product, id);
+    public ResponseEntity<?> editProduct(@PathVariable UUID id,
+            @RequestBody @Valid CreateProductDto product, BindingResult result) {
+        if (result.hasErrors()) {
+            return validation(result);
+        }
+
+        GetProductDto updatedProduct = productService.updateProduct(product, id);
+        return ResponseEntity.ok(updatedProduct);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable UUID id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
+    }
+
+    private ResponseEntity<?> validation(BindingResult result) {
+        Map<String, String> errors = new HashMap<>();
+        result.getFieldErrors().forEach(err -> {
+            errors.put("message", "Error en campo " + err.getField() + ": " + err.getDefaultMessage());
+        });
+
+        return ResponseEntity.badRequest().body(errors);
     }
 
 }

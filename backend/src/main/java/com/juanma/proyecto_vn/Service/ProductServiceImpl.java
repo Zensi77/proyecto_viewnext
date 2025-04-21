@@ -110,7 +110,7 @@ public class ProductServiceImpl implements IProductService {
         public GetProductDto deleteProduct(UUID id) {
                 Product product = productRepository.findById(id)
                                 .orElseThrow(() -> new RuntimeException("Product not found"));
-                product.setDeleted(true);
+                productRepository.delete(product);
 
                 return mapToGetProductDto(product);
         }

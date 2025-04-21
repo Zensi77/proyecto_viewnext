@@ -39,13 +39,11 @@ public class UserServiceImpl implements IUserService {
 
     @Transactional
     public Map<String, Object> saveUser(UserCreateDto user) {
-        User newUser = new User(
-                null,
-                user.getEmail(),
-                passwordEncoder.encode(user.getPassword()),
-                RoleEnum.USER,
-                false,
-                false);
+        User newUser = User.builder()
+                .email(user.getEmail())
+                .password(passwordEncoder.encode(user.getPassword()))
+                .role(RoleEnum.USER)
+                .build();
 
         User savedUser = userRepository.save(newUser);
 
@@ -84,13 +82,11 @@ public class UserServiceImpl implements IUserService {
 
     @Transactional
     public Map<String, Object> saveAdmin(UserCreateDto user) {
-        User newUser = new User(
-                null,
-                user.getEmail(),
-                passwordEncoder.encode(user.getPassword()),
-                RoleEnum.ADMIN,
-                false,
-                false);
+        User newUser = User.builder()
+                .email(user.getEmail())
+                .password(passwordEncoder.encode(user.getPassword()))
+                .role(RoleEnum.ADMIN)
+                .build();
 
         User savedUser = userRepository.save(newUser);
 

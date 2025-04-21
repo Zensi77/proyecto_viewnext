@@ -3,8 +3,9 @@ package com.juanma.proyecto_vn.models;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
+import org.hibernate.annotations.JdbcTypeCode;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,11 +23,11 @@ import java.util.UUID;
 @ToString(exclude = { "provider", "category" }) // Excluye las relaciones para evitar problemas de serialización
 @EqualsAndHashCode(callSuper = true, exclude = { "provider", "category" })
 @Builder
-@SQLDelete(sql = "UPDATE product SET is_deleted = true WHERE id = ?")
-@Filter(name = "deletedFilter", condition = "is_deleted = :isDeleted")
 public class Product extends BaseEntity {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
+    @UuidGenerator
+    @JdbcTypeCode(SqlTypes.CHAR)
     @Column(name = "id", nullable = false, updatable = false, columnDefinition = "char(36)")
     private UUID id;
 
@@ -49,7 +50,4 @@ public class Product extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_category", referencedColumnName = "id")
     private Category category;
-
-    @Column(name = "is_deleted", columnDefinition = "boolean default false")
-    private boolean isDeleted;
 }
