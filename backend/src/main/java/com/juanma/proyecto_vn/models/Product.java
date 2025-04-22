@@ -43,6 +43,9 @@ public class Product extends BaseEntity {
     @Column(name = "description", nullable = false, columnDefinition = "text")
     private String description;
 
+    @Column(name = "stock", nullable = false, columnDefinition = "int default 0")
+    private int stock;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_provider", referencedColumnName = "id")
     private Provider provider;

@@ -2,6 +2,7 @@ package com.juanma.proyecto_vn.Dtos.Product;
 
 import java.util.UUID;
 
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -25,6 +26,10 @@ public class CreateProductDto {
 
     @Positive(message = "El precio debe ser un número positivo")
     private double price;
+
+    @Positive(message = "El stock debe ser un número positivo")
+    @Max(value = 1000, message = "El stock no puede ser mayor a 1000")
+    private int stock;
 
     @NotBlank(message = "La imagen no puede estar vacía")
     @Pattern(regexp = "^(https?|ftp)://.*$", message = "La imagen debe ser una URL válida")

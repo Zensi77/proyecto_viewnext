@@ -6,16 +6,16 @@ import java.util.UUID;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
 @Entity
 @Data
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "product_cart")
-public class ProductCart {
+public class ProductCart extends BaseEntity {
 
     @EmbeddedId
     private ProductCartPK id;
@@ -39,12 +39,10 @@ public class ProductCart {
     @AllArgsConstructor
     public static class ProductCartPK implements Serializable { // Serializable es necesario para claves compuestas
         @Column(name = "product_id", nullable = false, columnDefinition = "char(36)")
-        @UuidGenerator
         @JdbcTypeCode(SqlTypes.CHAR)
         private UUID productId;
 
         @Column(name = "cart_id", nullable = false, columnDefinition = "char(36)")
-        @UuidGenerator
         @JdbcTypeCode(SqlTypes.CHAR)
         private UUID cartId;
     }

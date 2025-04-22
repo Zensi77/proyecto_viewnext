@@ -17,6 +17,7 @@ public class GetProductDto {
     private double price;
     private String image;
     private String description;
+    private int stock;
     private String provider;
     private String category;
 }

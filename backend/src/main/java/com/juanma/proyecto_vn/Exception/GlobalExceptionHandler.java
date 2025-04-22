@@ -104,6 +104,24 @@ public class GlobalExceptionHandler {
                 return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
         }
 
+        @ExceptionHandler(NoStockException.class)
+        public ResponseEntity<Object> handleNoStockException(
+                        NoStockException ex, WebRequest request) {
+
+                Map<String, String> errors = new HashMap<>();
+                errors.put("error", ex.getMessage());
+
+                ApiError apiError = ApiError.builder()
+                                .timestamp(LocalDateTime.now())
+                                .message("No hay stock disponible")
+                                .errors(errors)
+                                .path(request.getDescription(false))
+                                .build();
+
+                return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+        }
+
+
         // Excepciones genéricas
         @ExceptionHandler(Exception.class)
         public ResponseEntity<Object> handleAllExceptions(
@@ -121,5 +139,7 @@ public class GlobalExceptionHandler {
                                 .build();
 
                 return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
+
 }

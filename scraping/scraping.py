@@ -13,6 +13,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.common.exceptions import TimeoutException
 import os
 import dotenv
+import random
 
 dotenv.load_dotenv()
 
@@ -161,14 +162,14 @@ def getDescription(data, search_term):
         
         # Configurar la petición a Ollama
         payload = {
-            "model": "llama3",
+            "model": "llama3.2",
             "prompt": prompt,
             "stream": False
         }
         
         time1 = time.time()
         # Realizar la petición a Ollama
-        response = requests.post(OLLAMA_URL, json=payload, timeout=120)
+        response = requests.post(OLLAMA_URL, json=payload, timeout=60)
         time2 = time.time()
 
         # Verificar la respuesta
@@ -213,8 +214,8 @@ def saveProduct(data, search_term):
             data["provider"] = None
 
         sql_insert = '''
-            INSERT INTO product (id, id_provider, name, image, price, id_category, description, deleted)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO product (id, id_provider, name, image, price, id_category, description, deleted, stock)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         '''
 
         # Manejo del precio
@@ -248,7 +249,8 @@ def saveProduct(data, search_term):
             precio,
             category[0] if category else None,
             description if description else "Descripción no disponible",
-            False
+            False,
+            random.randint(0, 100) 
         )
 
         cursor.execute(sql_insert, values)

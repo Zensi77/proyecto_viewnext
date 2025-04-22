@@ -1,16 +1,14 @@
 package com.juanma.proyecto_vn.interfaces;
 
-import java.util.List;
 import java.util.UUID;
 
-import com.juanma.proyecto_vn.models.ProductCart;
+import com.juanma.proyecto_vn.Dtos.Cart.CartDto;
+import com.juanma.proyecto_vn.Dtos.Cart.CreateProductCartDto;
 
 public interface ICartService {
-    List<ProductCart> getCartByUserId(String email);
+    CartDto getCartByUserId(String email);
 
-    ProductCart addProductToCart(ProductCart productCart);
+    CartDto addProductToCart(CreateProductCartDto productCart, String email);
 
-    ProductCart updateProductInCart(ProductCart productCart);
-
-    void deleteProductFromCart(UUID productId, UUID cartId);
+    void deleteProductFromCart(UUID productId, UUID cartId, String email);
 }
