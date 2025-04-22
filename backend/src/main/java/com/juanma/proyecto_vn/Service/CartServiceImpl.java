@@ -47,8 +47,12 @@ public class CartServiceImpl implements ICartService {
         Optional<Cart> cart = cartRepository.findByUserId(user.getId());
 
         if (cart.isEmpty()) {
-            Cart newCart = Cart.builder().user(user).build();
+            Cart newCart = Cart.builder()
+                    .user(user)
+                    .productCart(List.of())
+                    .build();
             cartRepository.save(newCart);
+            return convertToCartDto(newCart);
         }
 
         return convertToCartDto(cart.get());
@@ -70,20 +74,24 @@ public class CartServiceImpl implements ICartService {
                     .orElseThrow(() -> new ResourceNotFoundException("El producto no existe."));
 
             int productStock = product.getStock();
-            int quantityInCart = productCartRepository
-                    .findByProductAndCart(productCart.getProduct_id(), existingCart.getId()).getQuantity() + 1;
-
-            if (quantityInCart > productStock) {
-                throw new NoStockException("No hay suficiente stock del producto: ");
-            }
-
             if (productExists) {
+                int quantityInCart = productCartRepository
+                        .findByProductAndCart(productCart.getProduct_id(), existingCart.getId()).getQuantity() + 1;
+
+                if (quantityInCart > productStock) {
+                    throw new NoStockException("No hay suficiente stock del producto: ");
+                }
+
                 ProductCart productCartDb = productCartRepository.findByProductAndCart(
                         productCart.getProduct_id(), existingCart.getId());
 
                 productCartDb.setQuantity(productCartDb.getQuantity() + productCart.getQuantity());
                 productCartRepository.save(productCartDb);
             } else {
+                if (productCart.getQuantity() > productStock) {
+                    throw new NoStockException("No hay suficiente stock del producto: ");
+                }
+
                 ProductCart.ProductCartPK pk = new ProductCart.ProductCartPK(
                         productCart.getProduct_id(),
                         existingCart.getId());
@@ -111,17 +119,15 @@ public class CartServiceImpl implements ICartService {
         Optional<Cart> cart = cartRepository.findByUserId(user.getId());
 
         if (cart.isPresent() && cart.get().getId().equals(cartId)) {
-            ProductCart.ProductCartPK pk = new ProductCart.ProductCartPK(productId, cartId);
-            ProductCart productCart = productCartRepository.findById(pk)
-                    .orElseThrow(() -> new ResourceNotFoundException("El producto no existe en el carrito."));
+            ProductCart productCart = productCartRepository.findByProductAndCart(productId, cartId);
+
+            System.out.println("El producto existe en el carrito: " + productCart.getProduct().getName());
 
             if (productCart != null) {
-                productCartRepository.delete(productCart);
-            } else {
-                throw new ResourceNotFoundException("El producto no existe en el carrito.");
+                productCartRepository.deleteByProductAndCart(productId, cartId);
             }
         } else {
-            throw new ResourceNotFoundException("El carrito no existe, reintentelo mas tarde.");
+            throw new ResourceNotFoundException("El carrito no pertenece al usuario o no existe.");
         }
     }
 

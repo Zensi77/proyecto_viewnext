@@ -16,7 +16,7 @@ public class ProyectoVnApplication {
 	}
 
 	@Bean // Se crea un bean para configurar el CORS
-	public WebMvcConfigurer corsConfigurer() {
+	WebMvcConfigurer corsConfigurer() {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {

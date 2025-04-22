@@ -3,7 +3,11 @@ package com.juanma.proyecto_vn.Service;
 import java.util.List;
 import java.util.UUID;
 
+import org.infinispan.client.hotrod.RemoteCache;
+import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -21,10 +25,12 @@ import com.juanma.proyecto_vn.models.Category;
 import com.juanma.proyecto_vn.models.Product;
 import com.juanma.proyecto_vn.models.Provider;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
+// @CacheConfig(cacheNames = "products")
 public class ProductServiceImpl implements IProductService {
 
         @Autowired
@@ -35,6 +41,17 @@ public class ProductServiceImpl implements IProductService {
 
         @Autowired
         private CategoryRepository categoryRepository;
+
+        @Autowired
+        private RemoteCacheManager rcm; // Manejador de cache remota de Infinispan
+
+        private RemoteCache<String, Product> remoteCache; // Cache de Infinispan
+
+        @PostConstruct
+        public void init() {
+                // Inicializa el RemoteCacheManager y el RemoteCache
+                remoteCache = rcm.administration().getOrCreateCache("productCache", "distributed");
+        }
 
         @Override
         public List<GetProductDto> getAllProducts(int page, int size, String sortBy, String orderBy, String filterBy,
@@ -57,9 +74,18 @@ public class ProductServiceImpl implements IProductService {
         }
 
         @Override
+        // @Cacheable(value = "products", key = "#id")
         public GetProductDto getProductById(UUID id) {
+                String key = id.toString();
+                Product cachedProduct = remoteCache.get(key);
+                if (cachedProduct != null) {
+                        return mapToGetProductDto(cachedProduct);
+                }
+
                 Product product = productRepository.findById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+
+                remoteCache.put(key, product);
                 return mapToGetProductDto(product);
         }
 
@@ -85,6 +111,7 @@ public class ProductServiceImpl implements IProductService {
         }
 
         @Override
+        @CachePut(value = "products", key = "#id") // Actualiza la cache después de modificar el producto
         public GetProductDto updateProduct(CreateProductDto product, UUID id) {
                 Product existingProduct = productRepository.findById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
@@ -107,6 +134,7 @@ public class ProductServiceImpl implements IProductService {
         }
 
         @Override
+        @CacheEvict(value = "products", key = "#id") // Elimina el producto de la cache
         public GetProductDto deleteProduct(UUID id) {
                 Product product = productRepository.findById(id)
                                 .orElseThrow(() -> new RuntimeException("Product not found"));

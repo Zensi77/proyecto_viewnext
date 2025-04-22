@@ -10,7 +10,7 @@ import org.hibernate.type.SqlTypes;
 
 @Entity
 @Data
-
+@EqualsAndHashCode(callSuper = true) // Para que no de error al hacer equals y hashCode
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
