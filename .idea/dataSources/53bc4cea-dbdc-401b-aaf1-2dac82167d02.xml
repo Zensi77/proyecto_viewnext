@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataSource name="tienda-vn@localhost">
-  <database-model serializer="dbm" dbms="MYSQL" family-id="MYSQL" format-version="4.52">
+  <database-model serializer="dbm" dbms="MYSQL" family-id="MYSQL" format-version="4.53">
     <root id="1">
       <DefaultCasing>exact</DefaultCasing>
       <DefaultEngine>InnoDB</DefaultEngine>
@@ -1157,13 +1157,13 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </table>
     <column id="308" parent="300" name="id">
-      <DasType>binary(16)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
+      <StoredType>binary(16)|0s</StoredType>
     </column>
     <column id="309" parent="300" name="user_id">
-      <DasType>binary(16)|0s</DasType>
       <Position>2</Position>
+      <StoredType>binary(16)|0s</StoredType>
     </column>
     <foreign-key id="310" parent="300" name="FKl70asp4l4w0jmbm1tqyofho4o">
       <ColNames>user_id</ColNames>
@@ -1189,19 +1189,19 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <UnderlyingIndexName>UK9emlp6m95v5er2bcqkjsw48he</UnderlyingIndexName>
     </key>
     <column id="315" parent="301" name="is_deleted">
-      <DasType>tinyint(1)|0s</DasType>
       <DefaultExpression>0</DefaultExpression>
       <Position>1</Position>
+      <StoredType>tinyint(1)|0s</StoredType>
     </column>
     <column id="316" parent="301" name="id">
-      <DasType>binary(16)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>2</Position>
+      <StoredType>binary(16)|0s</StoredType>
     </column>
     <column id="317" parent="301" name="name">
-      <DasType>varchar(255)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
+      <StoredType>varchar(255)|0s</StoredType>
     </column>
     <index id="318" parent="301" name="PRIMARY">
       <ColNames>id</ColNames>
@@ -1214,29 +1214,29 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="320" parent="302" name="is_deleted">
-      <DasType>tinyint(1)|0s</DasType>
       <DefaultExpression>0</DefaultExpression>
       <Position>1</Position>
+      <StoredType>tinyint(1)|0s</StoredType>
     </column>
     <column id="321" parent="302" name="order_date">
-      <DasType>datetime(6)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>2</Position>
+      <StoredType>datetime(6)|0s</StoredType>
     </column>
     <column id="322" parent="302" name="total_price">
-      <DasType>bigint|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
+      <StoredType>bigint|0s</StoredType>
     </column>
     <column id="323" parent="302" name="id">
-      <DasType>binary(16)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>4</Position>
+      <StoredType>binary(16)|0s</StoredType>
     </column>
     <column id="324" parent="302" name="user">
-      <DasType>binary(16)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>5</Position>
+      <StoredType>binary(16)|0s</StoredType>
     </column>
     <foreign-key id="325" parent="302" name="FKmh56yymll54s83noc1v5dt535">
       <ColNames>user</ColNames>
@@ -1258,42 +1258,42 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="329" parent="303" name="is_deleted">
-      <DasType>tinyint(1)|0s</DasType>
       <DefaultExpression>0</DefaultExpression>
       <Position>1</Position>
+      <StoredType>tinyint(1)|0s</StoredType>
     </column>
     <column id="330" parent="303" name="price">
-      <DasType>bigint|0s</DasType>
       <NotNull>1</NotNull>
       <Position>2</Position>
+      <StoredType>bigint|0s</StoredType>
     </column>
     <column id="331" parent="303" name="id">
-      <DasType>binary(16)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
+      <StoredType>binary(16)|0s</StoredType>
     </column>
     <column id="332" parent="303" name="id_category">
-      <DasType>binary(16)|0s</DasType>
       <Position>4</Position>
+      <StoredType>binary(16)|0s</StoredType>
     </column>
     <column id="333" parent="303" name="id_provider">
-      <DasType>binary(16)|0s</DasType>
       <Position>5</Position>
+      <StoredType>binary(16)|0s</StoredType>
     </column>
     <column id="334" parent="303" name="image">
-      <DasType>varchar(255)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>6</Position>
+      <StoredType>varchar(255)|0s</StoredType>
     </column>
     <column id="335" parent="303" name="nombre">
-      <DasType>varchar(255)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>7</Position>
+      <StoredType>varchar(255)|0s</StoredType>
     </column>
     <column id="336" parent="303" name="name">
-      <DasType>varchar(255)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>8</Position>
+      <StoredType>varchar(255)|0s</StoredType>
     </column>
     <foreign-key id="337" parent="303" name="FK5cxv31vuhc7v32omftlxa8k3c">
       <ColNames>id_category</ColNames>
@@ -1324,20 +1324,20 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="343" parent="304" name="quantity">
-      <DasType>int|0s</DasType>
       <DefaultExpression>1</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
+      <StoredType>int|0s</StoredType>
     </column>
     <column id="344" parent="304" name="cart_id">
-      <DasType>binary(16)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>2</Position>
+      <StoredType>binary(16)|0s</StoredType>
     </column>
     <column id="345" parent="304" name="product_id">
-      <DasType>binary(16)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
+      <StoredType>binary(16)|0s</StoredType>
     </column>
     <foreign-key id="346" parent="304" name="FKowadg6jmbiwwlufj8ygk11c1a">
       <ColNames>cart_id</ColNames>
@@ -1370,24 +1370,24 @@ product_id</ColNames>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="352" parent="305" name="is_deleted">
-      <DasType>bit(1)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
+      <StoredType>bit(1)|0s</StoredType>
     </column>
     <column id="353" parent="305" name="quantity">
-      <DasType>int|0s</DasType>
       <NotNull>1</NotNull>
       <Position>2</Position>
+      <StoredType>int|0s</StoredType>
     </column>
     <column id="354" parent="305" name="order_id">
-      <DasType>binary(16)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
+      <StoredType>binary(16)|0s</StoredType>
     </column>
     <column id="355" parent="305" name="product_id">
-      <DasType>binary(16)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>4</Position>
+      <StoredType>binary(16)|0s</StoredType>
     </column>
     <foreign-key id="356" parent="305" name="FKjwsik4uvq2sdqtb7x6h1o5f0v">
       <ColNames>order_id</ColNames>
@@ -1421,24 +1421,24 @@ product_id</ColNames>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="362" parent="306" name="is_deleted">
-      <DasType>bit(1)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>1</Position>
+      <StoredType>bit(1)|0s</StoredType>
     </column>
     <column id="363" parent="306" name="id">
-      <DasType>binary(16)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>2</Position>
+      <StoredType>binary(16)|0s</StoredType>
     </column>
     <column id="364" parent="306" name="address">
-      <DasType>varchar(255)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
+      <StoredType>varchar(255)|0s</StoredType>
     </column>
     <column id="365" parent="306" name="name">
-      <DasType>varchar(255)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>4</Position>
+      <StoredType>varchar(255)|0s</StoredType>
     </column>
     <index id="366" parent="306" name="PRIMARY">
       <ColNames>id</ColNames>
@@ -1451,29 +1451,29 @@ product_id</ColNames>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
     <column id="368" parent="307" name="is_deleted">
-      <DasType>tinyint(1)|0s</DasType>
       <DefaultExpression>0</DefaultExpression>
       <Position>1</Position>
+      <StoredType>tinyint(1)|0s</StoredType>
     </column>
     <column id="369" parent="307" name="id">
-      <DasType>binary(16)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>2</Position>
+      <StoredType>binary(16)|0s</StoredType>
     </column>
     <column id="370" parent="307" name="email">
-      <DasType>varchar(255)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>3</Position>
+      <StoredType>varchar(255)|0s</StoredType>
     </column>
     <column id="371" parent="307" name="password">
-      <DasType>varchar(255)|0s</DasType>
       <NotNull>1</NotNull>
       <Position>4</Position>
+      <StoredType>varchar(255)|0s</StoredType>
     </column>
     <column id="372" parent="307" name="role">
-      <DasType>enum(&apos;USER&apos;, &apos;ADMIN&apos;)|0e</DasType>
       <NotNull>1</NotNull>
       <Position>5</Position>
+      <StoredType>enum(&apos;USER&apos;, &apos;ADMIN&apos;)|0e</StoredType>
     </column>
     <index id="373" parent="307" name="PRIMARY">
       <ColNames>id</ColNames>

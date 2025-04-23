@@ -49,8 +49,12 @@ public class ProductServiceImpl implements IProductService {
 
         @PostConstruct
         public void init() {
-                // Inicializa el RemoteCacheManager y el RemoteCache
-                remoteCache = rcm.administration().getOrCreateCache("productCache", "distributed");
+                try {
+                        // Inicializa el RemoteCacheManager y el RemoteCache
+                        remoteCache = rcm.administration().getOrCreateCache("productCache", "default");
+                } catch (Exception e) {
+                        System.out.println("Error inicializando cache: " + e.getMessage());
+                }
         }
 
         @Override
