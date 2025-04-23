@@ -51,7 +51,7 @@ public class ProductServiceImpl implements IProductService {
         public void init() {
                 try {
                         // Inicializa el RemoteCacheManager y el RemoteCache
-                        remoteCache = rcm.administration().getOrCreateCache("productCache", "default");
+                        remoteCache = rcm.getCache("productCache");
                 } catch (Exception e) {
                         System.out.println("Error inicializando cache: " + e.getMessage());
                 }
@@ -81,15 +81,23 @@ public class ProductServiceImpl implements IProductService {
         // @Cacheable(value = "products", key = "#id")
         public GetProductDto getProductById(UUID id) {
                 String key = id.toString();
-                Product cachedProduct = remoteCache.get(key);
-                if (cachedProduct != null) {
-                        return mapToGetProductDto(cachedProduct);
+
+                try {
+                        // Intenta obtener el producto de la cache
+                        Product cachedProduct = remoteCache.get(key);
+                        if (cachedProduct != null) {
+                                return mapToGetProductDto(cachedProduct);
+                        }
+                } catch (Exception e) {
+                        System.out.println("Error al obtener el producto de la cache: " + e.getMessage());
                 }
 
                 Product product = productRepository.findById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
-                remoteCache.put(key, product);
+                if (remoteCache != null) {
+                        remoteCache.put(key, product);
+                }
                 return mapToGetProductDto(product);
         }
 

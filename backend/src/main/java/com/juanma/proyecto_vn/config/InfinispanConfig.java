@@ -1,57 +1,54 @@
+// src/main/java/com/tuapp/config/InfinispanConfig.java
 package com.juanma.proyecto_vn.config;
 
 import org.infinispan.client.hotrod.RemoteCacheManager;
+import org.infinispan.client.hotrod.configuration.ClientIntelligence;
 import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 import org.infinispan.client.hotrod.marshall.MarshallerUtil;
 import org.infinispan.commons.marshall.ProtoStreamMarshaller;
 import org.infinispan.spring.remote.provider.SpringRemoteCacheManager;
 import org.infinispan.protostream.SerializationContext;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.juanma.proyecto_vn.serialization.ProductSchemaInitializer;
-import com.juanma.proyecto_vn.serialization.ProductSchemaInitializerImpl;
+import com.juanma.proyecto_vn.serialization.ProductoSchemaInitializer;
+import com.juanma.proyecto_vn.serialization.ProductoSchemaInitializerImpl;
 
 @Configuration
-@EnableCaching
+@EnableCaching // Activa @Cacheable
 public class InfinispanConfig {
 
-    @Value("${infinispan.hotrod.host}")
-    private String host;
-
-    @Value("${infinispan.hotrod.port}")
-    private int port;
-
-    @Value("${infinispan.hotrod.username}")
-    private String username;
-
-    @Value("${infinispan.hotrod.password}")
-    private String password;
-
     @Bean
-    RemoteCacheManager remoteCacheManager(ProductSchemaInitializer schema) {
+    public RemoteCacheManager remoteCacheManager(ProductoSchemaInitializer schema) {
         ConfigurationBuilder builder = new ConfigurationBuilder();
-        builder.addServer().host("127.0.0.1").port(11222).security().authentication().enabled(true)
-                .saslMechanism("DIGEST-MD5").username("admin123").password("admin123")
-                .marshaller(new ProtoStreamMarshaller());
+        builder
+                // Por defecto, el cliente de Infinispan usa la IP que le da el servidor, por lo
+                // que no es necesario
+                // Al estar en docker se le pone BASIC para que no use la IP del servidor
+                .clientIntelligence(ClientIntelligence.BASIC)
+                .addServer().host("localhost").port(11222)
+                .security().authentication()
+                .enabled(true)
+                .saslMechanism("SCRAM-SHA-512")
+                .username("admin123")
+                .password("admin123").marshaller(new ProtoStreamMarshaller());
+
         RemoteCacheManager rcm = new RemoteCacheManager(builder.build());
 
         SerializationContext ctx = MarshallerUtil.getSerializationContext(rcm);
-        schema.registerSchema(ctx);
+        schema.registerSchema(ctx); // Registra Producto, Categoria, Proveedor, UUID en el contexto de serialización
+        schema.registerMarshallers(ctx); // Registra los Marshallers en el contexto de serialización
         return rcm;
     }
 
     @Bean
-    SpringRemoteCacheManager springCacheManager(RemoteCacheManager rcm) {
+    public SpringRemoteCacheManager cacheManager(RemoteCacheManager rcm) {
         return new SpringRemoteCacheManager(rcm);
     }
 
     @Bean
-    public ProductSchemaInitializer productSchemaInitializer() {
-        // Clase generada automaticamente por Infinispan al registrar el esquema de
-        return new ProductSchemaInitializerImpl();
+    public ProductoSchemaInitializer productoSchemaInitializer() {
+        return new ProductoSchemaInitializerImpl();
     }
-
 }

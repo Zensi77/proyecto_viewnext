@@ -1,38 +1,53 @@
 package com.juanma.proyecto_vn.models;
 
-import lombok.NoArgsConstructor;
+import java.util.UUID;
+
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
+import org.infinispan.protostream.annotations.Proto;
+import org.infinispan.protostream.annotations.ProtoFactory;
+import org.infinispan.protostream.annotations.ProtoField;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.util.UUID;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@Builder
-@EqualsAndHashCode(callSuper = true) // Para que no de error al hacer equals y hashCode
-@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
+@Builder
+@Proto
 public class Provider extends BaseEntity {
+
+    @ProtoField(number = 1)
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     @UuidGenerator
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(name = "id", nullable = false, updatable = false, columnDefinition = "char(36)")
-    private UUID id;
+    protected UUID id;
 
+    @ProtoField(number = 2)
     @Column(name = "name", nullable = false, unique = true)
-    private String name;
+    protected String name;
 
+    @ProtoField(number = 3)
     @Column(name = "address", nullable = false)
-    private String address;
+    protected String address;
+
+    // Constructor para ProtoStream
+    @ProtoFactory
+    public Provider(UUID id, String name, String address) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+    }
+
 }
