@@ -1,4 +1,4 @@
-package com.juanma.proyecto_vn.Dtos.category;
+package com.juanma.proyecto_vn.Dtos.Category;
 
 import java.util.UUID;
 
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CreateCategoryDto {
+public class CategoryDto {
 
     @Builder.Default
     private UUID id = UUID.randomUUID();

@@ -3,19 +3,24 @@ package com.juanma.proyecto_vn.Service;
 import java.util.List;
 import java.util.UUID;
 
+import org.infinispan.client.hotrod.DefaultTemplate;
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
+
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 
+import com.juanma.proyecto_vn.Dtos.Category.CategoryDto;
 import com.juanma.proyecto_vn.Dtos.Product.CreateProductDto;
 import com.juanma.proyecto_vn.Dtos.Product.GetProductDto;
+import com.juanma.proyecto_vn.Dtos.Provider.ProviderDto;
 import com.juanma.proyecto_vn.Exception.ResourceNotFoundException;
 import com.juanma.proyecto_vn.Repositorys.CategoryRepository;
 import com.juanma.proyecto_vn.Repositorys.ProductRepository;
@@ -30,8 +35,9 @@ import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-// @CacheConfig(cacheNames = "products")
+@CacheConfig(cacheNames = "productCache") // Configuración de la cache
 public class ProductServiceImpl implements IProductService {
+        private static final Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
 
         @Autowired
         private ProductRepository productRepository;
@@ -51,9 +57,13 @@ public class ProductServiceImpl implements IProductService {
         public void init() {
                 try {
                         // Inicializa el RemoteCacheManager y el RemoteCache
+                        // Crear o obtener la cache distribuida
+                        rcm.administration().getOrCreateCache("productCache", DefaultTemplate.DIST_SYNC);
+
                         remoteCache = rcm.getCache("productCache");
+                        logger.info("Cache de Infinispan inicializada correctamente");
                 } catch (Exception e) {
-                        System.out.println("Error inicializando cache: " + e.getMessage());
+                        logger.warn("Error al inicializar el cache de Infinispan: " + e.getMessage());
                 }
         }
 
@@ -70,49 +80,54 @@ public class ProductServiceImpl implements IProductService {
                         pageProducts = productRepository.findAll(pageable);
                 }
 
-                // Get content se usa para obtener la lista de productos de la página
-                // y no la página completa
                 return pageProducts.getContent().stream()
                                 .map(this::mapToGetProductDto)
                                 .toList();
         }
 
         @Override
-        // @Cacheable(value = "products", key = "#id")
+        @Transactional
+        // @Cacheable(value = "products", key = "#id", unless = "#result == null") //
+        // Usa la cache configurada en spring de forma automatica
         public GetProductDto getProductById(UUID id) {
                 String key = id.toString();
 
-                try {
+                Product cachedProduct = null;
+                if (remoteCache != null) {
                         // Intenta obtener el producto de la cache
-                        Product cachedProduct = remoteCache.get(key);
+                        cachedProduct = remoteCache.get(key);
                         if (cachedProduct != null) {
                                 return mapToGetProductDto(cachedProduct);
                         }
-                } catch (Exception e) {
-                        System.out.println("Error al obtener el producto de la cache: " + e.getMessage());
+
                 }
 
-                Product product = productRepository.findById(id)
-                                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
-
-                if (remoteCache != null) {
-                        remoteCache.put(key, product);
+                Product productDb = null;
+                if (cachedProduct == null) {
+                        // Si no está en la cache, lo buscamos en la base de datos
+                        productDb = productRepository.findById(id)
+                                        .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
                 }
-                return mapToGetProductDto(product);
+
+                if (remoteCache != null && cachedProduct == null) {
+                        remoteCache.put(key, productDb);
+                }
+                return mapToGetProductDto(productDb);
         }
 
         @Override
         public GetProductDto createProduct(CreateProductDto product) {
-                Provider provider = providerRepository.findById(product.getProvider())
+                Provider provider = providerRepository.findById(UUID.fromString(product.getProvider()))
                                 .orElseThrow(() -> new ResourceNotFoundException("Provider not found"));
 
-                Category category = categoryRepository.findById(product.getCategory())
+                Category category = categoryRepository.findById(UUID.fromString(product.getCategory()))
                                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
                 Product newProduct = Product.builder()
                                 .name(product.getName())
                                 .price(product.getPrice())
                                 .image(product.getImage())
+                                .stock(product.getStock())
                                 .description(product.getDescription())
                                 .provider(provider)
                                 .category(category)
@@ -123,34 +138,46 @@ public class ProductServiceImpl implements IProductService {
         }
 
         @Override
-        @CachePut(value = "products", key = "#id") // Actualiza la cache después de modificar el producto
+        // @CachePut(value = "productCache", key = "#id")
         public GetProductDto updateProduct(CreateProductDto product, UUID id) {
                 Product existingProduct = productRepository.findById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
-                Provider provider = providerRepository.findById(product.getProvider())
+                Provider provider = providerRepository.findById(UUID.fromString(product.getProvider()))
                                 .orElseThrow(() -> new ResourceNotFoundException("Provider not found"));
 
-                Category category = categoryRepository.findById(product.getCategory())
+                Category category = categoryRepository.findById(UUID.fromString(product.getCategory()))
                                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
                 existingProduct.setName(product.getName());
                 existingProduct.setPrice(product.getPrice());
                 existingProduct.setImage(product.getImage());
+                existingProduct.setStock(product.getStock());
                 existingProduct.setDescription(product.getDescription());
                 existingProduct.setProvider(provider);
                 existingProduct.setCategory(category);
 
                 productRepository.save(existingProduct);
+
+                if (remoteCache != null) {
+                        // Actualiza el producto en la cache
+                        remoteCache.put(id.toString(), existingProduct);
+                }
                 return mapToGetProductDto(existingProduct);
         }
 
         @Override
-        @CacheEvict(value = "products", key = "#id") // Elimina el producto de la cache
+        // @CacheEvict(value = "productCache", key = "#id") // Elimina el producto de la
+        // cache
         public GetProductDto deleteProduct(UUID id) {
                 Product product = productRepository.findById(id)
                                 .orElseThrow(() -> new RuntimeException("Product not found"));
                 productRepository.delete(product);
+
+                if (remoteCache != null) {
+                        // Elimina el producto de la cache
+                        remoteCache.remove(id.toString());
+                }
 
                 return mapToGetProductDto(product);
         }
@@ -162,9 +189,16 @@ public class ProductServiceImpl implements IProductService {
                                 .name(product.getName())
                                 .price(product.getPrice())
                                 .image(product.getImage())
+                                .stock(product.getStock())
                                 .description(product.getDescription())
-                                .provider(product.getProvider().getName())
-                                .category(product.getCategory().getName())
+                                .provider(ProviderDto.builder()
+                                                .id(product.getProvider().getId())
+                                                .name(product.getProvider().getName())
+                                                .build())
+                                .category(CategoryDto.builder()
+                                                .id(product.getCategory().getId())
+                                                .name(product.getCategory().getName())
+                                                .build())
                                 .build();
         }
 

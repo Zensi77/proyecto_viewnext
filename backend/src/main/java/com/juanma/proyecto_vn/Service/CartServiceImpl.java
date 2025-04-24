@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import com.juanma.proyecto_vn.Dtos.Cart.CartDto;
 import com.juanma.proyecto_vn.Dtos.Cart.CreateProductCartDto;
 import com.juanma.proyecto_vn.Dtos.Cart.GetProductCartDto;
+import com.juanma.proyecto_vn.Dtos.Category.CategoryDto;
 import com.juanma.proyecto_vn.Dtos.Product.GetProductDto;
+import com.juanma.proyecto_vn.Dtos.Provider.ProviderDto;
 import com.juanma.proyecto_vn.Exception.NoStockException;
 import com.juanma.proyecto_vn.Exception.ResourceNotFoundException;
 import com.juanma.proyecto_vn.Repositorys.CartRepository;
@@ -19,8 +21,10 @@ import com.juanma.proyecto_vn.Repositorys.ProductRepository;
 import com.juanma.proyecto_vn.Repositorys.UserRepository;
 import com.juanma.proyecto_vn.interfaces.ICartService;
 import com.juanma.proyecto_vn.models.Cart;
+import com.juanma.proyecto_vn.models.Category;
 import com.juanma.proyecto_vn.models.Product;
 import com.juanma.proyecto_vn.models.ProductCart;
+import com.juanma.proyecto_vn.models.Provider;
 import com.juanma.proyecto_vn.models.User;
 
 import jakarta.transaction.Transactional;
@@ -134,16 +138,8 @@ public class CartServiceImpl implements ICartService {
     private CartDto convertToCartDto(Cart cart) {
         List<GetProductCartDto> productCartDtos = cart.getProductCart().stream()
                 .map(productCart -> GetProductCartDto.builder()
-                        .product(GetProductDto.builder()
-                                .id(productCart.getProduct().getId())
-                                .name(productCart.getProduct().getName())
-                                .price(productCart.getProduct().getPrice())
-                                .image(productCart.getProduct().getImage())
-                                .description(productCart.getProduct().getDescription())
-                                .stock(productCart.getProduct().getStock())
-                                .category(productCart.getProduct().getCategory().getName())
-                                .provider(productCart.getProduct().getProvider().getName())
-                                .build())
+                        .product(
+                                getProdutDto(productCart))
                         .quantity(productCart.getQuantity())
                         .build())
                 .toList();
@@ -151,6 +147,37 @@ public class CartServiceImpl implements ICartService {
         return CartDto.builder()
                 .cart_id(cart.getId().toString())
                 .products(productCartDtos)
+                .build();
+    }
+
+    private CategoryDto getCategoryDtoFromProduct(Category category) {
+        return CategoryDto.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .build();
+    }
+
+    private ProviderDto getCategoryDtoFromProduct(Provider provider) {
+        return ProviderDto.builder()
+                .id(provider.getId())
+                .name(provider.getName())
+                .address(provider.getAddress())
+                .build();
+    }
+
+    private GetProductDto getProdutDto(ProductCart productCart) {
+        return GetProductDto.builder()
+                .id(productCart.getProduct().getId())
+                .name(productCart.getProduct().getName())
+                .price(productCart.getProduct().getPrice())
+                .image(productCart.getProduct().getImage())
+                .description(productCart.getProduct().getDescription())
+                .stock(productCart.getProduct().getStock())
+                .category(
+                        getCategoryDtoFromProduct(productCart.getProduct().getCategory()))
+                .provider(
+                        getCategoryDtoFromProduct(productCart.getProduct()
+                                .getProvider()))
                 .build();
     }
 

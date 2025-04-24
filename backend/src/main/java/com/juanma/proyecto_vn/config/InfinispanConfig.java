@@ -8,7 +8,6 @@ import org.infinispan.client.hotrod.marshall.MarshallerUtil;
 import org.infinispan.commons.marshall.ProtoStreamMarshaller;
 import org.infinispan.spring.remote.provider.SpringRemoteCacheManager;
 import org.infinispan.protostream.SerializationContext;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,7 +15,7 @@ import com.juanma.proyecto_vn.serialization.ProductoSchemaInitializer;
 import com.juanma.proyecto_vn.serialization.ProductoSchemaInitializerImpl;
 
 @Configuration
-@EnableCaching // Activa @Cacheable
+// @EnableCaching // Activa @Cacheable
 public class InfinispanConfig {
 
     @Bean
@@ -32,7 +31,10 @@ public class InfinispanConfig {
                 .enabled(true)
                 .saslMechanism("SCRAM-SHA-512")
                 .username("admin123")
-                .password("admin123").marshaller(new ProtoStreamMarshaller());
+                .password("admin123")
+                .marshaller(new ProtoStreamMarshaller())
+                .addJavaSerialAllowList("com.juanma.proyecto_vn.models.*"); // Permite la serialización de los objetos
+                                                                            // de la aplicación
 
         RemoteCacheManager rcm = new RemoteCacheManager(builder.build());
 
@@ -42,13 +44,23 @@ public class InfinispanConfig {
         return rcm;
     }
 
+    /**
+     * Bean para cargar el manejador de cache remota de infinispan en el
+     * contexto de spring. Se usa para que spring pueda usar el cache de infinispan
+     */
     @Bean
-    public SpringRemoteCacheManager cacheManager(RemoteCacheManager rcm) {
+    SpringRemoteCacheManager cacheManager(RemoteCacheManager rcm) {
         return new SpringRemoteCacheManager(rcm);
     }
 
+    /**
+     * Bean para inicializar el esquema de protostream de infinispan. Se usa para
+     * registrar los marshallers y el esquema de protostream en el contexto de
+     * Los marshallers son los que se encargan de serializar y deserializar los
+     * objetos en el cache de infinispan. Se usa para registrar los objetos que se
+     */
     @Bean
-    public ProductoSchemaInitializer productoSchemaInitializer() {
+    ProductoSchemaInitializer productoSchemaInitializer() {
         return new ProductoSchemaInitializerImpl();
     }
 }

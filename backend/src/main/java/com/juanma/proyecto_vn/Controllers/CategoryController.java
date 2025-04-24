@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.juanma.proyecto_vn.Dtos.category.CreateCategoryDto;
+import com.juanma.proyecto_vn.Dtos.Category.CategoryDto;
 import com.juanma.proyecto_vn.interfaces.ICategoryService;
 
 import jakarta.validation.Valid;
@@ -30,37 +30,37 @@ public class CategoryController {
     private ICategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<List<CreateCategoryDto>> getAllCategories() {
-        List<CreateCategoryDto> categories = categoryService.getAllCategories();
+    public ResponseEntity<List<CategoryDto>> getAllCategories() {
+        List<CategoryDto> categories = categoryService.getAllCategories();
         return ResponseEntity.ok(categories);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CreateCategoryDto> getCategory(@PathVariable UUID id) {
-        CreateCategoryDto category = categoryService.getCategory(id);
+    public ResponseEntity<CategoryDto> getCategory(@PathVariable UUID id) {
+        CategoryDto category = categoryService.getCategory(id);
         return ResponseEntity.ok(category);
     }
 
     @PostMapping
-    public ResponseEntity<?> createCategory(@RequestBody @Valid CreateCategoryDto category, BindingResult result) {
+    public ResponseEntity<?> createCategory(@RequestBody @Valid CategoryDto category, BindingResult result) {
         if (result.hasErrors()) {
             return validation(result);
         }
 
-        CreateCategoryDto createdCategory = categoryService.createCategory(category);
+        CategoryDto createdCategory = categoryService.createCategory(category);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCategory);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCategory(
-            @RequestBody @Valid CreateCategoryDto category,
+            @RequestBody @Valid CategoryDto category,
             @PathVariable UUID id,
             BindingResult result) {
         if (result.hasErrors()) {
             return validation(result);
         }
 
-        CreateCategoryDto updatedCategory = categoryService.updateCategory(id, category);
+        CategoryDto updatedCategory = categoryService.updateCategory(id, category);
         return ResponseEntity.ok(updatedCategory);
     }
 

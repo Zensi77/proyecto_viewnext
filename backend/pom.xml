@@ -66,9 +66,9 @@
 		    <version>${infinispan.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.infinispan</groupId>
-		    <artifactId>infinispan-spring-boot-starter-remote</artifactId>
-		    <version>${infinispan.version}</version>
+    		<groupId>org.infinispan</groupId>
+    		<artifactId>infinispan-spring5-remote</artifactId>
+    		<version>14.0.5.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.infinispan.protostream</groupId>

@@ -3,16 +3,16 @@ package com.juanma.proyecto_vn.interfaces;
 import java.util.List;
 import java.util.UUID;
 
-import com.juanma.proyecto_vn.Dtos.category.CreateCategoryDto;
+import com.juanma.proyecto_vn.Dtos.Category.CategoryDto;
 
 public interface ICategoryService {
-    List<CreateCategoryDto> getAllCategories();
+    List<CategoryDto> getAllCategories();
 
-    CreateCategoryDto getCategory(UUID id);
+    CategoryDto getCategory(UUID id);
 
-    CreateCategoryDto createCategory(CreateCategoryDto categoryDto);
+    CategoryDto createCategory(CategoryDto categoryDto);
 
-    CreateCategoryDto updateCategory(UUID id, CreateCategoryDto categoryDto);
+    CategoryDto updateCategory(UUID id, CategoryDto categoryDto);
 
     void deleteCategory(UUID id);
 

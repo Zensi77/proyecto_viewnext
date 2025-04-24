@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.juanma.proyecto_vn.Dtos.category.CreateCategoryDto;
+import com.juanma.proyecto_vn.Dtos.Category.CategoryDto;
 import com.juanma.proyecto_vn.Exception.ResourceNotFoundException;
 import com.juanma.proyecto_vn.Repositorys.CategoryRepository;
 import com.juanma.proyecto_vn.interfaces.ICategoryService;
@@ -22,7 +22,7 @@ public class CategoryServiceImpl implements ICategoryService {
     private CategoryRepository categoryRepository;
 
     @Override
-    public List<CreateCategoryDto> getAllCategories() {
+    public List<CategoryDto> getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
         return categories.stream()
                 .map(this::getCategoryDto)
@@ -30,7 +30,7 @@ public class CategoryServiceImpl implements ICategoryService {
     }
 
     @Override
-    public CreateCategoryDto getCategory(UUID id) {
+    public CategoryDto getCategory(UUID id) {
         System.out.println("ID recibido: " + id.toString());
 
         Optional<Category> category = categoryRepository.findById(id);
@@ -43,7 +43,7 @@ public class CategoryServiceImpl implements ICategoryService {
     }
 
     @Override
-    public CreateCategoryDto createCategory(CreateCategoryDto categoryDto) {
+    public CategoryDto createCategory(CategoryDto categoryDto) {
         Category category = Category.builder()
                 .name(categoryDto.getName())
                 .build();
@@ -53,7 +53,7 @@ public class CategoryServiceImpl implements ICategoryService {
     }
 
     @Override
-    public CreateCategoryDto updateCategory(UUID id, CreateCategoryDto categoryDto) {
+    public CategoryDto updateCategory(UUID id, CategoryDto categoryDto) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
@@ -70,8 +70,8 @@ public class CategoryServiceImpl implements ICategoryService {
         categoryRepository.delete(category);
     }
 
-    private CreateCategoryDto getCategoryDto(Category category) {
-        return CreateCategoryDto.builder()
+    private CategoryDto getCategoryDto(Category category) {
+        return CategoryDto.builder()
                 .id(category.getId())
                 .name(category.getName())
                 .build();

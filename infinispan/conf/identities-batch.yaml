@@ -1,5 +1,0 @@
-credentials:
-  - username: ${INFINISPAN_USER}
-    password: ${INFINISPAN_PASSWORD}
-    roles:
-      - admin

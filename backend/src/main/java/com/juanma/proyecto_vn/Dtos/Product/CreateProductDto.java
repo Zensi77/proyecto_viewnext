@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +28,8 @@ public class CreateProductDto {
     @Positive(message = "El precio debe ser un número positivo")
     private double price;
 
-    @Positive(message = "El stock debe ser un número positivo")
+    @NotNull(message = "El stock no puede estar vacío")
+    @PositiveOrZero(message = "El stock no puede ser negativo")
     @Max(value = 1000, message = "El stock no puede ser mayor a 1000")
     private int stock;
 
@@ -40,8 +42,14 @@ public class CreateProductDto {
     private String description;
 
     @NotNull(message = "El proveedor no puede estar vacío")
-    private UUID provider;
+    @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", message = "El proveedor debe ser un UUID válido")
+    @Size(max = 36, message = "El proveedor no puede tener más de 36 caracteres")
+    @NotBlank(message = "El proveedor no puede estar vacío")
+    private String provider;
 
     @NotNull(message = "La categoría no puede estar vacía")
-    private UUID category;
+    @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$", message = "La categoría debe ser un UUID válido")
+    @Size(max = 36, message = "La categoría no puede tener más de 36 caracteres")
+    @NotBlank(message = "La categoría no puede estar vacía")
+    private String category;
 }

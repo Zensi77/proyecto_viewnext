@@ -2,6 +2,9 @@ package com.juanma.proyecto_vn.Dtos.Product;
 
 import java.util.UUID;
 
+import com.juanma.proyecto_vn.Dtos.Provider.ProviderDto;
+import com.juanma.proyecto_vn.Dtos.Category.CategoryDto;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +21,6 @@ public class GetProductDto {
     private String image;
     private String description;
     private int stock;
-    private String provider;
-    private String category;
+    private ProviderDto provider;
+    private CategoryDto category;
 }
