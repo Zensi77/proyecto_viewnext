@@ -7,6 +7,9 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+
 @SpringBootApplication
 @EnableAspectJAutoProxy // Habilita el uso de AOP (Aspect Oriented Programming) en la aplicación
 public class ProyectoVnApplication {
@@ -24,5 +27,14 @@ public class ProyectoVnApplication {
 						.allowedMethods("GET", "POST", "PUT", "DELETE").allowedHeaders("*");
 			}
 		};
+	}
+
+	@Bean
+	public OpenAPI apiInfo() {
+		return new OpenAPI()
+				.info(new Info()
+						.title("API de Tienda de Productos de informatica")
+						.description("Documentación de la API para la tienda de productos de informatica")
+						.version("1.0.0"));
 	}
 }
