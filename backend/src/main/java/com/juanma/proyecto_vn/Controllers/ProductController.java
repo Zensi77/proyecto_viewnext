@@ -1,7 +1,6 @@
 package com.juanma.proyecto_vn.Controllers;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -32,16 +31,21 @@ public class ProductController {
     private IProductService productService;
 
     @GetMapping
-    public ResponseEntity<List<GetProductDto>> getAllProducts(
+    public ResponseEntity<Object> getAllProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "16") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String orderBy,
             @RequestParam(defaultValue = "") String filterBy,
             @RequestParam(defaultValue = "") String filterValue) {
-        List<GetProductDto> products = productService.getAllProducts(page, size, sortBy, orderBy, filterBy,
+        Map<String, String> products = productService.getAllProducts(page, size, sortBy, orderBy, filterBy,
                 filterValue);
         return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/random")
+    public ResponseEntity<Object> getRandomProducts(@RequestParam int quantity) {
+        return ResponseEntity.ok().body(productService.getRandomProducts(quantity));
     }
 
     @GetMapping("/{id}")

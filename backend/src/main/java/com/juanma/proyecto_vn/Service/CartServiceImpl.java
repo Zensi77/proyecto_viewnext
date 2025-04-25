@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.juanma.proyecto_vn.Dtos.Cart.CartDto;
@@ -30,7 +32,6 @@ import com.juanma.proyecto_vn.models.User;
 import jakarta.transaction.Transactional;
 
 @Service
-@Transactional
 public class CartServiceImpl implements ICartService {
     @Autowired
     private CartRepository cartRepository;
@@ -45,14 +46,23 @@ public class CartServiceImpl implements ICartService {
     private ProductRepository productRepository;
 
     @Override
+    @Transactional
+    @PreAuthorize("#email == authentication.principal.username")
     public CartDto getCartByUserId(String email) {
-        User user = userRepository.findByEmail(email);
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isEmpty()) {
+            throw new UsernameNotFoundException("El usuario no existe.");
+        }
 
-        Optional<Cart> cart = cartRepository.findByUserId(user.getId());
+        Optional<Cart> cart = cartRepository.findByUserId(user.get().getId());
+
+        if (user.isEmpty()) {
+            throw new ResourceNotFoundException("El usuario no existe.");
+        }
 
         if (cart.isEmpty()) {
             Cart newCart = Cart.builder()
-                    .user(user)
+                    .user(user.get())
                     .productCart(List.of())
                     .build();
             cartRepository.save(newCart);
@@ -63,10 +73,14 @@ public class CartServiceImpl implements ICartService {
     }
 
     @Override
+    @Transactional
     public CartDto addProductToCart(CreateProductCartDto productCart, String email) {
-        User user = userRepository.findByEmail(email);
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isEmpty()) {
+            throw new UsernameNotFoundException("El usuario no existe.");
+        }
 
-        Optional<Cart> cart = cartRepository.findByUserId(user.getId());
+        Optional<Cart> cart = cartRepository.findByUserId(user.get().getId());
 
         if (cart.isPresent()) {
             Cart existingCart = cart.get();
@@ -80,17 +94,22 @@ public class CartServiceImpl implements ICartService {
             int productStock = product.getStock();
             if (productExists) {
                 int quantityInCart = productCartRepository
-                        .findByProductAndCart(productCart.getProduct_id(), existingCart.getId()).getQuantity() + 1;
+                        .findByProductAndCart(productCart.getProduct_id(), existingCart.getId()).get().getQuantity()
+                        + 1;
 
                 if (quantityInCart > productStock) {
                     throw new NoStockException("No hay suficiente stock del producto: ");
                 }
 
-                ProductCart productCartDb = productCartRepository.findByProductAndCart(
+                Optional<ProductCart> productCartDb = productCartRepository.findByProductAndCart(
                         productCart.getProduct_id(), existingCart.getId());
 
-                productCartDb.setQuantity(productCartDb.getQuantity() + productCart.getQuantity());
-                productCartRepository.save(productCartDb);
+                if (productCartDb.isPresent()) {
+
+                    productCartDb.get().setQuantity(productCartDb.get().getQuantity() + productCart.getQuantity());
+                    productCartRepository.save(productCartDb.get());
+                }
+
             } else {
                 if (productCart.getQuantity() > productStock) {
                     throw new NoStockException("No hay suficiente stock del producto: ");
@@ -118,16 +137,19 @@ public class CartServiceImpl implements ICartService {
     }
 
     @Override
+    @Transactional
     public void deleteProductFromCart(UUID productId, UUID cartId, String email) {
-        User user = userRepository.findByEmail(email);
-        Optional<Cart> cart = cartRepository.findByUserId(user.getId());
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isEmpty()) {
+            throw new UsernameNotFoundException("El usuario no existe.");
+        }
+
+        Optional<Cart> cart = cartRepository.findByUserId(user.get().getId());
 
         if (cart.isPresent() && cart.get().getId().equals(cartId)) {
-            ProductCart productCart = productCartRepository.findByProductAndCart(productId, cartId);
+            Optional<ProductCart> productCart = productCartRepository.findByProductAndCart(productId, cartId);
 
-            System.out.println("El producto existe en el carrito: " + productCart.getProduct().getName());
-
-            if (productCart != null) {
+            if (productCart.isPresent()) {
                 productCartRepository.deleteByProductAndCart(productId, cartId);
             }
         } else {

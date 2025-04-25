@@ -113,8 +113,6 @@ services:
   infinispan:
     image: infinispan/server:14.0.5.Final
     container_name: infinispan
-    volumes:
-      - ./infinispan/caches.xml:/opt/infinispan/server/conf/caches.xml
     ports:
       - '11222:11222'
     environment:

@@ -1,18 +1,21 @@
 package com.juanma.proyecto_vn.interfaces;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import com.juanma.proyecto_vn.Dtos.Product.CreateProductDto;
 import com.juanma.proyecto_vn.Dtos.Product.GetProductDto;
 
 public interface IProductService {
-    List<GetProductDto> getAllProducts(int page, int size, String sortBy, String orderBy, String filterBy,
+    Map<String, String> getAllProducts(int page, int size, String sortBy, String orderBy, String filterBy,
             String filterValue);
 
     GetProductDto getProductById(UUID id);
 
     GetProductDto createProduct(CreateProductDto product);
+
+    List<GetProductDto> getRandomProducts(int quantity);
 
     GetProductDto updateProduct(CreateProductDto product, UUID id);
 

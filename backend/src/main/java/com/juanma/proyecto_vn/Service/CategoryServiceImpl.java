@@ -22,16 +22,17 @@ public class CategoryServiceImpl implements ICategoryService {
     private CategoryRepository categoryRepository;
 
     @Override
+    @Transactional()
     public List<CategoryDto> getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
         return categories.stream()
-                .map(this::getCategoryDto)
+                .map(this::mapCategoryDto)
                 .toList();
     }
 
     @Override
+    @Transactional()
     public CategoryDto getCategory(UUID id) {
-        System.out.println("ID recibido: " + id.toString());
 
         Optional<Category> category = categoryRepository.findById(id);
 
@@ -39,30 +40,33 @@ public class CategoryServiceImpl implements ICategoryService {
             throw new ResourceNotFoundException("Category not found");
         }
 
-        return getCategoryDto(category.get());
+        return mapCategoryDto(category.get());
     }
 
     @Override
+    @Transactional
     public CategoryDto createCategory(CategoryDto categoryDto) {
         Category category = Category.builder()
                 .name(categoryDto.getName())
                 .build();
 
         Category savedCategory = categoryRepository.save(category);
-        return getCategoryDto(savedCategory);
+        return mapCategoryDto(savedCategory);
     }
 
     @Override
+    @Transactional
     public CategoryDto updateCategory(UUID id, CategoryDto categoryDto) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
         category.setName(categoryDto.getName());
         Category updatedCategory = categoryRepository.save(category);
-        return getCategoryDto(updatedCategory);
+        return mapCategoryDto(updatedCategory);
     }
 
     @Override
+    @Transactional
     public void deleteCategory(UUID id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
@@ -70,7 +74,7 @@ public class CategoryServiceImpl implements ICategoryService {
         categoryRepository.delete(category);
     }
 
-    private CategoryDto getCategoryDto(Category category) {
+    private CategoryDto mapCategoryDto(Category category) {
         return CategoryDto.builder()
                 .id(category.getId())
                 .name(category.getName())

@@ -1,6 +1,7 @@
 package com.juanma.proyecto_vn.Repositorys;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,7 +15,7 @@ public interface ProductCartRepository extends JpaRepository<ProductCart, Produc
     List<ProductCart> findByCart(Cart cart);
 
     @Query("SELECT pc FROM ProductCart pc WHERE pc.product.id = :productId AND pc.cart.id = :cartId")
-    ProductCart findByProductAndCart(UUID productId, UUID cartId);
+    Optional<ProductCart> findByProductAndCart(UUID productId, UUID cartId);
 
     @Modifying // Añadir esta anotación para indicar que es una operación de modificación
     @Query("DELETE FROM ProductCart pc WHERE pc.id.productId = :productId AND pc.id.cartId = :cartId")

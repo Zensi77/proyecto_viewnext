@@ -18,17 +18,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import com.juanma.proyecto_vn.Dtos.Auth.LoginDto;
 import com.juanma.proyecto_vn.Dtos.Auth.UserCreateDto;
 import com.juanma.proyecto_vn.Service.UserServiceImpl;
+import com.juanma.proyecto_vn.Validation.UniqueEmail;
 
 @RestController
 @RequestMapping("/api/v1/user")
 public class UserController {
     @Autowired
     private UserServiceImpl userService;
-
-    @GetMapping()
-    public String getMethodName() {
-        return "Hola desde el controlador de usuario";
-    }
 
     @PostMapping("/register")
     public ResponseEntity<?> getUser(@Valid @RequestBody UserCreateDto user, BindingResult result) {
@@ -61,6 +57,11 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
         }
+    }
+
+    @GetMapping("/EmailExist")
+    public ResponseEntity<?> emailExist(@UniqueEmail String email) {
+        return ResponseEntity.noContent().build();
     }
 
     private ResponseEntity<?> validation(BindingResult result) {

@@ -1,6 +1,7 @@
 package com.juanma.proyecto_vn.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.infinispan.client.hotrod.DefaultTemplate;
@@ -68,7 +69,8 @@ public class ProductServiceImpl implements IProductService {
         }
 
         @Override
-        public List<GetProductDto> getAllProducts(int page, int size, String sortBy, String orderBy, String filterBy,
+        @Transactional
+        public Map<String, String> getAllProducts(int page, int size, String sortBy, String orderBy, String filterBy,
                         String filterValue) {
                 Sort.Direction direction = orderBy.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
                 Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
@@ -80,15 +82,37 @@ public class ProductServiceImpl implements IProductService {
                         pageProducts = productRepository.findAll(pageable);
                 }
 
-                return pageProducts.getContent().stream()
-                                .map(this::mapToGetProductDto)
+                Map<String, String> response = Map.of("totalElements", String.valueOf(pageProducts.getTotalElements()),
+                                "totalPages", String.valueOf(pageProducts.getTotalPages()),
+                                "currentPage", String.valueOf(pageProducts.getNumber()),
+                                "pageSize", String.valueOf(pageProducts.getSize()),
+                                "numberOfElements", String.valueOf(pageProducts.getNumberOfElements()),
+                                "sortBy", sortBy,
+                                "orderBy", orderBy,
+                                "filterBy", filterBy,
+                                "filterValue", filterValue);
+
+                List<GetProductDto> products = pageProducts.getContent().stream()
+                                .map(this::mapProductDto)
+                                .toList();
+
+                response.put("products", products.toString());
+
+                return response;
+        }
+
+        @Override
+        @Transactional
+        public List<GetProductDto> getRandomProducts(int quantity) {
+                List<Product> products = productRepository.findRandomProducts(quantity);
+                return products.stream()
+                                .map(this::mapProductDto)
                                 .toList();
         }
 
         @Override
         @Transactional
         // @Cacheable(value = "products", key = "#id", unless = "#result == null") //
-        // Usa la cache configurada en spring de forma automatica
         public GetProductDto getProductById(UUID id) {
                 String key = id.toString();
 
@@ -97,7 +121,7 @@ public class ProductServiceImpl implements IProductService {
                         // Intenta obtener el producto de la cache
                         cachedProduct = remoteCache.get(key);
                         if (cachedProduct != null) {
-                                return mapToGetProductDto(cachedProduct);
+                                return mapProductDto(cachedProduct);
                         }
 
                 }
@@ -112,10 +136,11 @@ public class ProductServiceImpl implements IProductService {
                 if (remoteCache != null && cachedProduct == null) {
                         remoteCache.put(key, productDb);
                 }
-                return mapToGetProductDto(productDb);
+                return mapProductDto(productDb);
         }
 
         @Override
+        @Transactional
         public GetProductDto createProduct(CreateProductDto product) {
                 Provider provider = providerRepository.findById(UUID.fromString(product.getProvider()))
                                 .orElseThrow(() -> new ResourceNotFoundException("Provider not found"));
@@ -134,10 +159,11 @@ public class ProductServiceImpl implements IProductService {
                                 .build();
 
                 productRepository.save(newProduct);
-                return mapToGetProductDto(newProduct);
+                return mapProductDto(newProduct);
         }
 
         @Override
+        @Transactional
         // @CachePut(value = "productCache", key = "#id")
         public GetProductDto updateProduct(CreateProductDto product, UUID id) {
                 Product existingProduct = productRepository.findById(id)
@@ -163,10 +189,11 @@ public class ProductServiceImpl implements IProductService {
                         // Actualiza el producto en la cache
                         remoteCache.put(id.toString(), existingProduct);
                 }
-                return mapToGetProductDto(existingProduct);
+                return mapProductDto(existingProduct);
         }
 
         @Override
+        @Transactional
         // @CacheEvict(value = "productCache", key = "#id") // Elimina el producto de la
         // cache
         public GetProductDto deleteProduct(UUID id) {
@@ -179,11 +206,10 @@ public class ProductServiceImpl implements IProductService {
                         remoteCache.remove(id.toString());
                 }
 
-                return mapToGetProductDto(product);
+                return mapProductDto(product);
         }
 
-        private GetProductDto mapToGetProductDto(Product product) {
-                System.out.println("Product: " + product.toString());
+        private GetProductDto mapProductDto(Product product) {
                 return GetProductDto.builder()
                                 .id(product.getId())
                                 .name(product.getName())
