@@ -1,4 +1,4 @@
-package com.juanma.proyecto_vn.serialization.ModelsProto;
+package com.juanma.proyecto_vn.Serialization.ModelsProto;
 
 import java.util.UUID;
 
@@ -6,6 +6,11 @@ import org.infinispan.protostream.annotations.Proto;
 import org.infinispan.protostream.annotations.ProtoFactory;
 import org.infinispan.protostream.annotations.ProtoField;
 
+import com.juanma.proyecto_vn.Dtos.Category.CategoryDto;
+
+import lombok.Builder;
+
+@Builder
 @Proto
 public class CategoryProto {
     @ProtoFactory
@@ -20,4 +25,17 @@ public class CategoryProto {
     @ProtoField(number = 2, required = true)
     public String name;
 
+    public static CategoryProto fromDto(CategoryDto categoryDto) {
+        return CategoryProto.builder()
+                .id(categoryDto.getId())
+                .name(categoryDto.getName())
+                .build();
+    }
+
+    public static CategoryDto toDto(CategoryProto categoryProto) {
+        return CategoryDto.builder()
+                .id(categoryProto.id)
+                .name(categoryProto.name)
+                .build();
+    }
 }

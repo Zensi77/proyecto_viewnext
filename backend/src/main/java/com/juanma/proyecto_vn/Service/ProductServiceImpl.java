@@ -1,8 +1,11 @@
 package com.juanma.proyecto_vn.Service;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.infinispan.client.hotrod.DefaultTemplate;
 import org.infinispan.client.hotrod.RemoteCache;
@@ -22,10 +25,12 @@ import com.juanma.proyecto_vn.Dtos.Category.CategoryDto;
 import com.juanma.proyecto_vn.Dtos.Product.CreateProductDto;
 import com.juanma.proyecto_vn.Dtos.Product.GetProductDto;
 import com.juanma.proyecto_vn.Dtos.Provider.ProviderDto;
-import com.juanma.proyecto_vn.Exception.ResourceNotFoundException;
+import com.juanma.proyecto_vn.Exception.CustomExceptions.ResourceNotFoundException;
 import com.juanma.proyecto_vn.Repositorys.CategoryRepository;
+import com.juanma.proyecto_vn.Repositorys.ProductCartRepository;
 import com.juanma.proyecto_vn.Repositorys.ProductRepository;
 import com.juanma.proyecto_vn.Repositorys.ProviderRepository;
+import com.juanma.proyecto_vn.Serialization.ModelsProto.ProductProto;
 import com.juanma.proyecto_vn.interfaces.IProductService;
 import com.juanma.proyecto_vn.models.Category;
 import com.juanma.proyecto_vn.models.Product;
@@ -50,9 +55,12 @@ public class ProductServiceImpl implements IProductService {
         private CategoryRepository categoryRepository;
 
         @Autowired
+        private ProductCartRepository productCartRepository;
+
+        @Autowired
         private RemoteCacheManager rcm; // Manejador de cache remota de Infinispan
 
-        private RemoteCache<String, Product> remoteCache; // Cache de Infinispan
+        private RemoteCache<String, ProductProto> remoteCache; // Cache de Infinispan
 
         @PostConstruct
         public void init() {
@@ -70,7 +78,7 @@ public class ProductServiceImpl implements IProductService {
 
         @Override
         @Transactional
-        public Map<String, String> getAllProducts(int page, int size, String sortBy, String orderBy, String filterBy,
+        public Map<String, Object> getAllProducts(int page, int size, String sortBy, String orderBy, String filterBy,
                         String filterValue) {
                 Sort.Direction direction = orderBy.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
                 Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
@@ -82,21 +90,23 @@ public class ProductServiceImpl implements IProductService {
                         pageProducts = productRepository.findAll(pageable);
                 }
 
-                Map<String, String> response = Map.of("totalElements", String.valueOf(pageProducts.getTotalElements()),
-                                "totalPages", String.valueOf(pageProducts.getTotalPages()),
-                                "currentPage", String.valueOf(pageProducts.getNumber()),
-                                "pageSize", String.valueOf(pageProducts.getSize()),
-                                "numberOfElements", String.valueOf(pageProducts.getNumberOfElements()),
-                                "sortBy", sortBy,
-                                "orderBy", orderBy,
-                                "filterBy", filterBy,
-                                "filterValue", filterValue);
+                Map<String, Object> response = new HashMap<>();
+                response.put("totalPages", String.valueOf(pageProducts.getTotalPages()));
+                response.put("totalElements", String.valueOf(pageProducts.getTotalElements()));
+                response.put("currentPage", String.valueOf(pageProducts.getNumber()));
+                response.put("pageSize", String.valueOf(pageProducts.getSize()));
+                response.put("sortBy", sortBy);
+                response.put("orderBy", orderBy);
+                response.put("filterBy", filterBy);
+                response.put("filterValue", filterValue);
+                response.put("hasNext", String.valueOf(pageProducts.hasNext()));
+                response.put("hasPrevious", String.valueOf(pageProducts.hasPrevious()));
 
                 List<GetProductDto> products = pageProducts.getContent().stream()
                                 .map(this::mapProductDto)
                                 .toList();
 
-                response.put("products", products.toString());
+                response.put("products", products);
 
                 return response;
         }
@@ -104,38 +114,48 @@ public class ProductServiceImpl implements IProductService {
         @Override
         @Transactional
         public List<GetProductDto> getRandomProducts(int quantity) {
-                List<Product> products = productRepository.findRandomProducts(quantity);
-                return products.stream()
+                List<Product> allProducts = productRepository.findAll();
+                Collections.shuffle(allProducts);
+                return allProducts.stream()
                                 .map(this::mapProductDto)
-                                .toList();
+                                .limit(quantity)
+                                .collect(Collectors.toList());
         }
 
         @Override
         @Transactional
-        // @Cacheable(value = "products", key = "#id", unless = "#result == null") //
         public GetProductDto getProductById(UUID id) {
                 String key = id.toString();
+                ProductProto productProto = null;
 
-                Product cachedProduct = null;
                 if (remoteCache != null) {
-                        // Intenta obtener el producto de la cache
-                        cachedProduct = remoteCache.get(key);
-                        if (cachedProduct != null) {
-                                return mapProductDto(cachedProduct);
+                        try {
+                                productProto = remoteCache.get(key);
+                                if (productProto != null) {
+                                        logger.info("Producto obtenido de la caché: {}", key);
+                                        return ProductProto.toDto(productProto);
+                                }
+                        } catch (Exception e) {
+                                // Si hay un error al acceder a la caché, lo registramos pero seguimos
+                                logger.warn("Error al acceder a la caché: {}. Obteniendo datos de la base de datos.",
+                                                e.getMessage());
                         }
-
                 }
 
-                Product productDb = null;
-                if (cachedProduct == null) {
-                        // Si no está en la cache, lo buscamos en la base de datos
-                        productDb = productRepository.findById(id)
-                                        .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+                Product productDb = productRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+
+                if (remoteCache != null) {
+                        try {
+                                productProto = ProductProto.fromDto(mapProductDto(productDb));
+                                remoteCache.put(key, productProto);
+                                logger.debug("Producto guardado en caché: {}", key);
+                        } catch (Exception e) {
+                                // Si hay un error al guardar en la caché, lo registramos pero continuamos
+                                logger.warn("Error al guardar en la caché: {}", e.getMessage());
+                        }
                 }
 
-                if (remoteCache != null && cachedProduct == null) {
-                        remoteCache.put(key, productDb);
-                }
                 return mapProductDto(productDb);
         }
 
@@ -187,7 +207,7 @@ public class ProductServiceImpl implements IProductService {
 
                 if (remoteCache != null) {
                         // Actualiza el producto en la cache
-                        remoteCache.put(id.toString(), existingProduct);
+                        remoteCache.put(id.toString(), ProductProto.fromDto(mapProductDto(existingProduct)));
                 }
                 return mapProductDto(existingProduct);
         }
@@ -200,6 +220,8 @@ public class ProductServiceImpl implements IProductService {
                 Product product = productRepository.findById(id)
                                 .orElseThrow(() -> new RuntimeException("Product not found"));
                 productRepository.delete(product);
+
+                productCartRepository.deleteByProduct(product.getId()); // Elimina el producto de la tabla product_cart
 
                 if (remoteCache != null) {
                         // Elimina el producto de la cache
@@ -220,6 +242,7 @@ public class ProductServiceImpl implements IProductService {
                                 .provider(ProviderDto.builder()
                                                 .id(product.getProvider().getId())
                                                 .name(product.getProvider().getName())
+                                                .address(product.getProvider().getAddress())
                                                 .build())
                                 .category(CategoryDto.builder()
                                                 .id(product.getCategory().getId())

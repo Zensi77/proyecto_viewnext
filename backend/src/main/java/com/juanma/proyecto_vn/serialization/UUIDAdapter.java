@@ -1,4 +1,4 @@
-package com.juanma.proyecto_vn.serialization;
+package com.juanma.proyecto_vn.Serialization;
 
 import java.util.UUID;
 

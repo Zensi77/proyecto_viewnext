@@ -15,8 +15,8 @@ import com.juanma.proyecto_vn.Dtos.Cart.GetProductCartDto;
 import com.juanma.proyecto_vn.Dtos.Category.CategoryDto;
 import com.juanma.proyecto_vn.Dtos.Product.GetProductDto;
 import com.juanma.proyecto_vn.Dtos.Provider.ProviderDto;
-import com.juanma.proyecto_vn.Exception.NoStockException;
-import com.juanma.proyecto_vn.Exception.ResourceNotFoundException;
+import com.juanma.proyecto_vn.Exception.CustomExceptions.NoStockException;
+import com.juanma.proyecto_vn.Exception.CustomExceptions.ResourceNotFoundException;
 import com.juanma.proyecto_vn.Repositorys.CartRepository;
 import com.juanma.proyecto_vn.Repositorys.ProductCartRepository;
 import com.juanma.proyecto_vn.Repositorys.ProductRepository;
@@ -159,11 +159,18 @@ public class CartServiceImpl implements ICartService {
 
     private CartDto convertToCartDto(Cart cart) {
         List<GetProductCartDto> productCartDtos = cart.getProductCart().stream()
-                .map(productCart -> GetProductCartDto.builder()
-                        .product(
-                                getProdutDto(productCart))
-                        .quantity(productCart.getQuantity())
-                        .build())
+                .map(productCart -> {
+                    if (productCart.getProduct() == null) {
+                        productCartRepository.deleteByProductAndCart(null, cart.getId());
+                        return null;
+
+                    }
+                    return GetProductCartDto.builder()
+                            .product(getProdutDto(productCart))
+                            .quantity(productCart.getQuantity())
+                            .build();
+                })
+                .filter(dto -> dto != null)
                 .toList();
 
         return CartDto.builder()

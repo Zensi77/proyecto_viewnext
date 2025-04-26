@@ -2,12 +2,14 @@ package com.juanma.proyecto_vn.Controllers;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +21,11 @@ import jakarta.validation.Valid;
 
 import com.juanma.proyecto_vn.Dtos.Cart.CartDto;
 import com.juanma.proyecto_vn.Dtos.Cart.CreateProductCartDto;
+import com.juanma.proyecto_vn.Repositorys.UserRepository;
 import com.juanma.proyecto_vn.Service.CartServiceImpl;
+import com.juanma.proyecto_vn.models.Cart;
+import com.juanma.proyecto_vn.models.User;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -29,6 +35,9 @@ public class CartController {
 
     @Autowired
     private CartServiceImpl cartService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping()
     public ResponseEntity<?> getCart(Authentication authentication) {
@@ -58,13 +67,20 @@ public class CartController {
     @DeleteMapping
     public ResponseEntity<?> deleteProductFromCart(
             @RequestParam(required = true) UUID product_id,
-            @RequestParam(required = true) UUID cart_id,
             Authentication authentication) {
         if (authentication == null) {
             return ResponseEntity.status(401).body("Unauthorized");
         }
 
-        cartService.deleteProductFromCart(product_id, cart_id, authentication.getName());
+        Optional<User> user = userRepository.findByEmail(authentication.getName());
+
+        if (user.isEmpty()) {
+            throw new UsernameNotFoundException("El usuario no existe.");
+        }
+
+        CartDto cart = cartService.getCartByUserId(user.get().getId().toString());
+
+        cartService.deleteProductFromCart(product_id, UUID.fromString(cart.getCart_id()), authentication.getName());
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

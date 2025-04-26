@@ -1,4 +1,4 @@
-package com.juanma.proyecto_vn.serialization.ModelsProto;
+package com.juanma.proyecto_vn.Serialization.ModelsProto;
 
 import java.util.UUID;
 
@@ -6,6 +6,11 @@ import org.infinispan.protostream.annotations.Proto;
 import org.infinispan.protostream.annotations.ProtoFactory;
 import org.infinispan.protostream.annotations.ProtoField;
 
+import com.juanma.proyecto_vn.Dtos.Product.GetProductDto;
+
+import lombok.Builder;
+
+@Builder
 @Proto
 public class ProductProto {
     @ProtoFactory
@@ -47,4 +52,29 @@ public class ProductProto {
     @ProtoField(number = 8, required = true)
     public CategoryProto category;
 
+    public static ProductProto fromDto(GetProductDto productDto) {
+        return ProductProto.builder()
+                .id(productDto.getId())
+                .name(productDto.getName())
+                .price(productDto.getPrice())
+                .image(productDto.getImage())
+                .description(productDto.getDescription())
+                .stock(productDto.getStock())
+                .provider(ProviderProto.fromDto(productDto.getProvider()))
+                .category(CategoryProto.fromDto(productDto.getCategory()))
+                .build();
+    }
+
+    public static GetProductDto toDto(ProductProto productProto) {
+        return GetProductDto.builder()
+                .id(productProto.id)
+                .name(productProto.name)
+                .price(productProto.price)
+                .image(productProto.image)
+                .description(productProto.description)
+                .stock(productProto.stock)
+                .provider(ProviderProto.toDto(productProto.provider))
+                .category(CategoryProto.toDto(productProto.category))
+                .build();
+    }
 }

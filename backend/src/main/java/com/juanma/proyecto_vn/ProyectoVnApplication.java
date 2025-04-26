@@ -2,99 +2,96 @@ package com.juanma.proyecto_vn;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringApplication;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.Banner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.event.EventListener;
-import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.context.event.ApplicationFailedEvent;
+import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 
+import jakarta.annotation.PostConstruct;
+import java.util.Arrays;
+import java.util.UUID;
+
+/**
+ * Clase principal de arranque de la aplicación.
+ */
 @SpringBootApplication
-@EnableAspectJAutoProxy // Habilita el uso de AOP (Aspect Oriented Programming) en la aplicación
+@EnableAspectJAutoProxy
 public class ProyectoVnApplication {
-	// Configuración de logger con SLF4J
-	private static final Logger logger = LoggerFactory.getLogger(ProyectoVnApplication.class);
 
-	@Value("${spring.profiles.active:default}")
-	private String activeProfile;
+	private static final Logger log = LoggerFactory.getLogger(ProyectoVnApplication.class);
 
-	@Value("${server.port:8080}")
-	private String serverPort;
-
-	@Value("${cors.allowed-origins:http://localhost:4200}")
-	private String[] allowedOrigins;
+	@Autowired
+	private Environment env;
 
 	public static void main(String[] args) {
-		logger.info("Iniciando aplicación Proyecto ViewNext...");
-		try {
-			SpringApplication.run(ProyectoVnApplication.class, args);
-		} catch (Exception e) {
-			logger.error("Error durante el arranque de la aplicación: {}", e.getMessage(), e);
-			throw e;
-		}
+		// Desactivar banner y construir la aplicación
+		ApplicationContext ctx = new SpringApplicationBuilder(ProyectoVnApplication.class)
+				.bannerMode(Banner.Mode.OFF)
+				.listeners() // se pueden agregar listeners si se necesita
+				.build()
+				.run(args);
+
+		String appName = ctx.getEnvironment().getProperty("spring.application.name");
+		String[] activeProfiles = ctx.getEnvironment().getActiveProfiles();
+		log.info("Aplicacion '{}' iniciada con perfiles: {}", appName, Arrays.toString(activeProfiles));
 	}
 
-	@EventListener(ApplicationStartedEvent.class)
-	public void onApplicationStarted() {
-		logger.info("Aplicación iniciada con perfil: {}", activeProfile);
-		logger.info("Servidor escuchando en puerto: {}", serverPort);
+	/**
+	 * Método que se ejecuta justo después de arrancar el contexto.
+	 * Captura Environment inyectado sin parámetros en el PostConstruct.
+	 */
+	@PostConstruct
+	public void logStartupInfo() {
+		String port = env.getProperty("server.port");
+		String[] corsOrigins = env.getProperty("cors.allowed-origins", String[].class, new String[] {});
+
+		log.info("Servidor escuchando en puerto: {}", port);
+		log.info("Orígenes CORS permitidos: {}", String.join(", ", corsOrigins));
+		log.info("Instance requestId: {}", UUID.randomUUID());
 	}
 
-	@EventListener(ApplicationReadyEvent.class)
-	public void onApplicationReady() {
-		logger.info("Aplicación lista para recibir peticiones");
-
-		// Log información sobre CORS para facilitar la depuración
-		StringBuilder corsConfig = new StringBuilder("Configuración CORS: Orígenes permitidos: ");
-		for (String origin : allowedOrigins) {
-			corsConfig.append(origin).append(", ");
-		}
-		logger.info(corsConfig.toString());
-	}
-
-	@EventListener(ApplicationFailedEvent.class)
-	public void onApplicationFailed(ApplicationFailedEvent event) {
-		logger.error("La aplicación no pudo iniciarse correctamente: {}",
-				event.getException().getMessage(), event.getException());
-	}
-
-	@Bean // Se crea un bean para configurar el CORS
-	WebMvcConfigurer corsConfigurer() {
-		logger.info("Configurando CORS para la aplicación");
+	/**
+	 * Configura CORS de forma centralizada usando valores del Environment.
+	 */
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		String[] origins = env.getProperty("cors.allowed-origins", String[].class, new String[] {});
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				// Configuración más segura utilizando orígenes específicos
 				registry.addMapping("/**")
-						.allowedOrigins(allowedOrigins)
-						.allowedMethods("GET", "POST", "PUT", "DELETE")
-						.allowedHeaders("Authorization", "Content-Type", "Accept")
+						.allowedOrigins(origins)
+						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+						.allowedHeaders("*")
 						.allowCredentials(true)
-						.maxAge(3600); // 1 hora de caché para pre-flight
-
-				logger.info("Configuración CORS aplicada: {} orígenes permitidos", allowedOrigins.length);
+						.maxAge(3600);
+				log.debug("CORS configurado con orígenes: {}", Arrays.toString(origins));
 			}
 		};
 	}
 
+	/**
+	 * Configuración de OpenAPI para documentación Swagger.
+	 */
 	@Bean
-	OpenAPI apiInfo() {
-		logger.info("Configurando documentación OpenAPI");
+	public OpenAPI apiInfo() {
+		String appName = env.getProperty("spring.application.name", "API");
+		String version = env.getProperty("api.version", "1.0.0");
 		OpenAPI openAPI = new OpenAPI()
 				.info(new Info()
-						.title("API de Tienda de Productos de Informática")
-						.description("Documentación de la API para la tienda de productos de informática")
-						.version("1.0.0"));
-
-		logger.debug("Documentación OpenAPI generada correctamente");
+						.title(appName + " Documentation")
+						.version(version)
+						.description("Documentación de la API de " + appName));
+		log.debug("OpenAPI configurado: {} v{}", appName, version);
 		return openAPI;
 	}
 }

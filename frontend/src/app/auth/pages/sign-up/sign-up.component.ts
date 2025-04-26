@@ -12,6 +12,8 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { PasswordModule } from 'primeng/password';
 import { AuthService } from '../../services/auth.service';
 import Swal from 'sweetalert2';
+import { User } from '../../interfaces/user.interface';
+import { ValidatorService } from '../../services/validator.service';
 
 @Component({
   imports: [
@@ -37,10 +39,16 @@ export default class SignUpComponent {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly _router = inject(Router);
   private readonly _authService = inject(AuthService);
+  private readonly _validator = inject(ValidatorService);
 
   readonly registerForm = this.fb.group(
     {
-      email: ['', [Validators.required, Validators.email]],
+      email: [
+        '',
+        [Validators.required, Validators.email],
+        [this._validator.validateEmail()],
+      ],
+      name: ['', [Validators.required, Validators.minLength(3)]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: [{ value: '', disabled: true }, [Validators.required]],
     },
@@ -61,6 +69,7 @@ export default class SignUpComponent {
 
     const email = this.registerForm.get('email')?.value as string;
     const password = this.registerForm.get('password')?.value as string;
-    this._authService.signUp({ email, password });
+    const name = this.registerForm.get('name')?.value as string;
+    this._authService.signUp({ email, password, name } as User);
   }
 }

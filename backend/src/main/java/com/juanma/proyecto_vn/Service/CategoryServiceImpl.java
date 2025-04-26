@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.juanma.proyecto_vn.Dtos.Category.CategoryDto;
-import com.juanma.proyecto_vn.Exception.ResourceNotFoundException;
+import com.juanma.proyecto_vn.Exception.CustomExceptions.ResourceNotFoundException;
 import com.juanma.proyecto_vn.Repositorys.CategoryRepository;
 import com.juanma.proyecto_vn.interfaces.ICategoryService;
 import com.juanma.proyecto_vn.models.Category;

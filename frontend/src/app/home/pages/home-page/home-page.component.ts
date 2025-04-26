@@ -3,8 +3,6 @@ import { Component } from '@angular/core';
 @Component({
   imports: [],
   templateUrl: './home-page.component.html',
-  styles: ``
+  styles: ``,
 })
-export class HomePageComponent {
-
-}
+export class HomePageComponent {}

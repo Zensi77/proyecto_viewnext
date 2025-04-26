@@ -114,4 +114,11 @@ public class UserServiceImpl implements IUserService {
 
                 return response;
         }
+
+        @Transactional
+        public boolean emailExist(String email) {
+                Optional<User> user = userRepository.findByEmail(email);
+
+                return user.isPresent();
+        }
 }

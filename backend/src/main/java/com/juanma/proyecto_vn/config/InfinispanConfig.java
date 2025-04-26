@@ -11,8 +11,8 @@ import org.infinispan.protostream.SerializationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.juanma.proyecto_vn.serialization.ProductoSchemaInitializer;
-import com.juanma.proyecto_vn.serialization.ProductoSchemaInitializerImpl;
+import com.juanma.proyecto_vn.Serialization.ProductoSchemaInitializer;
+import com.juanma.proyecto_vn.Serialization.ProductoSchemaInitializerImpl;
 
 @Configuration
 // @EnableCaching // Activa @Cacheable
@@ -33,8 +33,10 @@ public class InfinispanConfig {
                 .username("admin123")
                 .password("admin123")
                 .marshaller(new ProtoStreamMarshaller())
-                .addJavaSerialAllowList("com.juanma.proyecto_vn.models.*"); // Permite la serialización de los objetos
-                                                                            // de la aplicación
+                .addJavaSerialAllowList("com.juanma.proyecto_vn.Serialization.ModelsProto.*"); // Permite la
+                                                                                               // serialización de los
+                                                                                               // objetos
+        // de la aplicación
 
         RemoteCacheManager rcm = new RemoteCacheManager(builder.build());
 

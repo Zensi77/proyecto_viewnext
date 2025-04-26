@@ -1,63 +1,57 @@
+
 package com.juanma.proyecto_vn.Exception;
 
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-
-import org.infinispan.commons.CacheException;
-import org.infinispan.protostream.annotations.ProtoSchemaBuilderException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.QueryTimeoutException;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.LockedException;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import com.juanma.proyecto_vn.Exception.CustomExceptions.NoStockException;
+import com.juanma.proyecto_vn.Exception.CustomExceptions.ResourceNotFoundException;
+
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 
-import javax.naming.AuthenticationNotSupportedException;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Centralizada gestión de errores para la API REST.
+ * Gestión centralizada de excepciones para la API.
  */
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-        private ResponseEntity<Object> buildResponse(ApiError error) {
-                // Agregar detalles adicionales para modo desarrollo
-                if (error.getStatus() >= 500) {
-                        // Solo agregar la causa para errores de servidor
-                        Throwable cause = error.getCause();
-                        if (cause != null) {
-                                Map<String, Object> errorDetails = new HashMap<>();
-                                errorDetails.put("Error Class", cause.getClass().getName());
-                                errorDetails.put("error", cause.getMessage());
-                                error.setErrors(errorDetails);
-                        }
+        private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+        private ResponseEntity<Object> buildResponse(ApiError err, Throwable ex) {
+                if (err.getStatus() >= 500 && ex != null) {
+                        Map<String, Object> details = new HashMap<>();
+                        details.put("exception", ex.getClass().getName());
+                        err.setDetails(details);
                 }
-                return ResponseEntity.status(error.getStatus()).body(error);
+                log.error("[{}] {}: {}", err.getStatus(), err.getPath(), err.getMessage(), ex);
+                return ResponseEntity.status(err.getStatus()).body(err);
         }
 
         @Override
@@ -66,17 +60,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         HttpHeaders headers,
                         HttpStatusCode status,
                         WebRequest request) {
-                List<String> errors = ex.getBindingResult().getFieldErrors().stream()
+                List<String> errs = ex.getFieldErrors().stream()
                                 .map(fe -> fe.getField() + ": " + fe.getDefaultMessage())
                                 .collect(Collectors.toList());
-                ApiError apiError = ApiError.builder()
+
+                ApiError apiErr = ApiError.builder()
                                 .timestamp(LocalDateTime.now())
                                 .status(status.value())
-                                .message("Error de validación")
-                                .errors(Map.of("validationErrors", errors))
-                                .path(request.getDescription(false).replace("uri=", ""))
+                                .error("Validation Failed")
+                                .message("One or more fields are invalid.")
+                                .path(request.getDescription(false).substring(4))
+                                .validationErrors(errs)
                                 .build();
-                return buildResponse(apiError);
+                return buildResponse(apiErr, ex);
         }
 
         @Override
@@ -85,14 +81,33 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         HttpHeaders headers,
                         HttpStatusCode status,
                         WebRequest request) {
-                ApiError apiError = ApiError.builder()
+                ApiError apiErr = ApiError.builder()
                                 .timestamp(LocalDateTime.now())
-                                .status(HttpStatus.BAD_REQUEST.value())
-                                .message("Error de formato")
-                                .errors(Map.of("error", ex.getMessage()))
-                                .path(request.getDescription(false).replace("uri=", ""))
+                                .status(status.value())
+                                .error("Malformed JSON request")
+                                .message(ex.getMostSpecificCause().getMessage())
+                                .path(request.getDescription(false).substring(4))
                                 .build();
-                return buildResponse(apiError);
+                return buildResponse(apiErr, ex);
+        }
+
+        @Override
+        protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
+                        HttpRequestMethodNotSupportedException ex,
+                        HttpHeaders headers,
+                        HttpStatusCode status,
+                        WebRequest request) {
+                String allow = String.join(", ", ex.getSupportedHttpMethods().stream()
+                                .map(HttpMethod::name)
+                                .toList());
+                ApiError apiErr = ApiError.builder()
+                                .timestamp(LocalDateTime.now())
+                                .status(status.value())
+                                .error("Method Not Allowed")
+                                .message(ex.getMethod() + " not supported. Supported: " + allow)
+                                .path(request.getDescription(false).substring(4))
+                                .build();
+                return buildResponse(apiErr, ex);
         }
 
         @Override
@@ -101,263 +116,135 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                         HttpHeaders headers,
                         HttpStatusCode status,
                         WebRequest request) {
-                ApiError apiError = ApiError.builder()
+                ApiError apiErr = ApiError.builder()
                                 .timestamp(LocalDateTime.now())
-                                .status(HttpStatus.BAD_REQUEST.value())
-                                .message("Parámetro requerido no proporcionado")
-                                .errors(Map.of("error", "El parámetro '" + ex.getParameterName() + "' es obligatorio"))
-                                .path(request.getDescription(false).replace("uri=", ""))
+                                .status(status.value())
+                                .error("Missing Parameter")
+                                .message("Parameter '" + ex.getParameterName() + "' is required")
+                                .path(request.getDescription(false).substring(4))
                                 .build();
-                return buildResponse(apiError);
+                return buildResponse(apiErr, ex);
         }
 
-        // ============ EXCEPCIONES PERSONALIZADAS ============
+        @Override
+        protected ResponseEntity<Object> handleHttpMediaTypeNotSupported(
+                        HttpMediaTypeNotSupportedException ex,
+                        HttpHeaders headers,
+                        HttpStatusCode status,
+                        WebRequest request) {
+                ApiError apiErr = ApiError.builder()
+                                .timestamp(LocalDateTime.now())
+                                .status(status.value())
+                                .error("Unsupported Media Type")
+                                .message(ex.getContentType() + " not supported. Supported: "
+                                                + ex.getSupportedMediaTypes())
+                                .path(request.getDescription(false).substring(4))
+                                .build();
+                return buildResponse(apiErr, ex);
+        }
 
-        @ExceptionHandler(ResourceNotFoundException.class)
-        public ResponseEntity<Object> handleResourceNotFoundException(
-                        ResourceNotFoundException ex, WebRequest request) {
-                ApiError apiError = ApiError.builder()
+        @Override
+        protected ResponseEntity<Object> handleHttpMediaTypeNotAcceptable(
+                        HttpMediaTypeNotAcceptableException ex,
+                        HttpHeaders headers,
+                        HttpStatusCode status,
+                        WebRequest request) {
+                ApiError apiErr = ApiError.builder()
+                                .timestamp(LocalDateTime.now())
+                                .status(status.value())
+                                .error("Not Acceptable")
+                                .message("Acceptable types: " + ex.getSupportedMediaTypes())
+                                .path(request.getDescription(false).substring(4))
+                                .build();
+                return buildResponse(apiErr, ex);
+        }
+
+        @Override
+        protected ResponseEntity<Object> handleNoHandlerFoundException(
+                        NoHandlerFoundException ex,
+                        HttpHeaders headers,
+                        HttpStatusCode status,
+                        WebRequest request) {
+
+                ApiError apiErr = ApiError.builder()
                                 .timestamp(LocalDateTime.now())
                                 .status(HttpStatus.NOT_FOUND.value())
+                                .error("Not Found")
                                 .message("Recurso no encontrado")
-                                .errors(Map.of("error", ex.getMessage()))
                                 .path(request.getDescription(false).replace("uri=", ""))
                                 .build();
-                return buildResponse(apiError);
+
+                return buildResponse(apiErr, ex);
+        }
+
+        @ExceptionHandler({ ConstraintViolationException.class,
+                        MethodArgumentTypeMismatchException.class })
+        public ResponseEntity<Object> handleBadRequest(Exception ex, WebRequest req) {
+                String msg;
+                if (ex instanceof ConstraintViolationException cve) {
+                        msg = cve.getConstraintViolations().stream()
+                                        .map(v -> v.getPropertyPath() + ": " + v.getMessage())
+                                        .collect(Collectors.joining("; "));
+                } else {
+                        msg = ex.getMessage();
+                }
+                ApiError apiErr = ApiError.builder()
+                                .timestamp(LocalDateTime.now())
+                                .status(HttpStatus.BAD_REQUEST.value())
+                                .error("Bad Request")
+                                .message(msg)
+                                .path(req.getDescription(false).substring(4))
+                                .build();
+                return buildResponse(apiErr, ex);
+        }
+
+        @ExceptionHandler({ DataIntegrityViolationException.class, SQLException.class })
+        protected ResponseEntity<Object> handleConflict(Exception ex, WebRequest req) {
+                String detail = Optional.ofNullable(ex.getMessage()).orElse("Database error");
+                ApiError apiErr = ApiError.builder()
+                                .timestamp(LocalDateTime.now())
+                                .status(HttpStatus.CONFLICT.value())
+                                .error("Conflict")
+                                .message(detail.contains("Duplicate") ? "Duplicate entry" : "Database integrity error")
+                                .path(req.getDescription(false).substring(4))
+                                .build();
+                return buildResponse(apiErr, ex);
         }
 
         @ExceptionHandler(NoStockException.class)
-        public ResponseEntity<Object> handleNoStockException(
-                        NoStockException ex, WebRequest request) {
-                ApiError apiError = ApiError.builder()
+        protected ResponseEntity<Object> handleNoStock(NoStockException ex, WebRequest req) {
+                ApiError apiErr = ApiError.builder()
                                 .timestamp(LocalDateTime.now())
-                                .status(HttpStatus.CONFLICT.value())
-                                .message("Error de stock")
-                                .errors(Map.of("error", ex.getMessage()))
-                                .path(request.getDescription(false).replace("uri=", ""))
+                                .status(HttpStatus.BAD_REQUEST.value())
+                                .error("No Stock Available")
+                                .message(ex.getMessage())
+                                .path(req.getDescription(false).substring(4))
                                 .build();
-                return buildResponse(apiError);
+                return buildResponse(apiErr, ex);
         }
 
-        @ExceptionHandler(ProtoSchemaBuilderException.class)
-        protected ResponseEntity<Object> handleProtoSchemaBuilder(
-                        ProtoSchemaBuilderException ex,
-                        WebRequest request) {
-                ApiError apiError = ApiError.builder()
-                                .timestamp(LocalDateTime.now())
-                                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                                .message("Error de formato")
-                                .errors(Map.of("error", ex.getMessage()))
-                                .path(request.getDescription(false).replace("uri=", ""))
-                                .cause(ex.getCause())
-                                .build();
-                return buildResponse(apiError);
-        }
-
-        @ExceptionHandler(CacheException.class)
-        protected ResponseEntity<Object> handleCacheException(
-                        CacheException ex,
-                        WebRequest request) {
-                ApiError apiError = ApiError.builder()
-                                .timestamp(LocalDateTime.now())
-                                .status(HttpStatus.SERVICE_UNAVAILABLE.value())
-                                .message("Error de caché")
-                                .errors(Map.of("error", "Error al acceder a la caché: " + ex.getMessage()))
-                                .path(request.getDescription(false).replace("uri=", ""))
-                                .cause(ex.getCause())
-                                .build();
-                return buildResponse(apiError);
-        }
-
-        @ExceptionHandler({ QueryTimeoutException.class, org.springframework.dao.QueryTimeoutException.class })
-        protected ResponseEntity<Object> handleQueryTimeout(
-                        Exception ex,
-                        WebRequest request) {
-                ApiError apiError = ApiError.builder()
-                                .timestamp(LocalDateTime.now())
-                                .status(HttpStatus.REQUEST_TIMEOUT.value())
-                                .message("Tiempo de espera agotado")
-                                .errors(Map.of("error",
-                                                "La operación de base de datos ha excedido el tiempo máximo permitido."))
-                                .path(request.getDescription(false).replace("uri=", ""))
-                                .cause(ex.getCause())
-                                .build();
-                return buildResponse(apiError);
-        }
-
-        @ExceptionHandler(NoSuchElementException.class)
-        protected ResponseEntity<Object> handleNoSuchElement(
-                        NoSuchElementException ex,
-                        WebRequest request) {
-                ApiError apiError = ApiError.builder()
+        @ExceptionHandler(ResourceNotFoundException.class)
+        protected ResponseEntity<Object> handleResourceNotFound(ResourceNotFoundException ex,
+                        WebRequest req) {
+                ApiError apiErr = ApiError.builder()
                                 .timestamp(LocalDateTime.now())
                                 .status(HttpStatus.NOT_FOUND.value())
-                                .message("Recurso no encontrado")
-                                .errors(Map.of("error", "El recurso solicitado no existe: " + ex.getMessage()))
-                                .path(request.getDescription(false).replace("uri=", ""))
+                                .error("Resource Not Found")
+                                .message(ex.getMessage())
+                                .path(req.getDescription(false).substring(4))
                                 .build();
-                return buildResponse(apiError);
+                return buildResponse(apiErr, ex);
         }
 
-        @ExceptionHandler(IllegalArgumentException.class)
-        protected ResponseEntity<Object> handleIllegalArgument(
-                        IllegalArgumentException ex,
-                        WebRequest request) {
-                ApiError apiError = ApiError.builder()
-                                .timestamp(LocalDateTime.now())
-                                .status(HttpStatus.BAD_REQUEST.value())
-                                .message("Argumento inválido")
-                                .errors(Map.of("error", ex.getMessage()))
-                                .path(request.getDescription(false).replace("uri=", ""))
-                                .build();
-                return buildResponse(apiError);
-        }
-
-        @ExceptionHandler(MissingRequestHeaderException.class)
-        protected ResponseEntity<Object> handleMissingHeader(
-                        MissingRequestHeaderException ex,
-                        WebRequest request) {
-                ApiError apiError = ApiError.builder()
-                                .timestamp(LocalDateTime.now())
-                                .status(HttpStatus.BAD_REQUEST.value())
-                                .message("Encabezado faltante")
-                                .errors(Map.of("error", "El encabezado " + ex.getHeaderName() + " es obligatorio"))
-                                .path(request.getDescription(false).replace("uri=", ""))
-                                .build();
-                return buildResponse(apiError);
-        }
-
-        @ExceptionHandler({ SQLException.class })
-        protected ResponseEntity<Object> handleSQLException(
-                        SQLException ex,
-                        WebRequest request) {
-                ApiError apiError = ApiError.builder()
-                                .timestamp(LocalDateTime.now())
-                                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                                .message("Error de base de datos")
-                                .errors(Map.of("error", "Ha ocurrido un error en la operación de base de datos"))
-                                .path(request.getDescription(false).replace("uri=", ""))
-                                .cause(ex)
-                                .build();
-                return buildResponse(apiError);
-        }
-
-        @ExceptionHandler({ IOException.class })
-        protected ResponseEntity<Object> handleIOException(
-                        IOException ex,
-                        WebRequest request) {
-                ApiError apiError = ApiError.builder()
-                                .timestamp(LocalDateTime.now())
-                                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                                .message("Error de E/S")
-                                .errors(Map.of("error", "Error al leer o escribir datos: " + ex.getMessage()))
-                                .path(request.getDescription(false).replace("uri=", ""))
-                                .build();
-                return buildResponse(apiError);
-        }
-
-        // Excepciones de autenticación
-        @ExceptionHandler({
-                        BadCredentialsException.class,
-                        UsernameNotFoundException.class,
-                        DisabledException.class,
-                        LockedException.class,
-                        AuthenticationNotSupportedException.class,
-                        AuthenticationException.class
-        })
-        protected ResponseEntity<Object> handleAuthenticationException(
-                        Exception ex,
-                        WebRequest request) {
-
-                HttpStatus status = HttpStatus.UNAUTHORIZED;
-                String error = "Error de autenticación";
-                String message = ex.getMessage();
-
-                if (ex instanceof DisabledException) {
-                        message = "Cuenta deshabilitada";
-                } else if (ex instanceof LockedException) {
-                        message = "Cuenta bloqueada";
-                } else if (ex instanceof BadCredentialsException || ex instanceof UsernameNotFoundException) {
-                        message = "Credenciales inválidas";
-                }
-
-                ApiError apiError = ApiError.builder()
-                                .timestamp(LocalDateTime.now())
-                                .status(status.value())
-                                .message(error)
-                                .errors(Map.of("error", message))
-                                .path(request.getDescription(false).replace("uri=", ""))
-                                .build();
-                return buildResponse(apiError);
-        }
-
-        @ExceptionHandler(AccessDeniedException.class)
-        protected ResponseEntity<Object> handleAccessDenied(
-                        AccessDeniedException ex,
-                        WebRequest request) {
-                ApiError apiError = ApiError.builder()
-                                .timestamp(LocalDateTime.now())
-                                .status(HttpStatus.FORBIDDEN.value())
-                                .message("Acceso denegado")
-                                .errors(Map.of("error", "No tiene permisos para acceder a este recurso"))
-                                .path(request.getDescription(false).replace("uri=", ""))
-                                .build();
-                return buildResponse(apiError);
-        }
-
-        @ExceptionHandler(DataIntegrityViolationException.class)
-        protected ResponseEntity<Object> handleDataIntegrityViolation(
-                        DataIntegrityViolationException ex,
-                        WebRequest request) {
-                String message = "Error de integridad de datos";
-                // Verificar si es por duplicidad
-                if (ex.getCause() != null && ex.getCause().getMessage().contains("Duplicate entry")) {
-                        message = "Ya existe un registro con esos datos";
-                }
-
-                ApiError apiError = ApiError.builder()
-                                .timestamp(LocalDateTime.now())
-                                .status(HttpStatus.CONFLICT.value())
-                                .message(message)
-                                .errors(Map.of("error", ex.getMessage()))
-                                .path(request.getDescription(false).replace("uri=", ""))
-                                .build();
-                return buildResponse(apiError);
-        }
-
-        // Excepciones de Constraint Validation
-        @ExceptionHandler(ConstraintViolationException.class)
-        public ResponseEntity<Object> handleConstraintViolation(
-                        ConstraintViolationException ex,
-                        WebRequest request) {
-                List<String> errors = ex.getConstraintViolations()
-                                .stream()
-                                .map(ConstraintViolation::getMessage)
-                                .collect(Collectors.toList());
-
-                ApiError apiError = ApiError.builder()
-                                .timestamp(LocalDateTime.now())
-                                .status(HttpStatus.BAD_REQUEST.value())
-                                .message("Error de validación")
-                                .errors(Map.of("validationErrors", errors))
-                                .path(request.getDescription(false).replace("uri=", ""))
-                                .build();
-                return buildResponse(apiError);
-        }
-
-        // Excepciones genéricas como último recurso
         @ExceptionHandler(Exception.class)
-        protected ResponseEntity<Object> handleAll(
-                        Exception ex,
-                        WebRequest request) {
-                ApiError apiError = ApiError.builder()
+        protected ResponseEntity<Object> handleAllUncaught(Exception ex, WebRequest req) {
+                ApiError apiErr = ApiError.builder()
                                 .timestamp(LocalDateTime.now())
                                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                                .message("Error interno del servidor")
-                                .errors(Map.of("error", ex.getMessage()))
-                                .path(request.getDescription(false).replace("uri=", ""))
-                                .cause(ex)
+                                .error("Internal Server Error")
+                                .message("Unexpected error occurred")
+                                .path(req.getDescription(false).substring(4))
                                 .build();
-                return buildResponse(apiError);
+                return buildResponse(apiErr, ex);
         }
 }

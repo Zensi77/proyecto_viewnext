@@ -12,4 +12,5 @@ public interface IUserService {
 
     Map<String, Object> saveAdmin(UserCreateDto user);
 
+    boolean emailExist(String email);
 }

@@ -1,4 +1,4 @@
-package com.juanma.proyecto_vn.Exception;
+package com.juanma.proyecto_vn.Exception.CustomExceptions;
 
 /**
  * Excepción lanzada cuando no hay suficiente stock de un producto

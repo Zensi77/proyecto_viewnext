@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.juanma.proyecto_vn.Dtos.Provider.ProviderDto;
-import com.juanma.proyecto_vn.Exception.ResourceNotFoundException;
+import com.juanma.proyecto_vn.Exception.CustomExceptions.ResourceNotFoundException;
 import com.juanma.proyecto_vn.Repositorys.ProviderRepository;
 import com.juanma.proyecto_vn.interfaces.IProviderService;
 import com.juanma.proyecto_vn.models.Provider;

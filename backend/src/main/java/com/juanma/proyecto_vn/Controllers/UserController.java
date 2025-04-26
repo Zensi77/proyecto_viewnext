@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import com.juanma.proyecto_vn.Dtos.Auth.LoginDto;
 import com.juanma.proyecto_vn.Dtos.Auth.UserCreateDto;
 import com.juanma.proyecto_vn.Service.UserServiceImpl;
-import com.juanma.proyecto_vn.Validation.UniqueEmail;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -59,9 +59,14 @@ public class UserController {
         }
     }
 
-    @GetMapping("/EmailExist")
-    public ResponseEntity<?> emailExist(@UniqueEmail String email) {
-        return ResponseEntity.noContent().build();
+    @GetMapping("/email-exist")
+    public boolean emailExist(@RequestParam String email) {
+        boolean exist = userService.emailExist(email);
+
+        if (exist) {
+            return true;
+        }
+        return false;
     }
 
     private ResponseEntity<?> validation(BindingResult result) {

@@ -38,13 +38,14 @@ public class ProductController {
             @RequestParam(defaultValue = "asc") String orderBy,
             @RequestParam(defaultValue = "") String filterBy,
             @RequestParam(defaultValue = "") String filterValue) {
-        Map<String, String> products = productService.getAllProducts(page, size, sortBy, orderBy, filterBy,
+        Map<String, Object> products = productService.getAllProducts(page, size, sortBy, orderBy, filterBy,
                 filterValue);
         return ResponseEntity.ok(products);
     }
 
     @GetMapping("/random")
     public ResponseEntity<Object> getRandomProducts(@RequestParam int quantity) {
+        System.out.println("Cantidad de productos aleatorios: " + quantity);
         return ResponseEntity.ok().body(productService.getRandomProducts(quantity));
     }
 

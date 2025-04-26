@@ -34,6 +34,8 @@ export function message(field: string) {
           return `Mínimo ${errors[key].requiredLength} caracteres`;
         case 'fieldsNotEqual':
           return `Las contraseñas no coinciden`;
+        case 'emailTaken':
+          return `El correo electrónico ya está en uso`;
         default:
           return `Campo inválido`;
       }

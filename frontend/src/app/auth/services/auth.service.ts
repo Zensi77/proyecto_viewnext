@@ -1,9 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 
-import { Subscription, User } from '../interfaces/user.interface';
+import { Role, User, UserResponse } from '../interfaces/user.interface';
 import { Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
+import { environment } from '../../../environments/environment.development';
+import Swal from 'sweetalert2';
 
 @Injectable({
   providedIn: 'root',
@@ -14,14 +15,58 @@ export class AuthService {
 
   loading = signal<boolean>(false);
 
-  private userProfileSubject = new BehaviorSubject<User | null>(null);
-  userProfile$ = this.userProfileSubject.asObservable();
+  user = signal<User | null>(null);
 
-  // Registrar un usuario con email y contraseña
-  signUp(user: { email: string; password: string }) {}
+  signUp(user: User) {
+    const url = environment['sign-up'];
+    this.loading.set(true);
+    this._http.post<UserResponse>('sign-up', url).subscribe({
+      next: (res) => {
+        sessionStorage.setItem('token', res.token);
+        this.user.set(res.user);
+        Swal.fire({
+          icon: 'success',
+          text: 'Registro exitoso',
+        });
+        this.loading.set(false);
+        this._router.navigate(['/']);
+      },
+      error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          text: 'Error en el registro',
+        });
+        this.loading.set(false);
+      },
+    });
+  }
 
   // Iniciar sesión con email y contraseña
-  signIn(user: { email: string; password: string }) {}
+  signIn(user: User) {
+    const url = environment['sign-in'];
+
+    this.loading.set(true);
+    this._http.post<UserResponse>(url, user).subscribe({
+      next: (res) => {
+        sessionStorage.setItem('token', res.token || '');
+        this.user.set(res.user);
+        Swal.fire({
+          icon: 'success',
+          text: `Bienvenido, ${res.user.name}`,
+        });
+        this.loading.set(false);
+        this._router.navigate(['/']);
+      },
+      error: (err) => {
+        console.error(err);
+        Swal.fire({
+          icon: 'error',
+          text: 'Error en las credenciales',
+        });
+        this.loading.set(false);
+      },
+    });
+  }
 
   // Cerrar sesión
   signOut() {
@@ -29,13 +74,11 @@ export class AuthService {
     this._router.navigate(['/']);
   }
 
-  // Iniciar sesión con Google
-  submitWithGoogle() {}
-
-  private validateUser() {}
-
   get isAdmin() {
-    const user = this.userProfileSubject.value;
-    return user?.role === 'admin';
+    const user = this.user();
+    if (user) {
+      return user.role === Role.admin;
+    }
+    return false;
   }
 }

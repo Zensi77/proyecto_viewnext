@@ -8,7 +8,7 @@ import com.juanma.proyecto_vn.Dtos.Product.CreateProductDto;
 import com.juanma.proyecto_vn.Dtos.Product.GetProductDto;
 
 public interface IProductService {
-    Map<String, String> getAllProducts(int page, int size, String sortBy, String orderBy, String filterBy,
+    Map<String, Object> getAllProducts(int page, int size, String sortBy, String orderBy, String filterBy,
             String filterValue);
 
     GetProductDto getProductById(UUID id);
