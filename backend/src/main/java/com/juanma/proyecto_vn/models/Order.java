@@ -38,4 +38,10 @@ public class Order extends BaseEntity {
 
     @Column(name = "total_price", nullable = false)
     private Long total_price;
+
+    @Column(name = "status", nullable = false)
+    private String status;
+
+    @Column(name = "payment_method", nullable = false)
+    private String paymentMethod;
 }

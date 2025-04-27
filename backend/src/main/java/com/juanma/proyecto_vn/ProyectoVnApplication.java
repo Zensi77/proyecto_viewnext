@@ -10,6 +10,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.env.Environment;
+import org.springframework.jms.annotation.EnableJms;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -24,7 +25,8 @@ import java.util.UUID;
  * Clase principal de arranque de la aplicación.
  */
 @SpringBootApplication
-@EnableAspectJAutoProxy
+@EnableAspectJAutoProxy // Habilita el soporte para AspectJ
+@EnableJms // Habilita la configuración de JMS(Java Message Service)
 public class ProyectoVnApplication {
 
 	private static final Logger log = LoggerFactory.getLogger(ProyectoVnApplication.class);
