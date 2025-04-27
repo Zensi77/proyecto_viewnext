@@ -3,7 +3,7 @@ package com.juanma.proyecto_vn.Controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.juanma.proyecto_vn.Service.ProducerService;
+import com.juanma.proyecto_vn.Service.MetricsService;
 import com.juanma.proyecto_vn.models.Order;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class OrderController {
 
     @Autowired
-    private ProducerService producerService;
+    private MetricsService producerService;
 
     @PostMapping("")
     public ResponseEntity<Object> createOrder(@RequestBody String entity) {

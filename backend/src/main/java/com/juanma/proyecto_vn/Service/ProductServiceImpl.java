@@ -58,6 +58,9 @@ public class ProductServiceImpl implements IProductService {
         private ProductCartRepository productCartRepository;
 
         @Autowired
+        private MetricsService producerService; // Servicio para enviar métricas a la cola de mensajes
+
+        @Autowired
         private RemoteCacheManager rcm; // Manejador de cache remota de Infinispan
 
         private RemoteCache<String, ProductProto> remoteCache; // Cache de Infinispan
@@ -125,6 +128,9 @@ public class ProductServiceImpl implements IProductService {
         @Override
         @Transactional
         public GetProductDto getProductById(UUID id) {
+                producerService.sendFunnelEvent("product_viewed", id.toString(), Map.of(
+                                "product_id", id.toString()));
+
                 String key = id.toString();
                 ProductProto productProto = null;
 

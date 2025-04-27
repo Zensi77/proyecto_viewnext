@@ -1,4 +1,4 @@
-package com.juanma.proyecto_vn.Security;
+package com.juanma.proyecto_vn.Infrastructure.Filters;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,6 +15,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.juanma.proyecto_vn.Security.JwtUtil;
+
 import java.io.IOException;
 import java.util.Collections;
 
@@ -24,7 +26,7 @@ import java.util.Collections;
  * de seguridad.
  */
 @Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
+public class LoggingFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtUtil jwtUtil;

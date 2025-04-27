@@ -13,12 +13,12 @@ import org.springframework.stereotype.Service;
 import com.juanma.proyecto_vn.models.Order;
 
 @Service
-public class ProducerService {
+public class MetricsService {
 
     @Autowired
     private JmsTemplate jms;
 
-    private static final Logger log = LoggerFactory.getLogger(ProducerService.class);
+    private static final Logger log = LoggerFactory.getLogger(MetricsService.class);
 
     public void sendOrderMetrics(Order order, long processingTimeMs, String status, String errorMessage) {
         Map<String, Object> metric = new HashMap<>();
@@ -60,6 +60,19 @@ public class ProducerService {
         jms.convertAndSend("metrics-queue", metric);
 
         log.info("Enviando métrica de funnel: {}", metric);
+    }
+
+    public void sendMetrics(String metricName, long processingTimeMs, String url, boolean isError) {
+        Map<String, Object> metric = new HashMap<>();
+        metric.put("metric_name", metricName);
+        metric.put("processing_time", processingTimeMs);
+        metric.put("url", url);
+        metric.put("timestamp", Instant.now().toString());
+        metric.put("status", "success");
+        metric.put("has_error", isError);
+        jms.convertAndSend("metrics-queue", metric);
+
+        log.info("Enviando métrica: {}", metric);
     }
 
 }

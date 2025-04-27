@@ -1,6 +1,7 @@
 package com.juanma.proyecto_vn.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -45,6 +46,9 @@ public class CartServiceImpl implements ICartService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private MetricsService producerService;
+
     @Override
     @Transactional
     @PreAuthorize("#email == authentication.principal.username")
@@ -75,10 +79,15 @@ public class CartServiceImpl implements ICartService {
     @Override
     @Transactional
     public CartDto addProductToCart(CreateProductCartDto productCart, String email) {
+
         Optional<User> user = userRepository.findByEmail(email);
         if (user.isEmpty()) {
             throw new UsernameNotFoundException("El usuario no existe.");
         }
+
+        producerService.sendFunnelEvent("add_to_cart", user.get().getId().toString(), Map.of(
+                "product_id", productCart.getProduct_id(),
+                "quantity", productCart.getQuantity()));
 
         Optional<Cart> cart = cartRepository.findByUserId(user.get().getId());
 
