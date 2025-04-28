@@ -2,6 +2,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "ConsumerApplication",
+      "request": "launch",
+      "mainClass": "com.juanma.consumer.ConsumerApplication",
+      "projectName": "consumer"
+    },
+    {
+      "type": "java",
       "name": "Spring Boot-ProyectoVnApplication<proyecto-vn>",
       "request": "launch",
       "cwd": "${workspaceFolder}",

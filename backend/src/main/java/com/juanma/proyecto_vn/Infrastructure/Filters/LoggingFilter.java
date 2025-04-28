@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,7 +16,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.juanma.proyecto_vn.Repositorys.UserRepository;
 import com.juanma.proyecto_vn.Security.JwtUtil;
+import com.juanma.proyecto_vn.models.User;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -25,8 +28,11 @@ import java.util.Collections;
  * Verifica la validez del token JWT y establece la autenticación en el contexto
  * de seguridad.
  */
+@Order(1)
 @Component
 public class LoggingFilter extends OncePerRequestFilter {
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -58,6 +64,11 @@ public class LoggingFilter extends OncePerRequestFilter {
                         new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                User user = userRepository.findByEmail(email).orElse(null);
+                if (user != null) {
+                    request.setAttribute("userId", user.getId());
+                }
             }
         }
 

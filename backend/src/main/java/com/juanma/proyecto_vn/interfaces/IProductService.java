@@ -7,11 +7,13 @@ import java.util.UUID;
 import com.juanma.proyecto_vn.Dtos.Product.CreateProductDto;
 import com.juanma.proyecto_vn.Dtos.Product.GetProductDto;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 public interface IProductService {
     Map<String, Object> getAllProducts(int page, int size, String sortBy, String orderBy, String filterBy,
             String filterValue);
 
-    GetProductDto getProductById(UUID id);
+    GetProductDto getProductById(UUID id, HttpServletRequest request);
 
     GetProductDto createProduct(CreateProductDto product);
 

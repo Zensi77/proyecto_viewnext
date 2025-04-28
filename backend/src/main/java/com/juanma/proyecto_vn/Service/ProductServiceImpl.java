@@ -37,6 +37,7 @@ import com.juanma.proyecto_vn.models.Product;
 import com.juanma.proyecto_vn.models.Provider;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -127,8 +128,13 @@ public class ProductServiceImpl implements IProductService {
 
         @Override
         @Transactional
-        public GetProductDto getProductById(UUID id) {
-                producerService.sendFunnelEvent("product_viewed", id.toString(), Map.of(
+        public GetProductDto getProductById(UUID id, HttpServletRequest http) {
+                Object attr = http.getAttribute("userId");
+                String userId = null;
+                if (attr != null) {
+                        userId = attr.toString();
+                }
+                producerService.sendFunnelEvent("product_viewed", userId, Map.of(
                                 "product_id", id.toString()));
 
                 String key = id.toString();

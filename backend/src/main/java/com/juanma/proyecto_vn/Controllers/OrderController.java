@@ -30,14 +30,16 @@ public class OrderController {
             long processingTimeMs = end - start;
 
             // Enviar métricas a Kafka
-            producerService.sendOrderMetrics(new Order(), processingTimeMs, "success", null);
+            // producerService.sendOrderMetrics(new Order(), processingTimeMs, "success",
+            // null);
             producerService.sendFunnelEvent("order_created", null, null);
             return ResponseEntity.ok("Order created successfully");
         } catch (Exception e) {
             long end = System.currentTimeMillis();
             long processingTimeMs = end - start;
 
-            producerService.sendOrderMetrics(null, processingTimeMs, "Failure", e.getMessage());
+            // producerService.sendOrderMetrics(null, processingTimeMs, "Failure",
+            // e.getMessage());
 
             return ResponseEntity.status(500).body("Error creating order: " + e.getMessage());
         }

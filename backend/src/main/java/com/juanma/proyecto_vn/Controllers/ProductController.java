@@ -16,6 +16,7 @@ import com.juanma.proyecto_vn.Dtos.Product.CreateProductDto;
 import com.juanma.proyecto_vn.Dtos.Product.GetProductDto;
 import com.juanma.proyecto_vn.interfaces.IProductService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,13 +46,12 @@ public class ProductController {
 
     @GetMapping("/random")
     public ResponseEntity<Object> getRandomProducts(@RequestParam int quantity) {
-        System.out.println("Cantidad de productos aleatorios: " + quantity);
         return ResponseEntity.ok().body(productService.getRandomProducts(quantity));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GetProductDto> getProductById(@PathVariable UUID id) {
-        return ResponseEntity.ok(productService.getProductById(id));
+    public ResponseEntity<GetProductDto> getProductById(@PathVariable UUID id, HttpServletRequest request) {
+        return ResponseEntity.ok(productService.getProductById(id, request));
     }
 
     @PostMapping
