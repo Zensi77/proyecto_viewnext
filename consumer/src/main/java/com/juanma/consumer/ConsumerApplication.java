@@ -1,6 +1,7 @@
 package com.juanma.consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner; // :contentReference[oaicite:0]{index=0}
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,8 +19,6 @@ import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 
 @SpringBootApplication
 public class ConsumerApplication implements CommandLineRunner {
-	@Autowired
-	private ELKSender sender;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ConsumerApplication.class, args);
@@ -31,7 +30,7 @@ public class ConsumerApplication implements CommandLineRunner {
 		String queueName = "metrics-queue";
 
 		try (ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(brokerURL);
-				Connection connection = factory.createConnection("test", "test")) {
+				Connection connection = factory.createConnection("admin", "admin")) {
 
 			connection.start();
 
@@ -47,9 +46,23 @@ public class ConsumerApplication implements CommandLineRunner {
 					Thread.sleep(5000);
 				} catch (InterruptedException ex) {
 				}
+
+				ELKSender sender = new ELKSender();
 				if (msg != null) {
-					System.out.println("Mensaje no-texto recibido: " + msg.getBody(Map.class));
-					sender.sentoELK(msg.getBody(Map.class));
+					Map<String, Object> data = msg.getBody(Map.class);
+					String index = (String) data.get("id");
+
+					if (index.equals(EventEnum.ORDER_EVENT.name())) {
+						sender.sentoELK(data, EventEnum.ORDER_EVENT);
+					} else if (index.equals(EventEnum.FUNNEL_EVENT.name())) {
+						sender.sentoELK(data, EventEnum.FUNNEL_EVENT);
+					} else if (index.equals(EventEnum.PERFORMANCE_EVENT.name())) {
+						sender.sentoELK(data, EventEnum.PERFORMANCE_EVENT);
+					} else {
+						System.out.println("No se ha podido enviar el mensaje a ELK");
+
+					}
+					// sender.sentoELK(msg.getBody(Map.class));
 				}
 			}
 		} catch (JMSException e) {
@@ -58,12 +71,19 @@ public class ConsumerApplication implements CommandLineRunner {
 	}
 }
 
-// GET metrics{"query":
-// {
-// "match_all": {}
-// }
-// }
 //
 // POST/metrics313/_doc{"root":{"element":"hello2","element2":"bye"}}
 //
 // PUT/metrics313{"mappings":{"properties":{"nombre":{"type":"text","ignore_above":256}}}}
+
+// Ver los índices existentes
+// GET _cat/indices?v
+
+// Ver el mapping del índice
+// GET metrics313/_mapping
+
+// Ver el los documentos del índice
+// GET metrics313/_search
+
+// eliminar el índice
+// DELETE metrics313

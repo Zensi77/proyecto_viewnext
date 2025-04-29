@@ -38,7 +38,8 @@ public class ProyectoVnApplication {
 		// Desactivar banner y construir la aplicación
 		ApplicationContext ctx = new SpringApplicationBuilder(ProyectoVnApplication.class)
 				.bannerMode(Banner.Mode.OFF)
-				.listeners() // se pueden agregar listeners si se necesita
+				.listeners() // Los listeners son objetos que se ejecutan en ciertos eventos del ciclo de
+								// vida de la aplicación
 				.build()
 				.run(args);
 

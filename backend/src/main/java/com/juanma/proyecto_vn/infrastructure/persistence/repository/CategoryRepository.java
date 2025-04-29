@@ -1,0 +1,20 @@
+package com.juanma.proyecto_vn.infrastructure.persistence.repository;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.juanma.proyecto_vn.infrastructure.persistence.entity.Category;
+
+
+@Repository
+public interface CategoryRepository extends JpaRepository<Category, UUID> {
+    Optional<Category> findByName(String name);
+
+    List<Category> findAll();
+
+    Optional<Category> findById(UUID id);
+}
