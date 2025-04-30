@@ -1,25 +1,27 @@
 {
-    "properties": {
-        "id": {
-            "type": "keyword"
-        },
-        "event": {
-            "type": "keyword"
-        },
-        "timestamp": {
-            "type": "date"
-        },
-        "userId": {
-            "type": "keyword"
-        },
-        "url": {
-            "type": "keyword"
-        },
-        "processing_time_ms": {
-            "type": "long"
-        },
-        "has_error": {
-            "type": "boolean"
+    "mappings": {
+        "properties": {
+            "id": {
+                "type": "keyword"
+            },
+            "event": {
+                "type": "keyword"
+            },
+            "timestamp": {
+                "type": "date"
+            },
+            "userId": {
+                "type": "keyword"
+            },
+            "url": {
+                "type": "keyword"
+            },
+            "processing_time_ms": {
+                "type": "long"
+            },
+            "has_error": {
+                "type": "boolean"
+            }
         }
     }
 }

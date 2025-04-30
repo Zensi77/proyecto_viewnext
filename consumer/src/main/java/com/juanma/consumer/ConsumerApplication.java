@@ -20,6 +20,9 @@ import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 @SpringBootApplication
 public class ConsumerApplication implements CommandLineRunner {
 
+	@Autowired
+	private ELKSender sender;
+
 	public static void main(String[] args) {
 		SpringApplication.run(ConsumerApplication.class, args);
 	}
@@ -30,7 +33,7 @@ public class ConsumerApplication implements CommandLineRunner {
 		String queueName = "metrics-queue";
 
 		try (ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(brokerURL);
-				Connection connection = factory.createConnection("admin", "admin")) {
+				Connection connection = factory.createConnection("test", "test")) {
 
 			connection.start();
 
@@ -47,8 +50,8 @@ public class ConsumerApplication implements CommandLineRunner {
 				} catch (InterruptedException ex) {
 				}
 
-				ELKSender sender = new ELKSender();
 				if (msg != null) {
+					System.out.println(msg.getBody(Map.class));
 					Map<String, Object> data = msg.getBody(Map.class);
 					String index = (String) data.get("id");
 
@@ -60,9 +63,7 @@ public class ConsumerApplication implements CommandLineRunner {
 						sender.sentoELK(data, EventEnum.PERFORMANCE_EVENT);
 					} else {
 						System.out.println("No se ha podido enviar el mensaje a ELK");
-
 					}
-					// sender.sentoELK(msg.getBody(Map.class));
 				}
 			}
 		} catch (JMSException e) {

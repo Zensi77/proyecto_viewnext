@@ -1,34 +1,36 @@
 {
-    "properties": {
-        "id": {
-            "type": "keyword"
-        },
-        "event": {
-            "type": "keyword"
-        },
-        "timestamp": {
-            "type": "date"
-        },
-        "userId": {
-            "type": "keyword"
-        },
-        "order_id": {
-            "type": "keyword"
-        },
-        "processingTimeMs": {
-            "type": "long"
-        },
-        "status": {
-            "type": "keyword"
-        },
-        "items_count": {
-            "type": "long"
-        },
-        "average_price": {
-            "type": "float"
-        },
-        "payment_method": {
-            "type": "keyword"
+    "mappings": {
+        "properties": {
+            "id": {
+                "type": "keyword"
+            },
+            "event": {
+                "type": "keyword"
+            },
+            "timestamp": {
+                "type": "date"
+            },
+            "userId": {
+                "type": "keyword"
+            },
+            "order_id": {
+                "type": "keyword"
+            },
+            "processingTimeMs": {
+                "type": "long"
+            },
+            "status": {
+                "type": "keyword"
+            },
+            "items_count": {
+                "type": "long"
+            },
+            "average_price": {
+                "type": "float"
+            },
+            "payment_method": {
+                "type": "keyword"
+            }
         }
     }
 }

@@ -38,7 +38,7 @@ public class ELKSender {
 
     private Map<String, Object> loadMapping(String mapper) throws IOException {
         ObjectMapper objMapper = new ObjectMapper();
-        InputStream input = new ClassPathResource(mappingDirectory + mapper).getInputStream();
+        InputStream input = new ClassPathResource(this.mappingDirectory + mapper).getInputStream();
 
         return objMapper.readValue(input, Map.class);
     }

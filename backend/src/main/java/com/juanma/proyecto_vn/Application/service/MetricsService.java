@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.jms.JmsException;
 
 @Service
 public class MetricsService {
@@ -27,7 +28,11 @@ public class MetricsService {
 
         metric.putAll(extra);
 
-        jms.convertAndSend("metrics-queue", metric);
+        try {
+            jms.convertAndSend("metrics-queue", metric);
+        } catch (JmsException e) {
+            log.error("Error al enviar la métrica de orden: {}", e.getMessage());
+        }
 
         log.info("Enviando métrica de orden: {}", metric);
     }
@@ -35,7 +40,7 @@ public class MetricsService {
     /**
      * Envía un evento de funnel a la cola de métricas.
      * 
-     * conversion_rate = orders_created / checkout_started × 100%
+     * conversion_rate = order_created / checkout_started × 100%
      * cart_abandonment_rate = (add_to_cart – checkout_started) / add_to_cart × 100%
      * cart_completion_rate = checkout_started / add_to_cart × 100%
      * 
@@ -51,7 +56,12 @@ public class MetricsService {
         metric.put("timestamp", Instant.now().toString());
         metric.put("user_id", userId);
         metric.putAll(extra);
-        jms.convertAndSend("metrics-queue", metric);
+
+        try {
+            jms.convertAndSend("metrics-queue", metric);
+        } catch (JmsException e) {
+            log.error("Error al enviar la métrica de funnel: {}", e.getMessage());
+        }
 
         log.info("Enviando métrica de funnel: {}", metric);
     }
@@ -62,9 +72,14 @@ public class MetricsService {
         metric.put("event", event);
         metric.put("timestamp", Instant.now().toString());
         metric.put("user_id", userId);
+        // todo: meter en extra el status code si hay un error
         metric.putAll(extra);
 
-        jms.convertAndSend("metrics-queue", metric);
+        try {
+            jms.convertAndSend("metrics-queue", metric);
+        } catch (JmsException e) {
+            log.error("Error al enviar la métrica de rendimiento: {}", e.getMessage());
+        }
 
         log.info("Enviando métrica de rendimiento: {}", metric);
     }
