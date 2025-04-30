@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { MenuItem } from 'primeng/api';
@@ -8,6 +8,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { InputTextModule } from 'primeng/inputtext';
 import { Ripple } from 'primeng/ripple';
 import { Router, RouterLink, RouterModule } from '@angular/router';
+import { AuthService } from '../../../auth/services/auth.service';
 
 @Component({
   selector: 'app-menu',
@@ -25,9 +26,11 @@ import { Router, RouterLink, RouterModule } from '@angular/router';
   styles: ``,
 })
 export class MenuComponent implements OnInit {
-  items: MenuItem[] | undefined;
+  private readonly _authService = inject(AuthService);
+  private readonly _router = inject(Router);
+  private _user = computed(() => this._authService.user());
 
-  private readonly router = inject(Router);
+  items: MenuItem[] | undefined;
 
   ngOnInit() {
     this.items = [
@@ -78,12 +81,25 @@ export class MenuComponent implements OnInit {
     return this.isDarkMode() ? 'pi pi-sun' : 'pi pi-moon';
   }
 
-  async signOut() {
-    this.router.navigate(['/']);
+  isLogged() {
+    return this._user !== null ? 'pi pi-sign-in' : 'pi pi-sign-out';
   }
 
-  isLogged() {
-    return 'pi pi-sign-in';
+  actionLogged() {
+    console.log('actionLogged', this._user());
+
+    if (this._user() !== null) {
+      this._authService.signOut();
+    } else {
+      this._router.navigateByUrl('/auth/sign-in');
+    }
   }
-  actionLogged() {}
+
+  actionCart() {
+    if (this._user() !== null) {
+      this._router.navigateByUrl('/cart');
+    } else {
+      this._router.navigateByUrl('/auth/sign-in');
+    }
+  }
 }

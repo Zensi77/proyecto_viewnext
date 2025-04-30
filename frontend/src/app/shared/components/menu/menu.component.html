@@ -1,26 +1,48 @@
-<div class="card fixed shadow-3xl w-full p-4 z-1">
+<div class="sticky top-0 w-full px-4 py-1 bg-gray-50 card shadow-3xl z-100">
   <p-menubar [model]="items">
-
     <ng-template #item let-item let-root="root">
-      <a pRipple class="flex items-center p-menubar-item-link" [routerLink]="item.routerLink"
-        routerLinkActive="active-route-class">
+      <a
+        pRipple
+        class="flex items-center p-menubar-item-link"
+        [routerLink]="item.routerLink"
+        routerLinkActive="active-route-class"
+      >
         <i *ngIf="item.icon" [ngClass]="item.icon + ' mr-2'"></i>
         <span>{{ item.label }}</span>
-        <p-badge *ngIf="item.badge" [ngClass]="{ 'ml-auto': !root, 'ml-2': root }" [value]="item.badge" />
-        <span *ngIf="item.shortcut"
-          class="ml-auto border border-surface rounded bg-emphasis text-muted-color text-xs p-1">{{
-          item.shortcut }}</span>
-        <i *ngIf="item.items" [ngClass]="['ml-auto pi', root ? 'pi-angle-down' : 'pi-angle-right']"></i>
+        <p-badge
+          *ngIf="item.badge"
+          [ngClass]="{ 'ml-auto': !root, 'ml-2': root }"
+          [value]="item.badge"
+        />
+        <span
+          *ngIf="item.shortcut"
+          class="p-1 ml-auto text-xs border rounded border-surface bg-emphasis text-muted-color"
+          >{{ item.shortcut }}</span
+        >
+        <i
+          *ngIf="item.items"
+          [ngClass]="['ml-auto pi', root ? 'pi-angle-down' : 'pi-angle-right']"
+        ></i>
       </a>
     </ng-template>
     <ng-template #end>
       <div class="flex items-center gap-4">
-        <i id="darkMode" class="cursor-pointer" [ngClass]="getIconMode()" tabindex="0" (click)="toogleDarkMode()"
-          (keydown.enter)="toogleDarkMode()" (keydown.space)="toogleDarkMode()"></i>
-        <i class=" cursor-pointer" tabindex="0" [ngClass]="isLogged()" (click)="actionLogged()" 
-          (keydown.space)="signOut()"></i>
-        <i class="pi pi-shopping-cart
-"></i>
+        <i
+          id="darkMode"
+          class="cursor-pointer"
+          [ngClass]="getIconMode()"
+          tabindex="0"
+          (click)="toogleDarkMode()"
+          (keydown.enter)="toogleDarkMode()"
+          (keydown.space)="toogleDarkMode()"
+        ></i>
+        <i
+          class="cursor-pointer"
+          tabindex="0"
+          [ngClass]="isLogged()"
+          (click)="actionLogged()"
+        ></i>
+        <i class="pi pi-shopping-cart" (click)="actionCart()"></i>
       </div>
     </ng-template>
   </p-menubar>

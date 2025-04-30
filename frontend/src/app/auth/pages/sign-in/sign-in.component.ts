@@ -8,11 +8,12 @@ import { AuthService } from '../../services/auth.service';
 import { Router, RouterLink } from '@angular/router';
 import { message } from '../../utils/validators';
 import { CommonModule } from '@angular/common';
+import { InputTextModule } from 'primeng/inputtext';
 import Swal from 'sweetalert2';
 import { User } from '../../interfaces/user.interface';
 
 @Component({
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, InputTextModule],
   templateUrl: './sign-in.component.html',
   styles: ``,
 })
