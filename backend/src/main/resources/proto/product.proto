@@ -1,0 +1,26 @@
+syntax = "proto2";
+
+package com.juanma.proyecto_vn.infrastructure.cache;
+
+option java_multiple_files = true;
+
+/**
+ * Definición protobuf para la serialización de productos en caché
+ */
+message ProductProto {
+  required string id = 1;
+  required string name = 2;
+  required double price = 3;
+  required int32 stock = 4;
+  optional string image = 5;
+  optional string description = 6;
+  
+  // Datos de categoría
+  required string categoryId = 7;
+  required string categoryName = 8;
+  
+  // Datos de proveedor
+  required string providerId = 9;
+  required string providerName = 10;
+  optional string providerAddress = 11;
+}

@@ -14,10 +14,17 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideAnimationsAsync(),
     providePrimeNG({
+      ripple: true,
+      inputStyle: 'filled',
+      csp: {
+        nonce: 'nonce-value',
+      },
       theme: {
         preset: Aura,
         options: {
           darkModeSelector: '.dark-mode',
+          prefix: 'p',
+          cssLayer: false,
         },
       },
     }),

@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import com.juanma.proyecto_vn.Application.service.UserServiceImpl;
+import com.juanma.proyecto_vn.domain.service.IUserService;
 import com.juanma.proyecto_vn.interfaces.rest.dtos.auth.LoginDto;
 import com.juanma.proyecto_vn.interfaces.rest.dtos.auth.UserCreateDto;
 
@@ -24,10 +24,10 @@ import com.juanma.proyecto_vn.interfaces.rest.dtos.auth.UserCreateDto;
 @RequestMapping("/api/v1/user")
 public class UserController {
     @Autowired
-    private UserServiceImpl userService;
+    private IUserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> getUser(@Valid @RequestBody UserCreateDto user, BindingResult result) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserCreateDto user, BindingResult result) {
         if (result.hasErrors()) {
             return validation(result);
         }
@@ -37,7 +37,7 @@ public class UserController {
 
     @PostMapping("/register-admin")
     @PreAuthorize("hasRole('ADMIN')") // Solo el admin puede crear usuarios admin
-    public ResponseEntity<?> getAdmin(@Valid @RequestBody UserCreateDto user, BindingResult result) {
+    public ResponseEntity<?> registerAdmin(@Valid @RequestBody UserCreateDto user, BindingResult result) {
         if (result.hasErrors()) {
             return validation(result);
         }
@@ -60,13 +60,8 @@ public class UserController {
     }
 
     @GetMapping("/email-exist")
-    public boolean emailExist(@RequestParam String email) {
-        boolean exist = userService.emailExist(email);
-
-        if (exist) {
-            return true;
-        }
-        return false;
+    public ResponseEntity<Boolean> emailExist(@RequestParam String email) {
+        return ResponseEntity.ok(userService.emailExist(email));
     }
 
     private ResponseEntity<?> validation(BindingResult result) {

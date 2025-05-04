@@ -1,0 +1,59 @@
+@if (loading) {
+<div class="card flex justify-center items-center h-full">
+  <p-progress-spinner ariaLabel="loading" />
+</div>
+}
+
+<p-select
+  [options]="orderBy"
+  [checkmark]="true"
+  [showClear]="true"
+  optionLabel="name"
+  placeholder="Ordenar por"
+  (onChange)="onOrderByChange($event)"
+  class="w-full md:w-56"
+/>
+
+<div class="w-full flex flex-col gap-6 p-6 items-center justify-start">
+  <div>
+    <div
+      class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+    >
+      @for (prod of productsSearch?.products; track $index) {
+      <product-card [product]="prod" />
+      }
+    </div>
+  </div>
+  <div class="flex justify-center items-center gap-2 w-full">
+    <span>Productos por pagina</span>
+    <div class="flex flex-col items-center justify-center mx-4">
+      <input
+        type="text"
+        pInputText
+        [(ngModel)]="searchParams.size"
+        class="w-12 mb-3"
+      />
+      <p-slider
+        class="-translate-y-2"
+        [(ngModel)]="searchParams.size"
+        (ngModelChange)="(productsSearch!.pageSize)"
+        (onChange)="onSizePageChange($event)"
+        [style]="{ width: '10rem' }"
+        [min]="12"
+        [max]="28"
+        [step]="4"
+      />
+    </div>
+    <p-paginator
+      (onPageChange)="onPageChange($event)"
+      [first]="
+        (productsSearch?.currentPage || 0) * (productsSearch?.pageSize || 0)
+      "
+      [rows]="productsSearch?.pageSize"
+      [totalRecords]="productsSearch?.totalElements"
+      [showFirstLastIcon]="false"
+      [showCurrentPageReport]="true"
+      currentPageReportTemplate="{first} - {last} de {totalRecords}"
+    ></p-paginator>
+  </div>
+</div>

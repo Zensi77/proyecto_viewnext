@@ -4,22 +4,55 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.juanma.proyecto_vn.interfaces.rest.dtos.product.CreateProductDto;
-import com.juanma.proyecto_vn.interfaces.rest.dtos.product.GetProductDto;
+import com.juanma.proyecto_vn.domain.model.Product;
 
-import jakarta.servlet.http.HttpServletRequest;
-
+/**
+ * Puerto primario (entrada) para los casos de uso relacionados con productos
+ */
 public interface IProductService {
-    Map<String, Object> getAllProducts(int page, int size, String sortBy, String orderBy, String filterBy,
-            String filterValue);
+        /**
+         * Obtiene todos los productos con paginación y filtros
+         * 
+         * @param page    número de página
+         * @param size    tamaño de página
+         * @param sortBy  campo por el que ordenar
+         * @param orderBy dirección de ordenamiento (asc/desc)
+         * @param filters mapa con los filtros a aplicar (name, category, provider,
+         *                priceMin, priceMax)
+         * @return Mapa con datos de paginación y lista de productos
+         */
+        Map<String, Object> getAllProducts(int page, int size, String sortBy, String orderBy,
+                        Map<String, Object> filters);
 
-    GetProductDto getProductById(UUID id, HttpServletRequest request);
+        /**
+         * Obtiene una lista de nombres e IDs de productos
+         */
+        List<Map<String, String>> getAllNames();
 
-    GetProductDto createProduct(CreateProductDto product);
+        /**
+         * Obtiene un producto por su ID
+         */
+        Product getProductById(UUID id, String userId);
 
-    List<GetProductDto> getRandomProducts(int quantity);
+        /**
+         * Crea un nuevo producto
+         */
+        Product createProduct(String name, double price, String image, int stock, String description,
+                        UUID categoryId, UUID providerId);
 
-    GetProductDto updateProduct(CreateProductDto product, UUID id);
+        /**
+         * Obtiene productos aleatorios
+         */
+        List<Product> getRandomProducts(int quantity);
 
-    GetProductDto deleteProduct(UUID id);
+        /**
+         * Actualiza un producto existente
+         */
+        Product updateProduct(UUID id, String name, double price, String image, int stock,
+                        String description, UUID categoryId, UUID providerId);
+
+        /**
+         * Elimina un producto por su ID
+         */
+        Product deleteProduct(UUID id);
 }

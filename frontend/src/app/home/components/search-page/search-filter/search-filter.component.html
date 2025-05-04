@@ -1,0 +1,106 @@
+<div class="w-full h-full bg-green-200 p-4 pb-64 rounded-lg shadow-md">
+  <div class="flex items-center justify-between p-4 border-b border-green-300">
+    <h2 class="text-lg font-semibold text-green-800">Filtros</h2>
+    <button
+      (click)="clearFilters()"
+      type="button"
+      class="flex items-center gap-1 px-3 py-1.5 cursor-pointer rounded-md bg-blue-500 text-white hover:bg-blue-600 transition-all duration-300 ease-in-out transform hover:scale-105"
+    >
+      <i class="pi pi-trash mr-1"></i>
+      Limpiar
+    </button>
+  </div>
+  <div class="p-4">
+    <div class="mb-4 flex flex-col gap-2 justify-between">
+      <span class="text-xl text-green-800 font-medium">Filtros aplicados</span>
+      <div class="min-h-8 flex flex-wrap gap-2">
+        @if (selectedCategoryValue) {
+        <p-chip
+          [removable]="true"
+          (onRemove)="
+            selectedCategoryValue = null;
+            selectedCategory.emit(selectedCategoryValue)
+          "
+          class="flex flex-row justify-between! animate__animated animate__bounceIn"
+        >
+          {{ selectedCategoryValue.name }}
+        </p-chip>
+        } @if (selectedProviderValue) { @for (provider of selectedProviderValue;
+        track $index) {
+        <p-chip
+          [removable]="true"
+          (onRemove)="selectedProviderValue = null; selectedProvider.emit(null)"
+          class="flex flex-row justify-between! animate__animated animate__bounceIn"
+        >
+          {{ provider.name }}
+        </p-chip>
+        } } @if (rangePricesValue[0] !== 0 || rangePricesValue[1] !== 3000) {
+        <p-chip
+          [removable]="true"
+          (onRemove)="
+            rangePricesValue = [0, 3000]; rangePrices.emit(rangePricesValue)
+          "
+          class="flex flex-row justify-between! animate__animated animate__bounceIn"
+        >
+          {{ rangePricesValue[0] }} - {{ rangePricesValue[1] }}
+        </p-chip>
+        }
+      </div>
+    </div>
+    <div class="mb-4 flex flex-col gap-1">
+      <span class="mb-1 text-xl text-green-800 font-medium">
+        Rango de precios
+      </span>
+      <p-slider
+        [(ngModel)]="rangePricesValue"
+        [range]="true"
+        (onChange)="rangePrices.emit(rangePricesValue)"
+        [min]="0"
+        [max]="3000"
+        [step]="10"
+        class="mt-2"
+      />
+      <div class="w-full flex justify-between mt-1">
+        <input
+          type="number"
+          pInputText
+          [disabled]="true"
+          readonly
+          [(ngModel)]="rangePricesValue[0]"
+          class="w-16 -translate-x-7 mt-1 text-center"
+        />
+        <input
+          type="number"
+          pInputText
+          [disabled]="true"
+          readonly
+          [(ngModel)]="rangePricesValue[1]"
+          class="w-16 translate-x-9 mt-1 text-center"
+        />
+      </div>
+    </div>
+    <div class="mb-4 flex flex-col gap-2">
+      <span class="text-xl text-green-800 font-medium">Proveedores</span>
+      <p-listbox
+        [(ngModel)]="selectedProviderValue"
+        (onChange)="selectedProvider.emit($event.value)"
+        [options]="providers"
+        [multiple]="true"
+        [checkbox]="true"
+        optionLabel="name"
+        class="w-full!"
+      />
+    </div>
+    <div class="mb-4 flex flex-col gap-2">
+      <span class="text-xl text-green-800 font-medium">Categorias</span>
+      <p-select
+        [options]="categories"
+        (onChange)="selectedCategory.emit($event.value)"
+        [(ngModel)]="selectedCategoryValue"
+        [checkmark]="true"
+        optionLabel="name"
+        class="w-full!"
+      />
+    </div>
+  </div>
+</div>

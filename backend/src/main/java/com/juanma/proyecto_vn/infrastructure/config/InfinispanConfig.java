@@ -11,15 +11,15 @@ import org.infinispan.protostream.SerializationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.juanma.proyecto_vn.infrastructure.cache.ProductoSchemaInitializer;
-import com.juanma.proyecto_vn.infrastructure.cache.ProductoSchemaInitializerImpl;
+import com.juanma.proyecto_vn.infrastructure.cache.ProductProtoSchemaInitializer;
+import com.juanma.proyecto_vn.infrastructure.cache.ProductProtoSchemaInitializerImpl;
 
 @Configuration
 // @EnableCaching // Activa @Cacheable
 public class InfinispanConfig {
 
     @Bean
-    public RemoteCacheManager remoteCacheManager(ProductoSchemaInitializer schema) {
+    public RemoteCacheManager remoteCacheManager(ProductProtoSchemaInitializer schema) {
         ConfigurationBuilder builder = new ConfigurationBuilder();
         builder
                 // Por defecto, el cliente de Infinispan usa la IP que le da el servidor, por lo
@@ -62,7 +62,7 @@ public class InfinispanConfig {
      * objetos en el cache de infinispan. Se usa para registrar los objetos que se
      */
     @Bean
-    ProductoSchemaInitializer productoSchemaInitializer() {
-        return new ProductoSchemaInitializerImpl();
+    ProductProtoSchemaInitializer productoSchemaInitializer() {
+        return new ProductProtoSchemaInitializerImpl();
     }
 }

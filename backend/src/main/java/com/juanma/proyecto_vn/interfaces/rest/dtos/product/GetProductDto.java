@@ -2,7 +2,7 @@ package com.juanma.proyecto_vn.interfaces.rest.dtos.product;
 
 import java.util.UUID;
 
-import com.juanma.proyecto_vn.interfaces.rest.dtos.category.CategoryDto;
+import com.juanma.proyecto_vn.interfaces.rest.dtos.category.CategoryResponseDto;
 import com.juanma.proyecto_vn.interfaces.rest.dtos.provider.ProviderDto;
 
 import lombok.AllArgsConstructor;
@@ -22,5 +22,5 @@ public class GetProductDto {
     private String description;
     private int stock;
     private ProviderDto provider;
-    private CategoryDto category;
+    private CategoryResponseDto category;
 }

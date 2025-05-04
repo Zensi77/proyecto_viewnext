@@ -82,13 +82,13 @@ export class MenuComponent implements OnInit {
   }
 
   isLogged() {
-    return this._user !== null ? 'pi pi-sign-in' : 'pi pi-sign-out';
+    return this._user() != null ? 'pi pi-sign-out' : 'pi pi-sign-in';
   }
 
   actionLogged() {
     console.log('actionLogged', this._user());
 
-    if (this._user() !== null) {
+    if (this._user() != null) {
       this._authService.signOut();
     } else {
       this._router.navigateByUrl('/auth/sign-in');
@@ -96,7 +96,7 @@ export class MenuComponent implements OnInit {
   }
 
   actionCart() {
-    if (this._user() !== null) {
+    if (this._user() != null) {
       this._router.navigateByUrl('/cart');
     } else {
       this._router.navigateByUrl('/auth/sign-in');

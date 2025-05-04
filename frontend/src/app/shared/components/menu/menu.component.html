@@ -1,5 +1,5 @@
-<div class="sticky top-0 w-full px-4 py-1 bg-gray-50 card shadow-3xl z-100">
-  <p-menubar [model]="items">
+<div class="fixed top-0 w-full px-4 py-1 card shadow-3xl z-100">
+  <p-menubar [model]="items" [styleClass]="'bg-red-200'" [baseZIndex]="1000">
     <ng-template #item let-item let-root="root">
       <a
         pRipple

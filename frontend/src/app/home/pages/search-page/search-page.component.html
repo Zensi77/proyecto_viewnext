@@ -1,0 +1,23 @@
+<main class="bg-gray-200 p-4 m-4 rounded-lg shadow-cyan-100 shadow-md mt-18">
+  <autocomplete-search />
+
+  <div class="flex flex-row p-2 gap-4 h-[calc(100vh-200px)]">
+    <div class="w-full md:w-1/6 md:min-w-48 rounded-lg shadow-md">
+      <search-filter
+        (rangePrices)="changeRangePrices($event)"
+        (selectedCategory)="changeCategory($event)"
+        (selectedProvider)="changeProvider($event)"
+      />
+    </div>
+
+    <section
+      class="w-full md:w-5/6 rounded-lg shadow-md bg-gray-100 overflow-y-auto animate__animated animate__fadeInRight"
+    >
+      <app-search-result
+        [rangePrices]="rangePrices"
+        [selectedCategory]="selectedCategory"
+        [selectedProvider]="selectedProvider"
+      />
+    </section>
+  </div>
+</main>

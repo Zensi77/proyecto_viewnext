@@ -4,13 +4,13 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.juanma.proyecto_vn.infrastructure.persistence.repository.UserRepository;
+import com.juanma.proyecto_vn.infrastructure.persistence.repository.JpaUserRepository;
 import com.juanma.proyecto_vn.interfaces.rest.validation.UniqueEmail;
 
 public class UniqueEmailValidator implements ConstraintValidator<UniqueEmail, String> {
 
     @Autowired
-    private UserRepository userRepository;
+    private JpaUserRepository userRepository;
 
     @Override
     public boolean isValid(String email, ConstraintValidatorContext context) {

@@ -1,2 +1,9 @@
 @import "tailwindcss";
 @import "primeicons/primeicons.css";
+@plugin "tailwindcss-primeui";
+
+@import "animate.css";
+
+body {
+  overflow-x: hidden;
+}

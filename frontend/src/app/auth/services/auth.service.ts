@@ -20,7 +20,7 @@ export class AuthService {
   signUp(user: User) {
     const url = environment['sign-up'];
     this.loading.set(true);
-    this._http.post<UserResponse>('sign-up', url).subscribe({
+    this._http.post<UserResponse>(url, user).subscribe({
       next: (res) => {
         sessionStorage.setItem('token', res.token);
         this.user.set(res.user);
@@ -71,6 +71,11 @@ export class AuthService {
   // Cerrar sesión
   signOut() {
     sessionStorage.removeItem('token');
+    this.user.set(null);
+    Swal.fire({
+      icon: 'success',
+      text: 'Sesión cerrada',
+    });
     this._router.navigate(['/']);
   }
 

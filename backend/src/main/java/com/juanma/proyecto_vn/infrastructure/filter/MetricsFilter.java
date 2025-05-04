@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.juanma.proyecto_vn.Application.service.MetricsService;
+import com.juanma.proyecto_vn.infrastructure.messaging.MetricsSender;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,7 +23,7 @@ public class MetricsFilter extends OncePerRequestFilter {
     // utiliza OncePerRequestFilter
 
     @Autowired
-    private MetricsService metricsService;
+    private MetricsSender metricsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

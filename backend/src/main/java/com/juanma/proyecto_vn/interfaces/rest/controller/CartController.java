@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -17,65 +16,109 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.validation.Valid;
 
+import com.juanma.proyecto_vn.domain.model.Cart;
+import com.juanma.proyecto_vn.domain.model.CartItem;
+import com.juanma.proyecto_vn.domain.model.Product;
 import com.juanma.proyecto_vn.domain.service.ICartService;
 import com.juanma.proyecto_vn.interfaces.rest.dtos.cart.CartDto;
 import com.juanma.proyecto_vn.interfaces.rest.dtos.cart.CreateProductCartDto;
+import com.juanma.proyecto_vn.interfaces.rest.mapper.CartDtoMapper;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/v1/cart")
+@RequiredArgsConstructor
+@Slf4j
 public class CartController {
 
-    @Autowired
-    private ICartService cartService;
+    private final ICartService cartService;
+    private final CartDtoMapper cartDtoMapper;
 
     @GetMapping()
     public ResponseEntity<?> getCart(Authentication authentication) {
+        log.info("Solicitud para obtener carrito del usuario: {}",
+                authentication != null ? authentication.getName() : "anónimo");
+
         if (authentication == null) {
-            return ResponseEntity.status(401).body("Unauthorized");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Unauthorized"));
         }
 
         String email = authentication.getName();
-        CartDto cart = cartService.getCartByUserId(email);
+        Cart cart = cartService.getCartByUserId(email);
+        CartDto cartDto = cartDtoMapper.toDto(cart);
 
-        return ResponseEntity.ok(cart);
+        log.info("Carrito obtenido para usuario: {}", email);
+        return ResponseEntity.ok(cartDto);
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addProductCart(Authentication authentication,
-            @RequestBody @Valid CreateProductCartDto productCartDto, BindingResult result) {
+    public ResponseEntity<?> addProductCart(
+            Authentication authentication,
+            @RequestBody @Valid CreateProductCartDto productCartDto,
+            BindingResult result) {
+
+        log.info("Solicitud para añadir producto al carrito: {}", productCartDto);
+
         if (authentication == null) {
-            return ResponseEntity.status(401).body("Unauthorized");
-        } else if (result.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Unauthorized"));
+        }
+
+        if (result.hasErrors()) {
             return validation(result);
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(cartService.addProductToCart(productCartDto, authentication.getName()));
+        // Convertir DTO a objeto de dominio CartItem
+        CartItem cartItem = convertToCartItem(productCartDto);
+        Cart updatedCart = cartService.addProductToCart(cartItem, authentication.getName());
+        CartDto responseDto = cartDtoMapper.toDto(updatedCart);
+
+        log.info("Producto añadido al carrito del usuario: {}", authentication.getName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     @DeleteMapping
     public ResponseEntity<?> deleteProductFromCart(
             @RequestParam(required = true) UUID product_id,
             Authentication authentication) {
+
+        log.info("Solicitud para eliminar producto {} del carrito", product_id);
+
         if (authentication == null) {
-            return ResponseEntity.status(401).body("Unauthorized");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Unauthorized"));
         }
 
         cartService.deleteProductFromCart(product_id, authentication.getName());
 
+        log.info("Producto {} eliminado del carrito del usuario: {}", product_id, authentication.getName());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    /**
+     * Convierte un DTO de producto para carrito a un CartItem del dominio
+     * 
+     * @param dto DTO con la información del producto a añadir al carrito
+     * @return CartItem con la información necesaria para el servicio
+     */
+    private CartItem convertToCartItem(CreateProductCartDto dto) {
+        return CartItem.builder()
+                .product(Product.builder()
+                        .id(dto.getProduct_id())
+                        .build())
+                .quantity(dto.getQuantity())
+                .build();
     }
 
     private ResponseEntity<?> validation(BindingResult result) {
         Map<String, String> errors = new HashMap<>();
         result.getFieldErrors().forEach(err -> {
-            errors.put("message", "Error en campo " + err.getField() + ": " + err.getDefaultMessage());
+            errors.put(err.getField(), err.getDefaultMessage());
         });
 
         return ResponseEntity.badRequest().body(errors);
     }
-
 }

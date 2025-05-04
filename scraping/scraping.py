@@ -40,6 +40,12 @@ def setup_driver():
     options.add_argument('--headless')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_argument("--disable-extensions")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.5615.138 Safari/537.36")
+    
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service, options=options)
     driver.set_page_load_timeout(60)
@@ -214,7 +220,7 @@ def saveProduct(data, search_term):
             data["provider"] = None
 
         sql_insert = '''
-            INSERT INTO product (id, id_provider, name, image, price, id_category, description, deleted, stock)
+            INSERT INTO product (id, provider_id, name, image, price, category_id, description, deleted, stock)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         '''
 

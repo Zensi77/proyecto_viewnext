@@ -6,7 +6,8 @@ import org.infinispan.protostream.annotations.Proto;
 import org.infinispan.protostream.annotations.ProtoFactory;
 import org.infinispan.protostream.annotations.ProtoField;
 
-import com.juanma.proyecto_vn.interfaces.rest.dtos.category.CategoryDto;
+import com.juanma.proyecto_vn.domain.model.Category;
+
 
 import lombok.Builder;
 
@@ -25,15 +26,15 @@ public class CategoryProto {
     @ProtoField(number = 2, required = true)
     public String name;
 
-    public static CategoryProto fromDto(CategoryDto categoryDto) {
+    public static CategoryProto fromDto(Category categoryDto) {
         return CategoryProto.builder()
                 .id(categoryDto.getId())
                 .name(categoryDto.getName())
                 .build();
     }
 
-    public static CategoryDto toDto(CategoryProto categoryProto) {
-        return CategoryDto.builder()
+    public static Category toDto(CategoryProto categoryProto) {
+        return Category.builder()
                 .id(categoryProto.id)
                 .name(categoryProto.name)
                 .build();

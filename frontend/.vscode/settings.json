@@ -1,0 +1,11 @@
+"tailwindCSS.experimental.configFile": "src/styles.scss",
+"tailwindCSS.includeLanguages": {
+    "plaintext": "html"
+},
+"editor.quickSuggestions": {
+  "strings": true
+},
+"files.associations": {
+  "*.scss": "tailwindcss"
+},
+

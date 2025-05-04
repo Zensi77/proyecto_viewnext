@@ -1,14 +1,14 @@
-
 package com.juanma.proyecto_vn.interfaces.rest.advice;
 
-import jakarta.validation.ConstraintViolationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -18,30 +18,42 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.juanma.proyecto_vn.interfaces.rest.advice.customExceptions.IllegalOrderStateException;
 import com.juanma.proyecto_vn.interfaces.rest.advice.customExceptions.NoStockException;
 import com.juanma.proyecto_vn.interfaces.rest.advice.customExceptions.ResourceNotFoundException;
+import jakarta.validation.ConstraintViolationException;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
-
-import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * Gestión centralizada de excepciones para la API.
+ * Controlador global para el manejo de excepciones en la API REST
  */
-@Order(Ordered.HIGHEST_PRECEDENCE)
-@ControllerAdvice
+@RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-        private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+        /**
+         * Maneja excepciones de estado ilegal de pedidos
+         */
+        @ExceptionHandler(IllegalOrderStateException.class)
+        public ResponseEntity<Object> handleIllegalOrderStateException(IllegalOrderStateException ex) {
+                Map<String, Object> body = new HashMap<>();
+                body.put("timestamp", LocalDateTime.now());
+                body.put("status", HttpStatus.BAD_REQUEST.value());
+                body.put("error", "Order State Error");
+                body.put("message", ex.getMessage());
+
+                return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+        }
 
         private ResponseEntity<Object> buildResponse(ApiError err, Throwable ex) {
                 if (err.getStatus() >= 500 && ex != null) {

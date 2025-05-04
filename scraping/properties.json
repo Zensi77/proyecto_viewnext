@@ -12,7 +12,22 @@
             "coolmod": "div.dfd-card.dfd-card-preset-product.dfd-card-type-indiceproductos"
         },
         "searchterms": {
-            "0": "ordenador"
+            "0": "ordenador",
+            "1": "portátil",
+            "2": "televisor",
+            "3": "monitor",
+            "4": "movil",
+            "5": "tablet",
+            "6": "ratón gamer",
+            "7": "refrigerador",
+            "8": "consola",
+            "9": "router",
+            "10": "auriculares",
+            "11": "camara",
+            "12": "impresora",
+            "13": "smartwatch",
+            "14": "dron",
+            "15": "microprocesador"
         },
         "data": {
             "nombre": {

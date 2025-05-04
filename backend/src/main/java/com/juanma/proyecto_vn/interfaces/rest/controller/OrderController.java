@@ -1,103 +1,175 @@
 package com.juanma.proyecto_vn.interfaces.rest.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.juanma.proyecto_vn.Application.service.MetricsService;
-import com.juanma.proyecto_vn.domain.service.IOrderService;
-import com.juanma.proyecto_vn.interfaces.rest.dtos.order.CreateOrderDto;
-import com.juanma.proyecto_vn.interfaces.rest.dtos.order.GetOrderDto;
-
-import jakarta.validation.Valid;
-
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import com.juanma.proyecto_vn.domain.model.Order;
+import com.juanma.proyecto_vn.domain.service.IOrderService;
+import com.juanma.proyecto_vn.infrastructure.messaging.MetricsSender;
+import com.juanma.proyecto_vn.interfaces.rest.dtos.order.CreateOrderDto;
+import com.juanma.proyecto_vn.interfaces.rest.dtos.order.GetOrderDto;
+import com.juanma.proyecto_vn.interfaces.rest.mapper.OrderDtoMapper;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+/**
+ * Adaptador primario que implementa la API REST para pedidos
+ */
 @RestController
 @RequestMapping("/api/v1/orders")
+@RequiredArgsConstructor
+@Slf4j
 public class OrderController {
 
-    @Autowired
-    private MetricsService metricsService;
+    private final IOrderService orderService;
+    private final OrderDtoMapper orderDtoMapper;
+    private final MetricsSender metricsService;
 
-    @Autowired
-    private IOrderService orderService;
-
+    /**
+     * Obtiene todos los pedidos del usuario autenticado
+     */
     @GetMapping
     public ResponseEntity<List<GetOrderDto>> getOrders(Authentication authentication) {
-
-        String email = authentication.getName();
-        List<GetOrderDto> orders = orderService.getAllOrders(email);
-        return ResponseEntity.ok(orders);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getOrderById(@RequestParam String id, Authentication authentication) {
         if (authentication == null) {
-            return ResponseEntity.status(401).body("Unauthorized");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+
         String email = authentication.getName();
-        GetOrderDto order = orderService.getOrderById(email, UUID.fromString(id));
-        return ResponseEntity.ok(order);
+        List<Order> orders = orderService.getAllOrders(email);
+        List<GetOrderDto> orderDtos = orderDtoMapper.toDtoList(orders);
+        return ResponseEntity.ok(orderDtos);
     }
 
+    /**
+     * Obtiene un pedido específico por su ID
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> getOrderById(@PathVariable UUID id, Authentication authentication) {
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        }
+
+        String email = authentication.getName();
+        try {
+            Order order = orderService.getOrderById(email, id);
+            GetOrderDto orderDto = orderDtoMapper.toDto(order);
+            return ResponseEntity.ok(orderDto);
+        } catch (Exception e) {
+            log.error("Error al obtener pedido: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    /**
+     * Crea un nuevo pedido
+     */
     @PostMapping
-    public ResponseEntity<Object> createOrder(@RequestBody @Valid CreateOrderDto orderDto,
+    public ResponseEntity<Object> createOrder(@Valid @RequestBody CreateOrderDto orderDto,
+            BindingResult result,
             Authentication authentication) {
         if (authentication == null) {
-            return ResponseEntity.status(401).body("Unauthorized");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
+
+        if (result.hasErrors()) {
+            return getValidationErrorResponse(result);
+        }
+
         String email = authentication.getName();
         long start = System.currentTimeMillis();
-        GetOrderDto order = orderService.createOrder(orderDto, email);
 
         try {
-            long end = System.currentTimeMillis();
-            long processingTimeMs = end - start;
+            // Convertir DTO a modelo de dominio
+            Order orderRequest = orderDtoMapper.toDomain(orderDto);
 
-            metricsService.sendFunnelEvent("order_created", authentication.getName(),
-                    Map.of("orderId", orderDto.getProductOrder().get(0).getProductId().toString(),
-                            "processingTimeMs", processingTimeMs));
-            return ResponseEntity.status(201).body(order);
+            // Procesar la orden
+            Order createdOrder = orderService.createOrder(orderRequest, email);
+
+            // Convertir resultado a DTO
+            GetOrderDto responseDto = orderDtoMapper.toDto(createdOrder);
+
+            long processingTimeMs = System.currentTimeMillis() - start;
+            metricsService.sendFunnelEvent("order_created_api", email,
+                    Map.of("processingTimeMs", processingTimeMs,
+                            "orderId", createdOrder.getId().toString()));
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
         } catch (Exception e) {
             long processingTimeMs = System.currentTimeMillis() - start;
+            log.error("Error al crear pedido: {}", e.getMessage());
 
-            metricsService.sendFunnelEvent("order_creation_failed", authentication.getName(),
-                    Map.of("error", e.getMessage(), "processingTimeMs", processingTimeMs));
-            return ResponseEntity.status(500).body("Error creating order: " + e.getMessage());
+            metricsService.sendFunnelEvent("order_creation_failed", email,
+                    Map.of("error", e.getMessage(),
+                            "processingTimeMs", processingTimeMs));
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al crear pedido: " + e.getMessage());
         }
     }
 
+    /**
+     * Cancela un pedido existente
+     */
     @PutMapping("/cancel/{id}")
-    public ResponseEntity<Object> cancelOrder(@PathVariable String id, Authentication authentication) {
+    public ResponseEntity<Object> cancelOrder(@PathVariable UUID id, Authentication authentication) {
         if (authentication == null) {
-            return ResponseEntity.status(401).body("Unauthorized");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
+
         String email = authentication.getName();
-        orderService.cancelOrder(UUID.fromString(id), email);
-        return ResponseEntity.status(204).build();
+        try {
+            orderService.cancelOrder(id, email);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            log.error("Error al cancelar pedido: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
+    /**
+     * Elimina un pedido (sólo si está cancelado)
+     */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteOrder(@PathVariable String id, Authentication authentication) {
+    public ResponseEntity<Object> deleteOrder(@PathVariable UUID id, Authentication authentication) {
         if (authentication == null) {
-            return ResponseEntity.status(401).body("Unauthorized");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
         }
-        String email = authentication.getName();
-        orderService.deleteOrder(UUID.fromString(id), email);
-        return ResponseEntity.status(204).build();
 
+        String email = authentication.getName();
+        try {
+            orderService.deleteOrder(id, email);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            log.error("Error al eliminar pedido: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    /**
+     * Método auxiliar para crear respuesta de errores de validación
+     */
+    private ResponseEntity<Object> getValidationErrorResponse(BindingResult result) {
+        Map<String, String> errors = new HashMap<>();
+        result.getFieldErrors().forEach(err -> {
+            errors.put(err.getField(), "Error en campo " + err.getField() + ": " + err.getDefaultMessage());
+        });
+        return ResponseEntity.badRequest().body(errors);
     }
 }

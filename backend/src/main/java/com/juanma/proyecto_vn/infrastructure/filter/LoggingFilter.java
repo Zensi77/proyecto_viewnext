@@ -16,8 +16,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.juanma.proyecto_vn.infrastructure.persistence.entity.User;
-import com.juanma.proyecto_vn.infrastructure.persistence.repository.UserRepository;
+import com.juanma.proyecto_vn.infrastructure.persistence.entity.UserEntity;
+import com.juanma.proyecto_vn.infrastructure.persistence.repository.JpaUserRepository;
 import com.juanma.proyecto_vn.infrastructure.security.jwt.JwtUtil;
 
 import java.io.IOException;
@@ -32,7 +32,7 @@ import java.util.Collections;
 @Component
 public class LoggingFilter extends OncePerRequestFilter {
     @Autowired
-    private UserRepository userRepository;
+    private JpaUserRepository userRepository;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -65,7 +65,7 @@ public class LoggingFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                User user = userRepository.findByEmail(email).orElse(null);
+                UserEntity user = userRepository.findByEmail(email).orElse(null);
                 if (user != null) {
                     request.setAttribute("userId", user.getId());
                 }

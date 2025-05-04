@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.juanma.proyecto_vn.domain.service.IProviderService;
 import com.juanma.proyecto_vn.interfaces.rest.dtos.provider.ProviderDto;
+import com.juanma.proyecto_vn.interfaces.rest.mapper.ProviderDtoMapper;
 
 import jakarta.validation.Valid;
 
@@ -30,23 +31,31 @@ public class ProviderController {
     @Autowired
     private IProviderService providerService;
 
-    @GetMapping
+    @Autowired
+    private ProviderDtoMapper providerDtoMapper;
+
+    @GetMapping("/")
     public ResponseEntity<List<ProviderDto>> getAllProviders() {
-        return ResponseEntity.ok(providerService.getAllProviders());
+        List<ProviderDto> providers = providerService.getAllProviders().stream()
+                .map(providerDtoMapper::toDto).toList();
+
+        return ResponseEntity.ok(providers);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ProviderDto> getProvider(@PathVariable UUID id) {
-        return ResponseEntity.ok(providerService.getProvider(id));
+        ProviderDto provider = providerDtoMapper.toDto(providerService.getProvider(id));
+        return ResponseEntity.ok(provider);
     }
 
-    @PostMapping()
+    @PostMapping("/")
     public ResponseEntity<?> createProvider(@RequestBody @Valid ProviderDto providerDto, BindingResult result) {
         if (result.hasErrors()) {
             return validation(result);
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(providerService.createProvider(providerDto));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(providerDtoMapper.toDto(providerService.createProvider(providerDto)));
     }
 
     @PutMapping("/{id}")
@@ -56,7 +65,7 @@ public class ProviderController {
             return validation(result);
         }
 
-        ProviderDto updatedProvider = providerService.updateProvider(id, providerDto);
+        ProviderDto updatedProvider = providerDtoMapper.toDto(providerService.updateProvider(id, providerDto));
         return ResponseEntity.ok(updatedProvider);
     }
 

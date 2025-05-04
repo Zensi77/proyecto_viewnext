@@ -1,30 +1,38 @@
-import { AfterViewInit, Component, computed, inject } from '@angular/core';
-import { AuthService } from '../../../auth/services/auth.service';
-import Typewriter from 'typewriter-effect';
+import { Component, inject } from '@angular/core';
+import { NgxTypewriterComponent } from '@omnedia/ngx-typewriter';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { SharedDataService } from '../../../shared/services/shared-data.service';
+import { ProductName } from '../../interfaces/ProductName.interface';
+import { CategoriesLayerComponent } from '../../components/home-page/categories-layer/categories-layer.component';
+import { ProductsLayerComponent } from '../../components/home-page/products-layer/products-layer.component';
+import { AutocompleteSearchComponent } from '../../../shared/components/autocomplete-search/autocomplete-search.component';
 
 @Component({
-  imports: [],
+  imports: [
+    NgxTypewriterComponent,
+    FormsModule,
+    CategoriesLayerComponent,
+    ProductsLayerComponent,
+    AutocompleteSearchComponent,
+  ],
   templateUrl: './home-page.component.html',
-  styles: ``,
+  styleUrls: ['./home-page.component.scss'],
 })
-export class HomePageComponent implements AfterViewInit {
-  ngAfterViewInit() {
-    const typewriter = new Typewriter(document.querySelector('#typewritter'), {
-      loop: false,
-      delay: 75,
-    });
+export class HomePageComponent {
+  private readonly _route = inject(ActivatedRoute);
+  private readonly _sharedService = inject(SharedDataService);
 
-    typewriter
-      .typeString('¡Bienvenido!') // Texto a teclear
-      //.pauseFor(500) // Espera inicial (ms)
-      // .pauseFor(1500) // Pausa tras escribir
-      //.deleteChars(7) // Borra últimos 7 caracteres
-      // .typeString('<strong>Angular + Typewriter</strong>') // Nuevo texto (con HTML)
-      // .pauseFor(2000) // Pausa final
-      .start();
+  constructor() {
+    const data: ProductName[] = this._route.snapshot.data['names'];
+
+    this._sharedService.setProductNames(data);
   }
 
-  private readonly _authService = inject(AuthService);
-
-  _user = computed(() => this._authService.user);
+  hora = new Date().getHours();
+  words = [
+    `${this.hora < 12 ? 'Buenos días' : 'Buenas tardes'}`,
+    'Bienvenido a TecnoShop',
+    'Encuentra lo que buscas',
+  ];
 }

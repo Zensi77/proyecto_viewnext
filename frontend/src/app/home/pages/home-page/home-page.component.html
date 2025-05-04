@@ -1,9 +1,46 @@
-<h1 class="text-3xl font-bold underline font-red">Hello world!</h1>
+<main class="bg-gray-50 mt-16">
+  <autocomplete-search />
+  <div
+    class="flex items-center p-8 mx-8 justify-center bg-blue-200 rounded-2xl"
+  >
+    <img class="w-2/5 grow-1" src="/images/banner.png" alt="" />
+    <div class="flex flex-col items-center w-3/5 space-y-12">
+      <om-typewriter
+        class="flex justify-center w-full"
+        [words]="words"
+        [writeSpeed]="100"
+        [deleteDelay]="2000"
+        [writeDelay]="500"
+        [disableLoop]="true"
+        styleClass="text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-gradient-move text-center"
+      ></om-typewriter>
+      <section
+        class="flex flex-col items-center justify-center w-full gap-4 pt-4"
+      >
+        <h2>
+          <span class="text-3xl font-bold text-gray-700">
+            Explore nuestras categorias destacadas
+          </span>
+          <p class="text-sm text-gray-500">
+            Click on a category to explore more
+          </p>
+        </h2>
 
-<h3 id="typewritter"></h3>
+        <app-categories-layer />
+      </section>
+    </div>
+  </div>
 
-<h2
-  className="text-3xl font-bold bg-gradient-to-r from-indigo-700 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient-move mb-8 text-center"
->
-  Stack Tecnológico
-</h2>
+  <section
+    class="flex flex-col items-center justify-center w-full h-full pt-8 gap-4"
+  >
+    <h2>
+      <span class="text-3xl font-bold text-gray-700">
+        Explora nuestros productos destacados
+      </span>
+      <p class="text-sm text-gray-500">Click on a product to explore more</p>
+    </h2>
+
+    <app-products-layer />
+  </section>
+</main>

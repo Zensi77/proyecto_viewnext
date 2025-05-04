@@ -8,8 +8,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.juanma.proyecto_vn.infrastructure.persistence.entity.User;
-import com.juanma.proyecto_vn.infrastructure.persistence.repository.UserRepository;
+import com.juanma.proyecto_vn.infrastructure.persistence.entity.UserEntity;
+import com.juanma.proyecto_vn.infrastructure.persistence.repository.JpaUserRepository;
 
 /**
  * Implementación de UserDetailsService para cargar los detalles del usuario
@@ -19,11 +19,11 @@ import com.juanma.proyecto_vn.infrastructure.persistence.repository.UserReposito
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
-    private UserRepository userRepository;
+    private JpaUserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByEmail(username);
+        Optional<UserEntity> user = userRepository.findByEmail(username);
         if (user.isEmpty()) {
             throw new UsernameNotFoundException("Usuario no encontrado con email: " + username);
         }
