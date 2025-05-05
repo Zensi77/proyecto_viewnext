@@ -24,7 +24,7 @@ import { HomeService } from '../../../services/home.service';
   templateUrl: './search-filter.component.html',
   styles: ``,
 })
-export class SearchFilterComponent {
+export class SearchFilterComponent implements OnInit {
   private readonly _homeService = inject(HomeService);
   private readonly _route = inject(ActivatedRoute);
 
@@ -38,6 +38,26 @@ export class SearchFilterComponent {
 
   categories = computed(() => this._homeService.categories());
   providers = computed(() => this._homeService.providers());
+
+  ngOnInit(): void {
+    this._route.queryParams.subscribe((params) => {
+      console.log('params', params);
+
+      const category = params['category'] || null;
+      const provider = params['provider'] || null;
+
+      this.selectedCategoryValue =
+        this.categories().find((cat) => cat.name === category) || null;
+
+      this.selectedProviderValue =
+        this.providers().filter((prov) => provider?.includes(prov.name)) ||
+        null;
+
+      this.selectedCategory.emit(this.selectedCategoryValue);
+      this.selectedProvider.emit(this.selectedProviderValue);
+      this.rangePrices.emit(this.rangePricesValue);
+    });
+  }
 
   clearFilters() {
     this.selectedCategoryValue = null;

@@ -8,11 +8,7 @@ import { ActivatedRoute } from '@angular/router';
 import { SharedDataService } from '../../../shared/services/shared-data.service';
 
 @Component({
-  imports: [
-    SearchFilterComponent,
-    SearchResultComponent,
-    AutocompleteSearchComponent,
-  ],
+  imports: [SearchFilterComponent, SearchResultComponent],
   templateUrl: './search-page.component.html',
   styles: ``,
 })

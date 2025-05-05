@@ -1,12 +1,13 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Product } from '../../interfaces/Data.interface';
 import { HomeService } from '../../services/home.service';
 import { CommonModule } from '@angular/common';
+import { Ripple } from 'primeng/ripple';
 
 @Component({
   selector: 'app-product-page',
-  imports: [CommonModule],
+  imports: [CommonModule, Ripple, RouterLink],
   templateUrl: './product-page.component.html',
   styles: ``,
 })

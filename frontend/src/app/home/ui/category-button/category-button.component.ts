@@ -39,43 +39,95 @@ export class CategoryButtonComponent {
   @Input() padding: string = 'p-6';
   @Input() margin: string = 'm-2';
 
-  selectIcon() {
-    switch (this.category) {
-      case 'ordenador':
-        return 'pi pi-desktop';
-      case 'portatil':
-        return 'pi pi-laptop';
-      case 'televisor':
-        return 'pi pi-tv';
-      case 'monitor':
-        return 'pi pi-desktop';
-      case 'movil':
-        return 'pi pi-mobile';
-      case 'tablet':
-        return 'pi pi-tablet';
-      case 'raton gamer':
-        return 'pi pi-mouse-pointer';
-      case 'refrigerador':
-        return 'pi pi-box';
-      case 'consola':
-        return 'pi pi-gamepad';
-      case 'router':
-        return 'pi pi-wifi';
-      case 'auriculares':
-        return 'pi pi-headphones';
-      case 'camara':
-        return 'pi pi-camera';
-      case 'impresora':
-        return 'pi pi-print';
-      case 'smartwatch':
-        return 'pi pi-clock';
-      case 'dron':
-        return 'pi pi-compass';
-      case 'microprocesador':
-        return 'pi pi-microchip';
-      default:
-        return 'pi pi-box';
-    }
+  selectIcon(): string {
+    const categoryNormalized = this.category.trim().toLowerCase();
+
+    const iconMap: Record<string, string> = {
+      // Informática y Electrónica
+      ordenador: 'pi pi-desktop',
+      computadora: 'pi pi-desktop',
+      pc: 'pi pi-desktop',
+      portátil: 'pi pi-desktop',
+      laptop: 'pi pi-laptop',
+      monitor: 'pi pi-desktop',
+      televisor: 'pi pi-desktop',
+      televisión: 'pi pi-desktop',
+      tv: 'pi pi-tv',
+      móvil: 'pi pi-mobile',
+      movil: 'pi pi-mobile',
+      teléfono: 'pi pi-mobile',
+      celular: 'pi pi-mobile',
+      tablet: 'pi pi-tablet',
+      tableta: 'pi pi-tablet',
+      smartwatch: 'pi pi-clock',
+      'reloj inteligente': 'pi pi-clock',
+      reloj: 'pi pi-clock',
+      cámara: 'pi pi-camera',
+      camara: 'pi pi-camera',
+      impresora: 'pi pi-print',
+      escáner: 'pi pi-print',
+      escaner: 'pi pi-print',
+      microprocesador: 'pi pi-microchip',
+      procesador: 'pi pi-microchip',
+      cpu: 'pi pi-microchip',
+      gpu: 'pi pi-microchip',
+      'tarjeta gráfica': 'pi pi-microchip',
+      'tarjeta grafica': 'pi pi-microchip',
+      'disco duro': 'pi pi-hdd',
+      ssd: 'pi pi-hdd',
+      'memoria ram': 'pi pi-hdd',
+      ratón: 'pi pi-mouse',
+      raton: 'pi pi-mouse',
+      mouse: 'pi pi-mouse',
+      teclado: 'pi pi-keyboard',
+      router: 'pi pi-wifi',
+      módem: 'pi pi-wifi',
+      modem: 'pi pi-wifi',
+      altavoces: 'pi pi-volume-up',
+      parlantes: 'pi pi-volume-up',
+      auriculares: 'pi pi-headphones',
+      audífonos: 'pi pi-headphones',
+      cascos: 'pi pi-headphones',
+      micrófono: 'pi pi-microphone',
+      microfono: 'pi pi-microphone',
+      dron: 'pi pi-compass',
+      drone: 'pi pi-compass',
+
+      // Electrodomésticos
+      refrigerador: 'pi pi-sliders-h',
+      nevera: 'pi pi-sliders-h',
+      frigorífico: 'pi pi-sliders-h',
+      frigorifico: 'pi pi-sliders-h',
+      lavadora: 'pi pi-cog',
+      secadora: 'pi pi-cog',
+      lavavajillas: 'pi pi-cog',
+      horno: 'pi pi-fire',
+      microondas: 'pi pi-fire',
+      cafetera: 'pi pi-coffee',
+      tostadora: 'pi pi-fire',
+      licuadora: 'pi pi-cog',
+      batidora: 'pi pi-cog',
+      aspiradora: 'pi pi-trash',
+      plancha: 'pi pi-cog',
+      ventilador: 'pi pi-refresh',
+      'aire acondicionado': 'pi pi-refresh',
+      calefactor: 'pi pi-fire',
+
+      // Entretenimiento y Juegos
+      consola: 'pi pi-discord',
+      videojuego: 'pi pi-gamepad',
+      juegos: 'pi pi-gamepad',
+      joystick: 'pi pi-gamepad',
+      mando: 'pi pi-gamepad',
+      control: 'pi pi-gamepad',
+      dvd: 'pi pi-video',
+      'blu-ray': 'pi pi-video',
+      proyector: 'pi pi-video',
+      'cine en casa': 'pi pi-video',
+      karaoke: 'pi pi-microphone',
+    };
+
+    return iconMap[categoryNormalized] ?? 'pi pi-question-circle';
   }
 
   buttonClass() {

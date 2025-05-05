@@ -77,11 +77,9 @@ export class SearchResultComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this._route.queryParams.subscribe((params) => {
-      console.log('Query params:', params);
-
-      const category = params['category'] || null;
-      const provider = params['provider'] || null;
-      const query = params['query'] || null;
+      const category = params['category'];
+      const provider = params['provider'];
+      const query = params['query'];
 
       this.setSearchParams(category, provider, query);
       this.getProducts();
@@ -108,7 +106,7 @@ export class SearchResultComponent implements OnInit, OnChanges {
     const rangePricesChange: SimpleChange = changes['rangePrices'];
     const queryChange: SimpleChange = changes['query'];
 
-    if (selectedCategoryChange) {
+    if (selectedCategoryChange && !selectedCategoryChange.firstChange) {
       this.searchParams.filterCategory = []; // Limpiar el filtro de categoría
       if (this.selectedCategory) {
         this.searchParams.filterCategory.push(this.selectedCategory.id);
@@ -116,7 +114,7 @@ export class SearchResultComponent implements OnInit, OnChanges {
       this.getProducts();
     }
 
-    if (selectedProviderChange) {
+    if (selectedProviderChange && !selectedProviderChange.firstChange) {
       this.searchParams.filterProvider = []; // Limpiar el filtro de proveedor
       if (this.selectedProvider) {
         this.selectedProvider.forEach((provider) => {
@@ -169,7 +167,7 @@ export class SearchResultComponent implements OnInit, OnChanges {
     this.loading = true;
     this._homeService.searchProducts(this.searchParams).subscribe({
       next: (res) => {
-        // console.log('Productos obtenidos:', res);
+        console.log('Productos obtenidos:', res);
 
         this.productsSearch = res;
         this.loading = false;
