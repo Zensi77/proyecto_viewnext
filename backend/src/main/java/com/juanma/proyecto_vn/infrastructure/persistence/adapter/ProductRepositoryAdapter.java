@@ -10,7 +10,6 @@ import com.juanma.proyecto_vn.infrastructure.persistence.mapper.ProductMapper;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.ArrayList;
 
 import jakarta.persistence.criteria.Predicate;
@@ -52,20 +51,6 @@ public class ProductRepositoryAdapter implements ProductRepository {
     }
 
     @Override
-    public Page<Product> findByNameContaining(String name, int page, int size, String sortBy, String orderBy) {
-        Sort.Direction direction = orderBy.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
-
-        Page<ProductEntity> pageProducts = jpaProductRepository.findByNameContainingIgnoreCase(name, pageable);
-        return pageProducts.map(productMapper::toDomain);
-    }
-
-    @Override
-    public long count() {
-        return jpaProductRepository.count();
-    }
-
-    @Override
     public Product findById(UUID id) {
         ProductEntity productEntity = jpaProductRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Product not found with id: " + id));
@@ -92,49 +77,8 @@ public class ProductRepositoryAdapter implements ProductRepository {
     }
 
     @Override
-    public List<Product> findAll() {
-        return jpaProductRepository.findAll().stream()
-                .map(productMapper::toDomain)
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public List<Map<String, Object>> findAllNames() {
         return jpaProductRepository.findAllNames();
-    }
-
-    @Override
-    public Page<Product> findByCategoryName(List<String> categorys, int page, int size, String sortBy,
-            String orderBy) {
-        Sort.Direction direction = orderBy.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
-
-        Page<ProductEntity> pageProducts = jpaProductRepository
-                .findByCategoryIgnoreCase(categorys.stream().map(UUID::fromString)
-                        .collect(Collectors.toList()), pageable);
-        return pageProducts.map(productMapper::toDomain);
-    }
-
-    @Override
-    public Page<Product> findByProviderName(List<String> providerName, int page, int size, String sortBy,
-            String orderBy) {
-        Sort.Direction direction = orderBy.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
-
-        Page<ProductEntity> pageProducts = jpaProductRepository
-                .findByProviderIgnoreCase(providerName.stream().map(UUID::fromString)
-                        .collect(Collectors.toList()), pageable);
-        return pageProducts.map(productMapper::toDomain);
-    }
-
-    @Override
-    public Page<Product> findByPriceBetween(String minPrice, String maxPrice, int page, int size, String sortBy,
-            String orderBy) {
-        Sort.Direction direction = orderBy.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
-
-        Page<ProductEntity> pageProducts = jpaProductRepository.findByPriceBetween(minPrice, maxPrice, pageable);
-        return pageProducts.map(productMapper::toDomain);
     }
 
     public Specification<ProductEntity> getProductSpecification(Map<String, Object> filters) {
@@ -189,6 +133,15 @@ public class ProductRepositoryAdapter implements ProductRepository {
             }
             return cb.and(predicates.toArray(new Predicate[0]));
         };
+    }
+
+    @Override
+    public List<Product> getRandom(int limit) {
+        List<ProductEntity> products = jpaProductRepository.findRandom(limit);
+
+        return products.stream()
+                .map(productMapper::toDomain)
+                .toList();
     }
 
 }

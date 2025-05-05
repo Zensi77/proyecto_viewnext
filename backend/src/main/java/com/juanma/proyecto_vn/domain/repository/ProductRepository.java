@@ -15,31 +15,20 @@ import java.util.Map;
  * Puerto de salida (secundario) para la persistencia de productos
  */
 public interface ProductRepository {
-    Page<Product> getAllProducts(int page, int size, String sortBy, String orderBy,
-            Map<String, Object> filters);
+        Page<Product> getAllProducts(int page, int size, String sortBy, String orderBy,
+                        Map<String, Object> filters);
 
-    Page<Product> findByNameContaining(String name, int page, int size, String sortBy, String orderBy);
+        Specification<ProductEntity> getProductSpecification(Map<String, Object> filters);
 
-    Page<Product> findByCategoryName(List<String> categoryIds, int page, int size, String sortBy, String orderBy);
+        Product findById(UUID id);
 
-    Page<Product> findByProviderName(List<String> providerIds, int page, int size, String sortBy, String orderBy);
+        Product save(Product product);
 
-    Page<Product> findByPriceBetween(String minPrice, String maxPrice, int page, int size, String sortBy,
-            String orderBy);
+        void delete(Product product);
 
-    Specification<ProductEntity> getProductSpecification(Map<String, Object> filters);
+        void deleteById(UUID id);
 
-    long count();
+        List<Map<String, Object>> findAllNames();
 
-    Product findById(UUID id);
-
-    Product save(Product product);
-
-    void delete(Product product);
-
-    void deleteById(UUID id);
-
-    List<Product> findAll();
-
-    List<Map<String, Object>> findAllNames();
+        List<Product> getRandom(int limit);
 }

@@ -33,4 +33,7 @@ public interface JpaProductRepository
 
     @Query(value = "SELECT id, name FROM product", nativeQuery = true)
     List<Map<String, Object>> findAllNames();
+
+    @Query(value = "SELECT p FROM ProductEntity p ORDER BY function('RAND') LIMIT :limit")
+    List<ProductEntity> findRandom(int limit);
 }

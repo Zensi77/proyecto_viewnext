@@ -1,6 +1,5 @@
 package com.juanma.proyecto_vn.Application.usecase.product;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,11 +107,7 @@ public class ProductServiceImpl implements IProductService {
 
     @Override
     public List<Product> getRandomProducts(int quantity) {
-        List<Product> allProducts = productRepository.findAll();
-        Collections.shuffle(allProducts);
-        return allProducts.stream()
-                .limit(quantity)
-                .collect(Collectors.toList());
+        return productRepository.getRandom(quantity);
     }
 
     @Override
