@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+} from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { HomeService } from '../../../services/home.service';
@@ -14,13 +19,7 @@ import { CategoryButtonComponent } from '../../../ui/category-button/category-bu
 export class CategoriesLayerComponent {
   private readonly _homeService = inject(HomeService);
 
-  categories: Category[] = [];
-
-  constructor() {
-    this._homeService.getCategoryes().subscribe((res: Category[]) => {
-      this.categories = res.sort(() => Math.random() - 0.5); // Shuffle categories
-    });
-  }
+  categories = computed(() => this._homeService.categories());
 
   animationClass(index: number) {
     index = Math.min(index, 5);

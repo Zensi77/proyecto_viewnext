@@ -1,9 +1,9 @@
 import {
-  ChangeDetectorRef,
   Component,
   EventEmitter,
   OnInit,
   Output,
+  computed,
   inject,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -24,7 +24,7 @@ import { HomeService } from '../../../services/home.service';
   templateUrl: './search-filter.component.html',
   styles: ``,
 })
-export class SearchFilterComponent implements OnInit {
+export class SearchFilterComponent {
   private readonly _homeService = inject(HomeService);
   private readonly _route = inject(ActivatedRoute);
 
@@ -36,66 +36,13 @@ export class SearchFilterComponent implements OnInit {
   selectedProviderValue: Provider[] | null = null;
   rangePricesValue: number[] = [0, 3000];
 
-  categories: Category[] = [];
-  providers: Provider[] = [];
-
-  ngOnInit() {
-    this._homeService
-      .getCategoryes()
-      .pipe(
-        tap((categories) =>
-          categories.forEach((category) => {
-            category.name =
-              category.name.charAt(0).toUpperCase() + category.name.slice(1);
-          })
-        )
-      )
-      .subscribe((categories) => {
-        this.categories = categories;
-        console.log('Categorías transformadas:', this.categories);
-      });
-
-    this._homeService
-      .getProviders()
-      .pipe(
-        tap((providers) => {
-          providers.forEach((provider) => {
-            provider.name =
-              provider.name.charAt(0).toUpperCase() + provider.name.slice(1);
-          });
-        })
-      )
-      .subscribe((providers) => {
-        this.providers = providers;
-      });
-
-    const categories$ = this._homeService.getCategoryes();
-    const queryParams$ = this._route.queryParams;
-
-    combineLatest([categories$, queryParams$]).subscribe(
-      ([categories, params]) => {
-        this.categories = categories;
-
-        if (params['category']) {
-          const category = params['category'].toLowerCase();
-
-          const categoryFound = this.categories.filter(
-            (c) => c.name.toLowerCase() === category
-          );
-
-          if (categoryFound.length > 0) {
-            this.selectedCategoryValue = categoryFound[0];
-          } else {
-            this.selectedCategoryValue = null;
-          }
-        }
-      }
-    );
-  }
+  categories = computed(() => this._homeService.categories());
+  providers = computed(() => this._homeService.providers());
 
   clearFilters() {
     this.selectedCategoryValue = null;
     this.selectedProviderValue = null;
+
     this.rangePricesValue = [0, 3000];
     this.selectedCategory.emit(this.selectedCategoryValue);
     this.selectedProvider.emit(this.selectedProviderValue);

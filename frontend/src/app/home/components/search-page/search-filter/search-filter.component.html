@@ -84,7 +84,7 @@
       <p-listbox
         [(ngModel)]="selectedProviderValue"
         (onChange)="selectedProvider.emit($event.value)"
-        [options]="providers"
+        [options]="providers()"
         [multiple]="true"
         [checkbox]="true"
         optionLabel="name"
@@ -94,7 +94,7 @@
     <div class="mb-4 flex flex-col gap-2">
       <span class="text-xl text-green-800 font-medium">Categorias</span>
       <p-select
-        [options]="categories"
+        [options]="categories()"
         (onChange)="selectedCategory.emit($event.value)"
         [(ngModel)]="selectedCategoryValue"
         [checkmark]="true"

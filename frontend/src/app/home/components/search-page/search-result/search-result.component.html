@@ -1,20 +1,27 @@
+<div class="flex w-full justify-end p-4">
+  <p-select
+    [options]="orderBy"
+    [checkmark]="true"
+    [showClear]="true"
+    optionLabel="name"
+    placeholder="Ordenar por"
+    (onChange)="onOrderByChange($event)"
+    class="w-full md:w-56"
+  />
+</div>
+
 @if (loading) {
-<div class="card flex justify-center items-center h-full">
+<div class="card flex justify-center items-center h-3/4">
   <p-progress-spinner ariaLabel="loading" />
 </div>
-}
-
-<p-select
-  [options]="orderBy"
-  [checkmark]="true"
-  [showClear]="true"
-  optionLabel="name"
-  placeholder="Ordenar por"
-  (onChange)="onOrderByChange($event)"
-  class="w-full md:w-56"
-/>
+} @else {
 
 <div class="w-full flex flex-col gap-6 p-6 items-center justify-start">
+  @if (productsSearch?.products?.length == 0) {
+  <div class="flex flex-col items-center justify-center w-full h-full">
+    <h2 class="text-2xl font-bold text-gray-600">No hay productos</h2>
+  </div>
+  }
   <div>
     <div
       class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
@@ -24,6 +31,8 @@
       }
     </div>
   </div>
+
+  @if (productsSearch?.products?.length != 0) {
   <div class="flex justify-center items-center gap-2 w-full">
     <span>Productos por pagina</span>
     <div class="flex flex-col items-center justify-center mx-4">
@@ -44,6 +53,7 @@
         [step]="4"
       />
     </div>
+
     <p-paginator
       (onPageChange)="onPageChange($event)"
       [first]="
@@ -56,4 +66,7 @@
       currentPageReportTemplate="{first} - {last} de {totalRecords}"
     ></p-paginator>
   </div>
+  }
 </div>
+
+}

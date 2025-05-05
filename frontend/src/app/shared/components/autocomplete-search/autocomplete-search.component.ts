@@ -28,6 +28,7 @@ interface AutoCompleteCompleteEvent {
         autofocus="true"
         [forceSelection]="false"
         [field]="'name'"
+        (keydown.enter)="onSearch()"
       ></p-autocomplete>
       <p-button
         label="Buscar"

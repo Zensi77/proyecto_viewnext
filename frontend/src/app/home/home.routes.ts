@@ -21,4 +21,11 @@ export default [
       names: NamesResolver,
     },
   },
+  {
+    path: 'product/:id',
+    loadComponent: () =>
+      import('./pages/product-page/product-page.component').then(
+        (m) => m.ProductPageComponent
+      ),
+  },
 ];

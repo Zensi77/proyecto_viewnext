@@ -21,7 +21,6 @@ export class ProductsLayerComponent {
   private readonly _homeService = inject(HomeService);
 
   products: Product[] = [];
-  responsiveOptions: any[] | undefined;
 
   constructor() {
     this._homeService.getRandomProducts().subscribe((data: Product[]) => {

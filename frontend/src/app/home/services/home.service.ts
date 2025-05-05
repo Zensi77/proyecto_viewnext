@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
 import {
@@ -18,19 +18,31 @@ export class HomeService {
   private readonly _router = inject(Router);
   private readonly _http = inject(HttpClient);
 
+  categories = signal<Category[]>([]);
+  providers = signal<Provider[]>([]);
+
+  constructor() {
+    this.getCategories();
+    this.getProviders();
+  }
+
   getProductsNamesObs() {
     const url = environment['get-names-products'];
     return this._http.get<ProductName[]>(url);
   }
 
-  getCategoryes() {
+  getCategories() {
     const url = environment['get-all-categories'];
-    return this._http.get<Category[]>(url);
+    return this._http.get<Category[]>(url).subscribe((res: Category[]) => {
+      this.categories.set(res.sort(() => Math.random() - 0.5));
+    });
   }
 
   getProviders() {
     const url = environment['get-all-providers'];
-    return this._http.get<Provider[]>(url);
+    return this._http.get<Provider[]>(url).subscribe((res: Provider[]) => {
+      this.providers.set(res.sort(() => Math.random() - 0.5));
+    });
   }
 
   getRandomProducts() {
@@ -41,8 +53,6 @@ export class HomeService {
   }
 
   searchProducts(search: SearchProduct) {
-    console.log('search', search);
-
     const url = environment['get-all-products'];
     let params = new HttpParams();
 
@@ -74,5 +84,11 @@ export class HomeService {
     return this._http.get<SearchProductResponse>(url, {
       params: params,
     });
+  }
+
+  getProduct(id: number) {
+    const url = environment['get-product'];
+
+    return this._http.get<Product>(url + id);
   }
 }

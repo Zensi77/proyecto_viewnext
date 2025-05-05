@@ -21,7 +21,7 @@ import { Slider, SliderChangeEvent } from 'primeng/slider';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
-import { debounceTime, timeout } from 'rxjs/operators';
+import { debounceTime } from 'rxjs/operators';
 import { ProductCardComponent } from '../../../ui/product-card/product-card.component';
 import { CommonModule } from '@angular/common';
 import { Select, SelectChangeEvent } from 'primeng/select';
@@ -76,7 +76,16 @@ export class SearchResultComponent implements OnInit, OnChanges {
   };
 
   ngOnInit(): void {
-    this.getProducts();
+    this._route.queryParams.subscribe((params) => {
+      console.log('Query params:', params);
+
+      const category = params['category'] || null;
+      const provider = params['provider'] || null;
+      const query = params['query'] || null;
+
+      this.setSearchParams(category, provider, query);
+      this.getProducts();
+    });
 
     // Configurar debounce para el slider
     this.sliderSubject.pipe(debounceTime(700)).subscribe((size) => {
@@ -129,11 +138,38 @@ export class SearchResultComponent implements OnInit, OnChanges {
     }
   }
 
+  setSearchParams(category: string, provider: string, query: string) {
+    this.searchParams.page = 0;
+    this.searchParams.filterCategory = []; // Limpiar el filtro de categoría
+    this.searchParams.filterProvider = []; // Limpiar el filtro de proveedor
+    this.searchParams.filterName = ''; // Limpiar el filtro de nombre
+
+    if (category) {
+      const categoryId = this._homeService
+        .categories()
+        .filter(
+          (cat) => cat.name.toLowerCase() === category.toLowerCase()
+        )[0]?.id;
+      this.searchParams.filterCategory.push(categoryId);
+    }
+
+    if (provider) {
+      const providerId = this._homeService
+        .providers()
+        .filter((prov) => prov.name === provider)[0]?.id;
+      this.searchParams.filterProvider.push(providerId);
+    }
+
+    if (query) {
+      this.searchParams.filterName = query;
+    }
+  }
+
   getProducts() {
     this.loading = true;
     this._homeService.searchProducts(this.searchParams).subscribe({
       next: (res) => {
-        console.log('Productos obtenidos:', res);
+        // console.log('Productos obtenidos:', res);
 
         this.productsSearch = res;
         this.loading = false;
