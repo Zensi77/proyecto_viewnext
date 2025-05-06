@@ -50,7 +50,7 @@ export default class SignUpComponent {
       ],
       name: ['', [Validators.required, Validators.minLength(3)]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: [{ value: '', disabled: true }, [Validators.required]],
+      confirmPassword: ['', [Validators.required]],
     },
     { validators: isFieldEquals('password', 'confirmPassword') }
   );

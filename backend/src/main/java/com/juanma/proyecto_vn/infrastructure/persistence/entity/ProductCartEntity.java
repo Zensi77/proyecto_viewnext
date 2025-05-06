@@ -8,6 +8,9 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+/**
+ * Entidad JPA para persistir la relación entre productos y carritos
+ */
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true) // Para que no de error al hacer equals y hashCode
@@ -28,16 +31,20 @@ public class ProductCartEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("cartId") // Mapea el campo cartId de la clave compuesta
     @JoinColumn(name = "cart_id")
+    @ToString.Exclude // Evita referencias circulares en toString
     private CartEntity cart;
 
     @Column(name = "quantity", nullable = false, columnDefinition = "int default 1")
     private int quantity;
 
-    @Embeddable // Clase embebida para la clave primaria compuesta
+    /**
+     * Clase embebida para la clave primaria compuesta
+     */
+    @Embeddable
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ProductCartPK implements Serializable { // Serializable es necesario para claves compuestas
+    public static class ProductCartPK implements Serializable {
         @Column(name = "product_id", nullable = false, columnDefinition = "char(36)")
         @JdbcTypeCode(SqlTypes.CHAR)
         private UUID productId;

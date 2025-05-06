@@ -95,6 +95,10 @@ public class CartValidator {
             throw new IllegalArgumentException("Quantity cannot exceed 100 units for product: "
                     + (item.getProduct().getName() != null ? item.getProduct().getName() : "unknown"));
         }
+        if (item.getProduct().getPrice() == null) {
+            throw new IllegalArgumentException("Price cannot be null for product: "
+                    + (item.getProduct().getName() != null ? item.getProduct().getName() : "unknown"));
+        }
     }
 
     /**

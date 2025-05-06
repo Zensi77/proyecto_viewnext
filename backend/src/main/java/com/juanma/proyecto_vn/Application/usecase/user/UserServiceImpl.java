@@ -102,6 +102,7 @@ public class UserServiceImpl implements IUserService {
         public Map<String, Object> saveAdmin(UserCreateDto user) {
                 User newUser = User.builder()
                                 .email(user.getEmail())
+                                .fullName(user.getName())
                                 .password(passwordEncoder.encode(user.getPassword()))
                                 .role(RoleEnum.ADMIN)
                                 .build();

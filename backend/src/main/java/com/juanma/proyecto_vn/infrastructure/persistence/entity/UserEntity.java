@@ -41,4 +41,10 @@ public class UserEntity extends BaseEntity {
 
     @Column(name = "enabled", nullable = false, columnDefinition = "boolean default false")
     private boolean enabled;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private CartEntity cart;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private OrderEntity order;
 }

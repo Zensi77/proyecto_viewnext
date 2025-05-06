@@ -31,6 +31,7 @@ export class AuthService {
   signUp(user: User) {
     const url = environment.sign_up;
     this.loading.set(true);
+
     this._http.post<UserResponse>(url, user).subscribe({
       next: (res) => {
         sessionStorage.setItem('token', res.token);

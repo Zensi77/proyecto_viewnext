@@ -20,6 +20,6 @@ public class UniqueEmailValidator implements ConstraintValidator<UniqueEmail, St
         }
 
         // Verificar si ya existe un usuario con ese email
-        return userRepository.findByEmail(email) == null;
+        return userRepository.findByEmail(email).isEmpty();
     }
 }

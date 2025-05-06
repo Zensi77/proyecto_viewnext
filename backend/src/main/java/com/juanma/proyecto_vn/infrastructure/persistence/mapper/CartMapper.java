@@ -1,79 +1,58 @@
 package com.juanma.proyecto_vn.infrastructure.persistence.mapper;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
 import com.juanma.proyecto_vn.domain.model.Cart;
-import com.juanma.proyecto_vn.domain.model.CartItem;
 import com.juanma.proyecto_vn.infrastructure.persistence.entity.CartEntity;
-import com.juanma.proyecto_vn.infrastructure.persistence.entity.ProductCartEntity;
-
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Mapper para convertir entre el modelo de dominio Cart y la entidad JPA
+ * CartEntity.
+ * Este mapper se encarga solo de la conversión básica entre Cart y CartEntity,
+ * sin manejar los items del carrito directamente.
+ */
 @Component
 @RequiredArgsConstructor
 public class CartMapper {
-    private final ProductMapper productMapper;
+
     private final UserMapper userMapper;
 
+    /**
+     * Convierte una entidad Cart del dominio a una entidad JPA CartEntity
+     * 
+     * @param cart El modelo de dominio Cart
+     * @return La entidad JPA CartEntity correspondiente
+     */
     public CartEntity toEntity(Cart cart) {
         if (cart == null) {
             return null;
         }
 
         return CartEntity.builder()
-                .user(userMapper.toEntity(cart.getUser()))
-                .productCart(mapProductOrderToEntity(cart.getItems()))
+                .id(cart.getId() != null ? UUID.fromString(cart.getId()) : null)
+                .user(cart.getUser() != null ? userMapper.toEntity(cart.getUser()) : null)
                 .total_price(cart.getTotalPrice())
                 .build();
     }
 
-    public Cart toDomain(CartEntity entity) {
-        if (entity == null) {
+    /**
+     * Convierte una entidad JPA CartEntity a un modelo de dominio Cart
+     * 
+     * @param cartEntity La entidad JPA CartEntity
+     * @return El modelo de dominio Cart correspondiente
+     */
+    public Cart toDomain(CartEntity cartEntity) {
+        if (cartEntity == null) {
             return null;
         }
 
         return Cart.builder()
-                .id(entity.getId().toString())
-                .user(userMapper.toDomain(entity.getUser()))
-                .items(mapProductOrderToDomain(entity.getProductCart()))
-                .totalPrice(entity.getTotal_price())
+                .id(cartEntity.getId() != null ? cartEntity.getId().toString() : null)
+                .user(cartEntity.getUser() != null ? userMapper.toDomain(cartEntity.getUser()) : null)
+                .totalPrice(cartEntity.getTotal_price())
                 .build();
-    }
-
-    public List<CartItem> mapProductOrderToDomain(List<ProductCartEntity> productOrder) {
-        if (productOrder == null || productOrder.isEmpty()) {
-            return new ArrayList<>();
-        }
-        return productOrder.stream()
-                .map(item -> CartItem.builder()
-                        .product(productMapper.toDomain(item.getProduct()))
-                        .quantity(item.getQuantity())
-                        .build())
-                .toList();
-    }
-
-    public List<ProductCartEntity> mapProductOrderToEntity(List<CartItem> productOrder) {
-        if (productOrder == null || productOrder.isEmpty()) {
-            return new ArrayList<>();
-
-        }
-        return productOrder.stream()
-                .map(item -> {
-                    ProductCartEntity.ProductCartPK pk = new ProductCartEntity.ProductCartPK();
-                    pk.setProductId(item.getProduct().getId());
-                    pk.setCartId(UUID.fromString(item.getCart().getId()));
-
-                    return ProductCartEntity.builder()
-                            .id(pk)
-                            .product(productMapper.toEntity(item.getProduct()))
-                            .cart(CartEntity.builder().id(UUID.fromString(item.getCart().getId())).build())
-                            .quantity(item.getQuantity())
-                            .build();
-                })
-                .toList();
     }
 }

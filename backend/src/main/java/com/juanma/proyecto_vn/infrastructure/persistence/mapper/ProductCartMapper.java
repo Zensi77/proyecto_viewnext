@@ -1,45 +1,62 @@
 package com.juanma.proyecto_vn.infrastructure.persistence.mapper;
 
-import java.util.UUID;
-
 import org.springframework.stereotype.Component;
 
+import com.juanma.proyecto_vn.domain.model.Cart;
 import com.juanma.proyecto_vn.domain.model.CartItem;
+import com.juanma.proyecto_vn.infrastructure.persistence.entity.CartEntity;
 import com.juanma.proyecto_vn.infrastructure.persistence.entity.ProductCartEntity;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Mapper para convertir entre el modelo de dominio CartItem y la entidad JPA
+ * ProductCartEntity.
+ */
 @Component
 @RequiredArgsConstructor
 public class ProductCartMapper {
     private final ProductMapper productMapper;
-    private final CartMapper cartMapper;
 
-    public ProductCartEntity toEntity(CartItem productCart) {
-        if (productCart == null) {
+    /**
+     * Convierte un CartItem del dominio a un ProductCartEntity
+     * 
+     * @param cartItem   El modelo de dominio CartItem
+     * @param cartEntity La entidad CartEntity asociada
+     * @return La entidad JPA ProductCartEntity correspondiente
+     */
+    public ProductCartEntity toEntity(CartItem cartItem, CartEntity cartEntity) {
+        if (cartItem == null || cartEntity == null) {
             return null;
         }
 
-        ProductCartEntity.ProductCartPK productCartPK = new ProductCartEntity.ProductCartPK();
-        productCartPK.setProductId(productCart.getProduct().getId());
-        productCartPK.setCartId(UUID.fromString(productCart.getCart().getId()));
+        ProductCartEntity.ProductCartPK pk = new ProductCartEntity.ProductCartPK();
+        pk.setProductId(cartItem.getProduct().getId());
+        pk.setCartId(cartEntity.getId());
 
         return ProductCartEntity.builder()
-                .id(productCartPK)
-                .cart(cartMapper.toEntity(productCart.getCart()))
-                .product(productMapper.toEntity(productCart.getProduct()))
-                .quantity(productCart.getQuantity())
+                .id(pk)
+                .cart(cartEntity)
+                .product(productMapper.toEntity(cartItem.getProduct()))
+                .quantity(cartItem.getQuantity())
                 .build();
     }
 
-    public CartItem toDomain(ProductCartEntity productCartEntity) {
+    /**
+     * Convierte un ProductCartEntity a un CartItem del dominio
+     * 
+     * @param productCartEntity La entidad JPA ProductCartEntity
+     * @param cart              El modelo de dominio Cart asociado
+     * @return El modelo de dominio CartItem correspondiente
+     */
+    public CartItem toDomain(ProductCartEntity productCartEntity, Cart cart) {
         if (productCartEntity == null) {
             return null;
         }
 
         return CartItem.builder()
                 .product(productMapper.toDomain(productCartEntity.getProduct()))
-                .cart(cartMapper.toDomain(productCartEntity.getCart()))
+                .cart(cart)
                 .quantity(productCartEntity.getQuantity())
                 .build();
     }

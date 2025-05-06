@@ -145,6 +145,10 @@ public class OrderValidator {
     private Product getProduct(UUID productId) {
         return productCache.computeIfAbsent(productId, id -> {
             Product product = productRepository.findById(id);
+            if (product == null || product.getPrice() == null) {
+                log.warn("Product with ID {} is null or has no price", id);
+                return null;
+            }
             return product;
         });
     }
