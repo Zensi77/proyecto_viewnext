@@ -2,6 +2,7 @@ package com.juanma.proyecto_vn.infrastructure.security.config;
 
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,14 +14,21 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.juanma.proyecto_vn.infrastructure.filter.LoggingFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
+
+    @Autowired
+    private LoggingFilter loggingFilter;
+
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -37,6 +45,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(loggingFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/v3/api-docs/**", // especificación JSON
@@ -54,8 +63,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/providers").permitAll()
                         .requestMatchers("/api/v1/providers/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
-                        .requestMatchers("/api/v1/cart").hasRole("USER")
-                        .requestMatchers("/api/v1/cart/**").hasRole("USER")
+                        .requestMatchers("/api/v1/cart").authenticated()
+                        .requestMatchers("/api/v1/cart/**").authenticated()
+                        .requestMatchers("/api/v1/orders").authenticated()
+                        .requestMatchers("/api/v1/orders/**").authenticated()
                         .anyRequest()
                         .authenticated())
                 .build();

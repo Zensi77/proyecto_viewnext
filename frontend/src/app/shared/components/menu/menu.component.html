@@ -42,7 +42,11 @@
           [ngClass]="isLogged()"
           (click)="actionLogged()"
         ></i>
-        <i class="pi pi-shopping-cart" (click)="actionCart()"></i>
+        <i
+          class="pi pi-shopping-cart cursor pointer"
+          (click)="actionCart()"
+        ></i>
+        <app-cart [showCart]="showCart" (showCartChange)="showCartChange()" />
       </div>
     </ng-template>
   </p-menubar>

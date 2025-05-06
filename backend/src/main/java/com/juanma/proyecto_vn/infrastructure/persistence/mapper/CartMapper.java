@@ -1,5 +1,6 @@
 package com.juanma.proyecto_vn.infrastructure.persistence.mapper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,8 +25,8 @@ public class CartMapper {
         }
 
         return CartEntity.builder()
-                .id(UUID.fromString(cart.getId()))
                 .user(userMapper.toEntity(cart.getUser()))
+                .productCart(mapProductOrderToEntity(cart.getItems()))
                 .total_price(cart.getTotalPrice())
                 .build();
     }
@@ -38,11 +39,15 @@ public class CartMapper {
         return Cart.builder()
                 .id(entity.getId().toString())
                 .user(userMapper.toDomain(entity.getUser()))
+                .items(mapProductOrderToDomain(entity.getProductCart()))
                 .totalPrice(entity.getTotal_price())
                 .build();
     }
 
     public List<CartItem> mapProductOrderToDomain(List<ProductCartEntity> productOrder) {
+        if (productOrder == null || productOrder.isEmpty()) {
+            return new ArrayList<>();
+        }
         return productOrder.stream()
                 .map(item -> CartItem.builder()
                         .product(productMapper.toDomain(item.getProduct()))
@@ -52,11 +57,23 @@ public class CartMapper {
     }
 
     public List<ProductCartEntity> mapProductOrderToEntity(List<CartItem> productOrder) {
+        if (productOrder == null || productOrder.isEmpty()) {
+            return new ArrayList<>();
+
+        }
         return productOrder.stream()
-                .map(item -> ProductCartEntity.builder()
-                        .product(productMapper.toEntity(item.getProduct()))
-                        .quantity(item.getQuantity())
-                        .build())
+                .map(item -> {
+                    ProductCartEntity.ProductCartPK pk = new ProductCartEntity.ProductCartPK();
+                    pk.setProductId(item.getProduct().getId());
+                    pk.setCartId(UUID.fromString(item.getCart().getId()));
+
+                    return ProductCartEntity.builder()
+                            .id(pk)
+                            .product(productMapper.toEntity(item.getProduct()))
+                            .cart(CartEntity.builder().id(UUID.fromString(item.getCart().getId())).build())
+                            .quantity(item.getQuantity())
+                            .build();
+                })
                 .toList();
     }
 }

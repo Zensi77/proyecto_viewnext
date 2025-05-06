@@ -2,6 +2,12 @@
   class="min-h-[calc(100vh-10.8rem)] bg-gradient-to-br from-gray-100 to-gray-200 p-6 flex items-center justify-center"
 >
   <div
+    class="loader h-full w-full flex justify-center items-center"
+    *ngIf="isLoading"
+  ></div>
+
+  <div
+    *ngIf="!isLoading && product"
     class="flex flex-col md:flex-row gap-8 max-w-6xl w-full bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-200"
   >
     <!-- Imagen con contenedor y efecto blur suave para baja resolución -->
@@ -9,8 +15,8 @@
       class="w-full md:w-[250px] aspect-square overflow-hidden flex items-center justify-center bg-gray-50"
     >
       <img
-        [src]="product.image"
-        [alt]="product.name"
+        [src]="product.image || ''"
+        [alt]="product.name || ''"
         class="w-full h-full object-contain blur-[0.4px] rounded-none p-2"
         loading="lazy"
       />
@@ -61,13 +67,38 @@
         <div class="text-2xl font-semibold text-gray-800">
           {{ product.price | currency : "EUR" }}
         </div>
-        <button
-          pRipple
-          class="flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition duration-200 ease-in-out cursor-pointer"
-        >
-          <i class="pi pi-shopping-cart"></i>
-          Añadir al carrito
-        </button>
+        <div class="flex-grow flex justify-end gap-2">
+          <p-inputnumber
+            class="w-34!"
+            [inputStyle]="{ width: '30%' }"
+            [min]="1"
+            [max]="product.stock"
+            [disabled]="product.stock === 0"
+            [(ngModel)]="quantity"
+            [showButtons]="true"
+            buttonLayout="horizontal"
+            inputId="horizontal"
+            spinnerMode="horizontal"
+            [step]="1"
+          >
+            <ng-template #incrementbuttonicon>
+              <span class="pi pi-plus"></span>
+            </ng-template>
+            <ng-template #decrementbuttonicon>
+              <span class="pi pi-minus"></span>
+            </ng-template>
+          </p-inputnumber>
+          <span class="text-gray-500 text-sm ml-2 my-4">
+            / {{ product.stock }} unidades
+          </span>
+          <button
+            pRipple
+            class="flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg ml-2 hover:bg-blue-700 transition duration-200 ease-in-out cursor-pointer"
+          >
+            <i class="pi pi-shopping-cart"></i>
+            Añadir al carrito
+          </button>
+        </div>
       </div>
     </div>
   </div>

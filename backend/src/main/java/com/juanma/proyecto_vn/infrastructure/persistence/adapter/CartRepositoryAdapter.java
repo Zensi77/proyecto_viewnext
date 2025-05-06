@@ -29,7 +29,7 @@ public class CartRepositoryAdapter implements CartRepository {
     @Override
     public Cart findByUserId(String id) {
         CartEntity cartEntity = jpaCartRepository.findByUserId(UUID.fromString(id))
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
+                .orElse(null);
         return cartMapper.toDomain(cartEntity);
     }
 

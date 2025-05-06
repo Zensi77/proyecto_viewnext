@@ -12,7 +12,7 @@ export class ValidatorService {
 
   validateEmail(): AsyncValidatorFn {
     return (control: AbstractControl) => {
-      const url = environment['check-email'];
+      const url = environment.check_email;
       const email = control.value;
 
       return this._http

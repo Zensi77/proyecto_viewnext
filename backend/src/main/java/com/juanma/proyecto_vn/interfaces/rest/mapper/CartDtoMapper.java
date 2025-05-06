@@ -31,7 +31,7 @@ public class CartDtoMapper {
         }
 
         List<GetProductCartDto> productCartDtos = new ArrayList<>();
-        if (cart.getItems() != null) {
+        if (cart.getItems() != null && !cart.getItems().isEmpty()) {
             productCartDtos = cart.getItems().stream()
                     .map(this::mapCartItemToDto)
                     .collect(Collectors.toList());
@@ -40,6 +40,7 @@ public class CartDtoMapper {
         return CartDto.builder()
                 .cart_id(cart.getId())
                 .products(productCartDtos)
+                .totalPrice(cart.getTotalPrice())
                 .build();
     }
 

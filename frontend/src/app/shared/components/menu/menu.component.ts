@@ -9,6 +9,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { Ripple } from 'primeng/ripple';
 import { Router, RouterLink, RouterModule } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
+import { CartComponent } from '../cart/cart.component';
 
 @Component({
   selector: 'app-menu',
@@ -21,6 +22,7 @@ import { AuthService } from '../../../auth/services/auth.service';
     InputTextModule,
     Ripple,
     CommonModule,
+    CartComponent,
   ],
   templateUrl: './menu.component.html',
   styles: ``,
@@ -31,6 +33,7 @@ export class MenuComponent implements OnInit {
   private _user = computed(() => this._authService.user());
 
   items: MenuItem[] | undefined;
+  showCart = false;
 
   ngOnInit() {
     this.items = [
@@ -40,12 +43,12 @@ export class MenuComponent implements OnInit {
         routerLink: '/',
       },
       {
-        label: 'Suscripcion',
-        icon: 'pi pi-money-bill',
+        label: 'Mis pedidos',
+        icon: 'pi pi-shopping-cart',
       },
       {
-        label: 'Stats',
-        icon: 'pi pi-chart-bar',
+        label: 'Lista de deseos',
+        icon: 'pi pi-heart',
         replaceUrl: true,
         routerLink: '/stats',
       },
@@ -53,6 +56,7 @@ export class MenuComponent implements OnInit {
         label: 'Admin Panel',
         icon: 'pi pi-cog',
         routerLink: '/admin',
+        visible: this._user() != null && this._user()?.role === 'ADMIN',
       },
     ];
 
@@ -97,9 +101,12 @@ export class MenuComponent implements OnInit {
 
   actionCart() {
     if (this._user() != null) {
-      this._router.navigateByUrl('/cart');
+      this.showCart = true;
     } else {
       this._router.navigateByUrl('/auth/sign-in');
     }
+  }
+  showCartChange() {
+    this.showCart = !this.showCart;
   }
 }

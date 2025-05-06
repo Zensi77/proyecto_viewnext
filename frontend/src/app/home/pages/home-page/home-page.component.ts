@@ -14,7 +14,6 @@ import { AutocompleteSearchComponent } from '../../../shared/components/autocomp
     FormsModule,
     CategoriesLayerComponent,
     ProductsLayerComponent,
-    AutocompleteSearchComponent,
   ],
   templateUrl: './home-page.component.html',
   styleUrls: ['./home-page.component.scss'],

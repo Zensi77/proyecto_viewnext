@@ -10,6 +10,7 @@ import {
   SearchProductResponse,
 } from '../interfaces/Data.interface';
 import { ProductName } from '../interfaces/ProductName.interface';
+import Swal from 'sweetalert2';
 
 @Injectable({
   providedIn: 'root',
@@ -27,33 +28,33 @@ export class HomeService {
   }
 
   getProductsNamesObs() {
-    const url = environment['get-names-products'];
+    const url = environment.get_names_products;
     return this._http.get<ProductName[]>(url);
   }
 
   getCategories() {
-    const url = environment['get-all-categories'];
+    const url = environment.get_all_categories;
     return this._http.get<Category[]>(url).subscribe((res: Category[]) => {
       this.categories.set(res.sort(() => Math.random() - 0.5));
     });
   }
 
   getProviders() {
-    const url = environment['get-all-providers'];
+    const url = environment.get_all_providers;
     return this._http.get<Provider[]>(url).subscribe((res: Provider[]) => {
       this.providers.set(res.sort(() => Math.random() - 0.5));
     });
   }
 
   getRandomProducts() {
-    const url = environment['get-random-products'];
+    const url = environment.get_random_products;
     return this._http.get<Product[]>(url, {
       params: { quantity: '8' },
     });
   }
 
   searchProducts(search: SearchProduct) {
-    const url = environment['get-all-products'];
+    const url = environment.get_all_products;
     let params = new HttpParams();
 
     params = params.append('page', search.page.toString());
@@ -87,7 +88,7 @@ export class HomeService {
   }
 
   getProduct(id: number) {
-    const url = environment['get-product'];
+    const url = environment.get_product;
 
     return this._http.get<Product>(url + id);
   }

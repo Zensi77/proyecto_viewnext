@@ -15,7 +15,7 @@ public class Cart {
     private String id;
     private User user;
     private List<CartItem> items;
-    private double totalPrice;
+    private Double totalPrice;
 
     public void addItem(CartItem item) {
         items.add(item);

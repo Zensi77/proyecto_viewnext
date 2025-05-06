@@ -1,5 +1,7 @@
 package com.juanma.proyecto_vn.infrastructure.persistence.mapper;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Component;
 
 import com.juanma.proyecto_vn.domain.model.CartItem;
@@ -18,7 +20,12 @@ public class ProductCartMapper {
             return null;
         }
 
+        ProductCartEntity.ProductCartPK productCartPK = new ProductCartEntity.ProductCartPK();
+        productCartPK.setProductId(productCart.getProduct().getId());
+        productCartPK.setCartId(UUID.fromString(productCart.getCart().getId()));
+
         return ProductCartEntity.builder()
+                .id(productCartPK)
                 .cart(cartMapper.toEntity(productCart.getCart()))
                 .product(productMapper.toEntity(productCart.getProduct()))
                 .quantity(productCart.getQuantity())

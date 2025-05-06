@@ -39,7 +39,7 @@ public class CartController {
     private final ICartService cartService;
     private final CartDtoMapper cartDtoMapper;
 
-    @GetMapping()
+    @GetMapping("/")
     public ResponseEntity<?> getCart(Authentication authentication) {
         log.info("Solicitud para obtener carrito del usuario: {}",
                 authentication != null ? authentication.getName() : "anónimo");
@@ -50,6 +50,7 @@ public class CartController {
 
         String email = authentication.getName();
         Cart cart = cartService.getCartByUserId(email);
+        log.debug("Carrito obtenido: {}", cart);
         CartDto cartDto = cartDtoMapper.toDto(cart);
 
         log.info("Carrito obtenido para usuario: {}", email);
@@ -81,7 +82,7 @@ public class CartController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/")
     public ResponseEntity<?> deleteProductFromCart(
             @RequestParam(required = true) UUID product_id,
             Authentication authentication) {

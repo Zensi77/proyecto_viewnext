@@ -1,7 +1,14 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  Input,
+} from '@angular/core';
 import { Product } from '../../interfaces/Data.interface';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { SharedDataService } from '../../../shared/services/shared-data.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'product-card',
@@ -55,6 +62,7 @@ import { RouterLink } from '@angular/router';
           </span>
 
           <button
+            (click)="addToCart(product.id)"
             [disabled]="product.stock === 0"
             class="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm px-4 py-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -67,5 +75,17 @@ import { RouterLink } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductCardComponent {
+  private readonly _sharedService = inject(SharedDataService);
+  private readonly _router = inject(Router);
+
   @Input({ required: true }) product!: Product;
+
+  addToCart(productId: number) {
+    if (this._sharedService.cart() === null) {
+      this._router.navigate(['/auth/sign-in']);
+      return;
+    }
+
+    this._sharedService.addProductToCart(productId);
+  }
 }

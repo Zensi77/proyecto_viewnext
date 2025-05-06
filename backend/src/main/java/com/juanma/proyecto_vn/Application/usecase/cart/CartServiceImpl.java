@@ -1,6 +1,6 @@
 package com.juanma.proyecto_vn.Application.usecase.cart;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,6 +24,12 @@ import com.juanma.proyecto_vn.domain.service.IMetricsService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * Implementación del servicio de carrito de compras.
+ * Esta clase maneja la lógica de negocio relacionada con el carrito de compras,
+ * incluyendo la adición y eliminación de productos, así como la obtención del
+ * carrito del usuario.
+ */
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -35,6 +41,12 @@ public class CartServiceImpl implements ICartService {
     private final IMetricsService metricService;
     private final CartValidator cartValidator;
 
+    /**
+     * Obtiene el carrito de un usuario por su ID.
+     * 
+     * @param email El ID del usuario.
+     * @return El carrito del usuario.
+     */
     @Override
     @PreAuthorize("#email == authentication.principal.username")
     public Cart getCartByUserId(String email) {
@@ -48,7 +60,7 @@ public class CartServiceImpl implements ICartService {
         if (cart == null) {
             Cart newCart = Cart.builder()
                     .user(user.get())
-                    .items(List.of())
+                    .items(new ArrayList<>())
                     .totalPrice(0.0)
                     .build();
             return cartRepository.save(newCart);
@@ -57,6 +69,13 @@ public class CartServiceImpl implements ICartService {
         return cart;
     }
 
+    /**
+     * Agrega un producto al carrito de un usuario.
+     * 
+     * @param productCart El producto a agregar al carrito.
+     * @param email       El ID del usuario.
+     * @return El carrito actualizado del usuario.
+     */
     @Override
     @PreAuthorize("#email == authentication.principal.username")
     public Cart addProductToCart(CartItem productCart, String email) {
@@ -75,7 +94,7 @@ public class CartServiceImpl implements ICartService {
         if (cart == null) {
             Cart newCart = Cart.builder()
                     .user(user.get())
-                    .items(List.of())
+                    .items(new ArrayList<>())
                     .totalPrice(0.0)
                     .build();
             cart = cartRepository.save(newCart);
@@ -96,21 +115,28 @@ public class CartServiceImpl implements ICartService {
             productCartDb.setQuantity(productCart.getQuantity() + productCartDb.getQuantity());
             productCartRepository.save(productCartDb);
 
-
         } else {
             cartValidator.validateStockAvailability(product, productCart.getQuantity());
 
-            cart.addItem(CartItem.builder()
+            CartItem item = CartItem.builder()
                     .product(product)
                     .cart(cart)
                     .quantity(productCart.getQuantity())
-                    .build());
-            cartRepository.save(cart);
+                    .build();
+
+            productCartRepository.save(item);
         }
-        
+
         return cartRepository.findByUserId(user.get().getId().toString());
     }
 
+    /**
+     * Borrar un producto del carrito
+     * 
+     * @param productId El ID del producto a eliminar.
+     * @param email     El ID del usuario.
+     * @return El carrito actualizado del usuario.
+     */
     @Override
     @PreAuthorize("#email == authentication.principal.username")
     public void deleteProductFromCart(UUID productId, String email) {

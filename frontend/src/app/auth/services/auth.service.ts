@@ -17,8 +17,19 @@ export class AuthService {
 
   user = signal<User | null>(null);
 
+  constructor() {
+    const token = sessionStorage.getItem('token');
+    if (token) {
+      const user = JSON.parse(atob(token.split('.')[1]));
+
+      this.user.set(user);
+    } else {
+      this.user.set(null);
+    }
+  }
+
   signUp(user: User) {
-    const url = environment['sign-up'];
+    const url = environment.sign_up;
     this.loading.set(true);
     this._http.post<UserResponse>(url, user).subscribe({
       next: (res) => {
@@ -43,7 +54,7 @@ export class AuthService {
 
   // Iniciar sesión con email y contraseña
   signIn(user: User) {
-    const url = environment['sign-in'];
+    const url = environment.sign_in;
 
     this.loading.set(true);
     this._http.post<UserResponse>(url, user).subscribe({
