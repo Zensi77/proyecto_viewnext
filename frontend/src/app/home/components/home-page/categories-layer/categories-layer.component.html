@@ -1,10 +1,8 @@
-<div
-  class="flex flex-wrap gap-4 p-8 mx-8 justify-center bg-blue-200 rounded-2xl"
->
+<div class="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4 p-4">
   @for (category of categories().slice(0, 8); track $index) {
   <div
     [ngClass]="animationClass($index)"
-    [style.animation-delay.s]="$index * 0.3"
+    [style.animation-delay.s]="$index * 0.2"
   >
     <category-button [category]="category.name" />
   </div>

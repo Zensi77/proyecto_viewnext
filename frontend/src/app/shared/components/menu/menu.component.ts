@@ -1,15 +1,25 @@
-import { Component, computed, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { MenuItem } from 'primeng/api';
 import { Menubar } from 'primeng/menubar';
 import { BadgeModule } from 'primeng/badge';
+import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { AvatarModule } from 'primeng/avatar';
 import { InputTextModule } from 'primeng/inputtext';
 import { Ripple } from 'primeng/ripple';
 import { Router, RouterLink, RouterModule } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
 import { CartComponent } from '../cart/cart.component';
+import { SharedDataService } from '../../services/shared-data.service';
 
 @Component({
   selector: 'app-menu',
@@ -23,17 +33,22 @@ import { CartComponent } from '../cart/cart.component';
     Ripple,
     CommonModule,
     CartComponent,
+    OverlayBadgeModule,
   ],
   templateUrl: './menu.component.html',
   styles: ``,
 })
 export class MenuComponent implements OnInit {
   private readonly _authService = inject(AuthService);
+  private readonly _sharedService = inject(SharedDataService);
   private readonly _router = inject(Router);
+
   private _user = computed(() => this._authService.user());
+  cart = computed(() => this._sharedService.cart());
 
   items: MenuItem[] | undefined;
   showCart = false;
+  animationCart = false;
 
   ngOnInit() {
     this.items = [
@@ -62,6 +77,18 @@ export class MenuComponent implements OnInit {
 
     const darkMode = localStorage.getItem('dark-mode');
     if (darkMode) this.toogleDarkMode();
+
+    effect(() => {
+      const cart = this.cart();
+
+      if (cart) {
+        console.log('¡Producto añadido! Activando animación...');
+        this.animationCart = true;
+        setTimeout(() => {
+          this.animationCart = false;
+        }, 1000);
+      }
+    });
   }
 
   toogleDarkMode() {

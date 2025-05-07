@@ -17,7 +17,7 @@ import { RippleModule } from 'primeng/ripple';
       pRipple
       type="button"
       [ngClass]="buttonClass()"
-      class="transition-all duration-400 ease-in-out shadow-3xl w-full flex gap-4 items-center justify-center font-bold hover:scale-102 hover:shadow-4xl cursor-pointer"
+      class="transition-all max-h-16 duration-400 ease-in-out shadow-3xl w-full flex gap-1 md:gap-4 items-center justify-center font-bold hover:scale-102 hover:shadow-4xl cursor-pointer"
       (click)="onClick()"
     >
       <i [ngClass]="selectIcon()"></i> {{ category | titlecase }}

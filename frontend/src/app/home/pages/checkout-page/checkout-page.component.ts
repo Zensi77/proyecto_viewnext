@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { HomeService } from '../../services/home.service';
 import { Product } from '../../interfaces/Data.interface';
 import { ProductCardComponent } from '../../ui/product-card/product-card.component';
+import { ProductCart } from '../../../shared/interfaces/data-shared.interface';
 
 @Component({
   imports: [RouterLink, CommonModule, ProductCardComponent],
@@ -26,7 +27,9 @@ export class CheckoutPageComponent {
     });
   }
 
-  modifyQuantity(productId: number, quantity: number) {}
+  modifyQuantity(productItemId: ProductCart, quantity: number) {
+    this._sharedService.updateProductQuantity(productItemId, quantity);
+  }
 
   removeFromCart(productId: number) {
     this._sharedService.deleteProductFromCart(productId);

@@ -3,7 +3,7 @@ import { ProductName } from '../../home/interfaces/ProductName.interface';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment.development';
 import { AuthService } from '../../auth/services/auth.service';
-import { CartResponse } from '../interfaces/data-shared.interface';
+import { CartResponse, ProductCart } from '../interfaces/data-shared.interface';
 import Swal from 'sweetalert2';
 
 @Injectable({
@@ -30,8 +30,6 @@ export class SharedDataService {
     const url = environment.get_cart;
     return this._http.get<CartResponse>(url).subscribe(
       (res) => {
-        console.log(res);
-
         this.cart.set(res);
       },
       (err) => {
@@ -94,5 +92,33 @@ export class SharedDataService {
         params: { product_id: productId },
       })
       .subscribe(() => this.getCart());
+  }
+
+  updateProductQuantity(productItem: ProductCart, quantity: number) {
+    const url = environment.modify_product_quantity;
+
+    const body = {
+      cart_id: this.cart()!.cart_id,
+      product_id: productItem.product.id,
+      quantity: productItem.quantity + quantity,
+    };
+
+    this._http.put<CartResponse>(url, body).subscribe(
+      (res) => {
+        this.cart.set(res);
+      },
+      (err) => {
+        console.error(err);
+
+        if (err.status === 500) {
+          Swal.fire({
+            icon: 'error',
+            text: 'Error, al modificar la cantidad del producto, por favor, inténtelo más tarde',
+            showCloseButton: true,
+            confirmButtonText: 'Aceptar',
+          });
+        }
+      }
+    );
   }
 }

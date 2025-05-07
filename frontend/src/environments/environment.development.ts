@@ -29,4 +29,5 @@ export const environment = {
   get_cart: 'http://localhost:8080/api/v1/cart/',
   add_to_cart: 'http://localhost:8080/api/v1/cart/add',
   delete_product_from_cart: 'http://localhost:8080/api/v1/cart/',
+  modify_product_quantity: 'http://localhost:8080/api/v1/cart/',
 };

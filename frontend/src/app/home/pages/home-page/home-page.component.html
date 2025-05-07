@@ -1,9 +1,13 @@
-<main class="bg-gray-50 mt-8">
+<main class="bg-gray-50 mt-8 min-h-screen">
   <div
-    class="flex flex-wrap items-center p-8 mx-8 justify-center bg-blue-200 rounded-2xl"
+    class="flex flex-col md:flex-row items-center w-full p-6 md:p-8 mx-auto max-w-7xl bg-blue-200 rounded-2xl gap-8"
   >
-    <img class="w-2/5 grow-1" src="/images/banner.png" alt="" />
-    <div class="flex flex-col items-center w-3/5 space-y-12">
+    <img
+      class="w-full md:w-2/5 h-auto object-contain rounded-2xl"
+      src="/images/banner.png"
+      alt="Banner"
+    />
+    <div class="flex flex-col items-center w-full md:w-3/5 space-y-12">
       <om-typewriter
         class="flex justify-center w-full"
         [words]="words"
@@ -11,35 +15,35 @@
         [deleteDelay]="2000"
         [writeDelay]="500"
         [disableLoop]="true"
-        styleClass="text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-gradient-move text-center"
+        styleClass="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent animate-gradient-move text-center"
       ></om-typewriter>
       <section
-        class="flex flex-col items-center justify-center w-full gap-4 pt-4"
+        class="flex flex-col items-center justify-center w-full gap-4 pt-4 text-center"
       >
         <h2>
-          <span class="text-3xl font-bold text-gray-700">
-            Explore nuestras categorias destacadas
+          <span class="text-2xl md:text-3xl font-bold text-gray-700">
+            Explora nuestras categorías destacadas
           </span>
           <p class="text-sm text-gray-500">
-            Click on a category to explore more
+            Click en una categoría para explorar más
           </p>
         </h2>
-
         <app-categories-layer />
       </section>
     </div>
   </div>
 
   <section
-    class="flex flex-col items-center justify-center w-full h-full pt-8 gap-4"
+    class="flex flex-col items-center justify-center w-full px-4 md:px-0 pt-12 gap-4 text-center"
   >
     <h2>
-      <span class="text-3xl font-bold text-gray-700">
+      <span class="text-2xl md:text-3xl font-bold text-gray-700">
         Explora nuestros productos destacados
       </span>
-      <p class="text-sm text-gray-500">Click on a product to explore more</p>
+      <p class="text-sm text-gray-500">
+        Click en un producto para explorar más
+      </p>
     </h2>
-
     <app-products-layer />
   </section>
 </main>

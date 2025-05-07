@@ -52,6 +52,20 @@ public class Cart {
     public void removeItem(UUID productId) {
         if (this.items != null) {
             this.items.removeIf(item -> Objects.equals(item.getProduct().getId(), productId));
+
+            recalculateTotalPrice();
+        }
+    }
+
+    public void updateQuantity(UUID productId, int quantity) {
+        if (this.items != null) {
+            for (CartItem item : this.items) {
+                if (Objects.equals(item.getProduct().getId(), productId)) {
+                    item.setQuantity(quantity);
+                    break;
+                }
+            }
+
             recalculateTotalPrice();
         }
     }

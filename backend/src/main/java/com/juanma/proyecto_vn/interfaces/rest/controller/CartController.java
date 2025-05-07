@@ -28,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
@@ -97,6 +98,31 @@ public class CartController {
 
         log.info("Producto {} eliminado del carrito del usuario: {}", product_id, authentication.getName());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PutMapping("/")
+    public ResponseEntity<?> updateProductCart(
+            @RequestBody @Valid CreateProductCartDto productCartDto,
+            BindingResult result,
+            Authentication authentication) {
+
+        log.info("Solicitud para actualizar producto en el carrito: {}", productCartDto);
+
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Unauthorized"));
+        }
+
+        if (result.hasErrors()) {
+            return validation(result);
+        }
+
+        // Convertir DTO a objeto de dominio CartItem
+        CartItem cartItem = convertToCartItem(productCartDto);
+        Cart updatedCart = cartService.updateProductInCart(cartItem, authentication.getName());
+        CartDto responseDto = cartDtoMapper.toDto(updatedCart);
+
+        log.info("Producto actualizado en el carrito del usuario: {}", authentication.getName());
+        return ResponseEntity.ok(responseDto);
     }
 
     /**

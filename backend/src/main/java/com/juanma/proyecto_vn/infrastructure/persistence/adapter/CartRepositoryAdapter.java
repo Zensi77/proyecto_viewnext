@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class CartRepositoryAdapter implements CartRepository {
 
     private final JpaCartRepository jpaCartRepository;
@@ -38,7 +39,6 @@ public class CartRepositoryAdapter implements CartRepository {
      * @return El carrito guardado
      */
     @Override
-    @Transactional
     public Cart save(Cart cart) {
         log.debug("Guardando carrito: {}", cart);
 
@@ -54,9 +54,9 @@ public class CartRepositoryAdapter implements CartRepository {
         }
         CartEntity savedCartEntity = jpaCartRepository.save(cartEntity);
 
-        if (cart.getItems() != null && !cart.getItems().isEmpty()) {
-            savedCartEntity.getProductCart().clear();
+        savedCartEntity.getProductCart().clear();
 
+        if (cart.getItems() != null && !cart.getItems().isEmpty()) {
             for (CartItem item : cart.getItems()) {
                 ProductCartEntity productCartEntity = productCartMapper.toEntity(item, savedCartEntity);
                 savedCartEntity.addProductCart(productCartEntity);

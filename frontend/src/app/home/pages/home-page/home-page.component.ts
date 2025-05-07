@@ -6,7 +6,6 @@ import { SharedDataService } from '../../../shared/services/shared-data.service'
 import { ProductName } from '../../interfaces/ProductName.interface';
 import { CategoriesLayerComponent } from '../../components/home-page/categories-layer/categories-layer.component';
 import { ProductsLayerComponent } from '../../components/home-page/products-layer/products-layer.component';
-import { AutocompleteSearchComponent } from '../../../shared/components/autocomplete-search/autocomplete-search.component';
 
 @Component({
   imports: [

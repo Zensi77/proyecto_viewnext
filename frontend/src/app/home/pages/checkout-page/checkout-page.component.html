@@ -1,6 +1,6 @@
-<section class="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
+<section class="bg-white py-8 antialiased md:py-16">
   <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
-    <h2 class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">
+    <h2 class="text-xl font-semibold text-gray-900 sm:text-2xl">
       Shopping Cart
     </h2>
 
@@ -9,7 +9,7 @@
         <div class="space-y-6">
           @for (item of cart()?.products; track $index) {
           <div
-            class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6"
+            class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm md:p-6"
           >
             <div
               class="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0"
@@ -19,7 +19,7 @@
                 class="shrink-0 md:order-1"
               >
                 <img
-                  class="h-20 w-20 dark:hidden"
+                  class="h-20 w-20"
                   [src]="[item.product.image]"
                   [alt]="[item.product.name]"
                 />
@@ -33,14 +33,14 @@
               >
                 <div class="flex items-center">
                   <button
-                    (click)="modifyQuantity(item.product.id, -1)"
+                    (click)="modifyQuantity(item, -1)"
                     type="button"
                     id="decrement-button"
                     data-input-counter-decrement="counter-input"
-                    class="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
+                    class="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100"
                   >
                     <svg
-                      class="h-2.5 w-2.5 text-gray-900 dark:text-white"
+                      class="h-2.5 w-2.5 text-gray-900"
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -59,20 +59,20 @@
                     type="text"
                     id="counter-input"
                     data-input-counter
-                    class="w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white"
+                    class="w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0"
                     placeholder=""
                     [value]="item.quantity"
                     disabled
                   />
                   <button
-                    (click)="modifyQuantity(item.product.id, 1)"
+                    (click)="modifyQuantity(item, 1)"
                     type="button"
                     id="increment-button"
                     data-input-counter-increment="counter-input"
-                    class="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
+                    class="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100"
                   >
                     <svg
-                      class="h-2.5 w-2.5 text-gray-900 dark:text-white"
+                      class="h-2.5 w-2.5 text-gray-900"
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -89,7 +89,7 @@
                   </button>
                 </div>
                 <div class="text-end md:order-4 md:w-32">
-                  <p class="text-base font-bold text-gray-900 dark:text-white">
+                  <p class="text-base font-bold text-gray-900">
                     {{ item.product.price | currency : "EUR" }}
                   </p>
                 </div>
@@ -100,7 +100,7 @@
               >
                 <a
                   [routerLink]="['/product', item.product.id]"
-                  class="text-base font-medium text-gray-900 hover:underline dark:text-white"
+                  class="text-base font-medium text-gray-900 hover:underline"
                 >
                   {{ item.product.name }}
                 </a>
@@ -108,7 +108,7 @@
                 <div class="flex items-center gap-4">
                   <button
                     type="button"
-                    class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 hover:underline dark:text-gray-400 dark:hover:text-white"
+                    class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 hover:underline"
                   >
                     <svg
                       class="me-1.5 h-5 w-5"
@@ -161,7 +161,7 @@
           }
         </div>
         <div class="hidden xl:mt-8 xl:block">
-          <h3 class="text-2xl font-semibold text-gray-900 dark:text-white">
+          <h3 class="text-2xl font-semibold text-gray-900">
             Productos que te pueden interesar
           </h3>
           <div class="mt-6 grid grid-cols-3 gap-4 sm:mt-8">
@@ -174,21 +174,17 @@
 
       <div class="mx-auto mt-6 max-w-4xl flex-1 space-y-6 lg:mt-0 lg:w-full">
         <div
-          class="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6"
+          class="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6"
         >
-          <p class="text-xl font-semibold text-gray-900 dark:text-white">
+          <p class="text-xl font-semibold text-gray-900">
             Resumen de la compra
           </p>
 
           <div class="space-y-4">
             <div class="space-y-2">
               <dl class="flex items-center justify-between gap-4">
-                <dt
-                  class="text-base font-normal text-gray-500 dark:text-gray-400"
-                >
-                  Precio
-                </dt>
-                <dd class="text-base font-medium text-gray-900 dark:text-white">
+                <dt class="text-base font-normal text-gray-500">Precio</dt>
+                <dd class="text-base font-medium text-gray-900">
                   {{ cart()?.totalPrice | currency : "EUR" }}
                 </dd>
               </dl>
@@ -208,12 +204,10 @@
             </div>
 
             <dl
-              class="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700"
+              class="flex items-center justify-between gap-4 border-t border-gray-200 pt-2"
             >
-              <dt class="text-base font-bold text-gray-900 dark:text-white">
-                Total
-              </dt>
-              <dd class="text-base font-bold text-gray-900 dark:text-white">
+              <dt class="text-base font-bold text-gray-900">Total</dt>
+              <dd class="text-base font-bold text-gray-900">
                 {{ cart()?.totalPrice | currency : "EUR" }}
               </dd>
             </dl>
@@ -221,7 +215,7 @@
 
           <a
             href="#"
-            class="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+            class="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300"
             >Proceder al pago</a
           >
 
@@ -232,7 +226,7 @@
             <a
               routerLink="/"
               title=""
-              class="inline-flex items-center gap-2 text-sm font-medium text-primary-700 underline hover:no-underline dark:text-primary-500"
+              class="inline-flex items-center gap-2 text-sm font-medium text-primary-700 underline hover:no-underline"
             >
               Continuar Comprando
               <svg
@@ -255,20 +249,20 @@
         </div>
 
         <div
-          class="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6"
+          class="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6"
         >
           <form class="space-y-4">
             <div>
               <label
                 for="voucher"
-                class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
+                class="mb-2 block text-sm font-medium text-gray-900"
               >
                 Tienes un código de descuento?
               </label>
               <input
                 type="text"
                 id="voucher"
-                class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
+                class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500"
                 required
               />
             </div>

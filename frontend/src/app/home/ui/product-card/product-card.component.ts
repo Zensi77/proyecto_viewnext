@@ -8,7 +8,6 @@ import { Product } from '../../interfaces/Data.interface';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { SharedDataService } from '../../../shared/services/shared-data.service';
-import Swal from 'sweetalert2';
 
 @Component({
   selector: 'product-card',
@@ -16,38 +15,42 @@ import Swal from 'sweetalert2';
   imports: [CommonModule, RouterLink],
   template: `
     <div
-      class="space-y-6 h-full overflow-hidden rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 hover:shadow-lg transition-shadow duration-300"
+      class="h-full overflow-hidden rounded-lg border border-gray-200 bg-white p-4 md:p-6 shadow-sm hover:shadow-lg transition-shadow duration-300"
     >
       <a
         [routerLink]="['/product', product.id]"
-        class="overflow-hidden rounded"
+        class="block overflow-hidden rounded text-center"
       >
         <img
-          class="mx-auto h-44 w-44 dark:block hover:scale-105 transition-transform duration-300"
+          class="mx-auto h-32 w-32 sm:h-40 sm:w-40 md:h-44 md:w-44 hover:scale-105 transition-transform duration-300"
           [src]="product.image"
           [alt]="product.name"
         />
       </a>
-      <div>
+      <div class="h-auto md:h-24">
         <a
           [routerLink]="['/product', product.id]"
-          class="text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white"
-          >{{ product.name | slice : 0 : 75 }}...</a
+          class="text-base sm:text-lg font-semibold leading-tight text-gray-900 hover:underline line-clamp-2"
+          >{{ product.name }}</a
         >
-        <p class="mt-2 text-base font-normal text-gray-500 dark:text-gray-400">
-          {{ product.description | slice : 0 : 30 }}...
+        <p
+          class="mt-2 text-sm sm:text-base font-normal text-gray-500 line-clamp-2"
+        >
+          {{ product.description }}
         </p>
       </div>
       <div>
-        <p class="text-xl font-bold leading-tight text-gray-900">
+        <p
+          class="text-lg sm:text-xl mt-4 md:mt-6 font-bold leading-tight text-gray-900"
+        >
           {{ product.price | currency : 'EUR' }}
         </p>
       </div>
-      <div class="mt-6 flex items-center gap-2.5">
+      <div class="mt-4 md:mt-6 flex flex-col sm:flex-row items-center gap-2.5">
         <button
           data-tooltip-target="favourites-tooltip-3"
           type="button"
-          class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+          class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100"
         >
           <svg
             class="h-5 w-5"
@@ -68,7 +71,7 @@ import Swal from 'sweetalert2';
         <div
           id="favourites-tooltip-3"
           role="tooltip"
-          class="tooltip invisible absolute z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300 dark:bg-gray-700"
+          class="tooltip invisible absolute z-10 h-full inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300 dark:bg-gray-700"
         >
           Añadir a favoritos
           <div class="tooltip-arrow" data-popper-arrow></div>
@@ -77,10 +80,10 @@ import Swal from 'sweetalert2';
         <button
           (click)="addToCart(product.id)"
           type="button"
-          class="inline-flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+          class="w-full inline-flex items-center justify-center rounded-lg bg-primary-700 px-3 sm:px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
         >
           <svg
-            class="-ms-2 me-2 h-5 w-5"
+            class="-ms-1 me-2 h-4 w-4 sm:h-5 sm:w-5"
             aria-hidden="true"
             xmlns="http://www.w3.org/2000/svg"
             width="24"

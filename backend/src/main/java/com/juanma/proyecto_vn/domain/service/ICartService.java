@@ -10,6 +10,8 @@ public interface ICartService {
 
     Cart addProductToCart(CartItem productCart, String email);
 
+    Cart updateProductInCart(CartItem productCart, String email);
+
     void deleteProductFromCart(UUID productId, String email);
 
 }

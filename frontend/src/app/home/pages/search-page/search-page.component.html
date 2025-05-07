@@ -1,6 +1,28 @@
 <main class="bg-gray-200 p-4 m-4 rounded-lg shadow-cyan-100 shadow-md">
+  <!-- <button
+    (click)="showFilters = !showFilters"
+    class="flex items-center px-4 py-2 bg-green-600 text-white rounded shadow hover:bg-green-700"
+  >
+    <svg
+      class="w-6 h-6"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M4 6h16M4 12h16M4 18h16"
+      ></path>
+    </svg>
+    <span class="ml-2">Filtros</span>
+  </button> -->
+
   <div class="flex flex-row p-2 gap-4 h-[calc(100vh-15rem)]">
     <div class="w-full md:w-1/6 md:min-w-48 rounded-lg shadow-md">
+      <!-- *ngIf="showFilters" -->
       <search-filter
         (rangePrices)="changeRangePrices($event)"
         (selectedCategory)="changeCategory($event)"

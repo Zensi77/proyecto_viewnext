@@ -153,6 +153,49 @@ public class CartServiceImpl implements ICartService {
         return updatedCart;
     }
 
+    @Override
+    @PreAuthorize("#email == authentication.principal.username")
+    public Cart updateProductInCart(CartItem cartItem, String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+
+        if (user.isEmpty()) {
+            throw new UsernameNotFoundException("El usuario no existe.");
+        }
+
+        if (cartItem.getProduct() != null && cartItem.getProduct().getId() != null) {
+            metricsService.sendFunnelEvent("delete_to_cart", user.get().getId().toString(), Map.of(
+                    "product_id", cartItem.getProduct().getId().toString(),
+                    "quantity", cartItem.getQuantity()));
+        }
+
+        Product prod = productRepository.findById(cartItem.getProduct().getId());
+        if (prod == null || prod.getPrice() == null) {
+            log.error("Producto no encontrado o sin precio válido: {}", cartItem.getProduct().getId());
+            throw new ResourceNotFoundException("El producto no existe o no tiene un precio válido.");
+        }
+
+        cartValidator.validateStockAvailability(prod, cartItem.getQuantity());
+
+        Cart cart = cartRepository.findByUserId(user.get().getId());
+
+        if (cart == null) {
+            throw new ResourceNotFoundException("No existe carrito para el user seleccionado");
+        }
+
+        Optional<CartItem> existingItem = cart.getItems().stream()
+                .filter(item -> item.getProduct() != null &&
+                        item.getProduct().getId() != null &&
+                        item.getProduct().getId().equals(cartItem.getProduct().getId()))
+                .findFirst();
+
+        if (existingItem.isPresent()) {
+
+            cart.updateQuantity(cartItem.getProduct().getId(), cartItem.getQuantity());
+        }
+
+        return cartRepository.save(cart);
+    }
+
     /**
      * Elimina un producto del carrito.
      * 

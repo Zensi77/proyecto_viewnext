@@ -27,7 +27,7 @@
     </ng-template>
     <ng-template #end>
       <div class="flex items-center gap-4">
-        <i
+        <!-- <i
           id="darkMode"
           class="cursor-pointer"
           [ngClass]="getIconMode()"
@@ -35,17 +35,23 @@
           (click)="toogleDarkMode()"
           (keydown.enter)="toogleDarkMode()"
           (keydown.space)="toogleDarkMode()"
-        ></i>
+        ></i> -->
         <i
           class="cursor-pointer"
           tabindex="0"
           [ngClass]="isLogged()"
           (click)="actionLogged()"
         ></i>
-        <i
-          class="pi pi-shopping-cart cursor pointer"
+        <p-overlaybadge
+          [value]="(cart()?.products)!.length"
+          severity="success"
           (click)="actionCart()"
-        ></i>
+        >
+          <i
+            [ngClass]="animationCart ? 'animate__animated animate__bounce' : ''"
+            class="pi pi-shopping-cart text-2xl cursor pointer"
+          ></i>
+        </p-overlaybadge>
         <app-cart [showCart]="showCart" (showCartChange)="showCartChange()" />
       </div>
     </ng-template>
