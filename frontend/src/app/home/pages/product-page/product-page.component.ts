@@ -1,4 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  effect,
+  inject,
+  OnChanges,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Product } from '../../interfaces/Data.interface';
 import { HomeService } from '../../services/home.service';
@@ -6,6 +13,7 @@ import { CommonModule } from '@angular/common';
 import { Ripple } from 'primeng/ripple';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { FormsModule } from '@angular/forms';
+import { SharedDataService } from '../../../shared/services/shared-data.service';
 
 @Component({
   selector: 'app-product-page',
@@ -37,26 +45,34 @@ import { FormsModule } from '@angular/forms';
 }
   `,
 })
-export class ProductPageComponent implements OnInit {
+export class ProductPageComponent {
   private readonly _route = inject(ActivatedRoute);
   private readonly _homeService = inject(HomeService);
+  private readonly _sharedService = inject(SharedDataService);
 
   isLoading = false;
 
   product!: Product;
-  id!: number;
+  id = signal<string>('');
   quantity: number = 1;
 
-  ngOnInit(): void {
+  constructor() {
     this.isLoading = true;
     this._route.params.subscribe((params) => {
-      this.id = params['id'];
+      this.id.set(params['id']);
     });
 
-    this._homeService.getProduct(this.id).subscribe((res: Product) => {
-      this.product = res;
-      console.log(res);
-      this.isLoading = false;
+    effect(() => {
+      if (this.id()) {
+        this._homeService.getProduct(this.id()).subscribe((res: Product) => {
+          this.product = res;
+          this.isLoading = false;
+        });
+      }
     });
+  }
+
+  addToCart() {
+    this._sharedService.addProductToCart(this.product.id, this.quantity);
   }
 }

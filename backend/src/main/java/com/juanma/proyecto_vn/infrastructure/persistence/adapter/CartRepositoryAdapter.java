@@ -42,10 +42,8 @@ public class CartRepositoryAdapter implements CartRepository {
     public Cart save(Cart cart) {
         log.debug("Guardando carrito: {}", cart);
 
-        // 1. Convertir el carrito básico sin items
         CartEntity cartEntity = cartMapper.toEntity(cart);
 
-        // 2. Si es una actualización, buscar la entidad existente
         boolean isUpdate = cart.getId() != null;
         if (isUpdate) {
             jpaCartRepository.findById(UUID.fromString(cart.getId()))
@@ -54,29 +52,21 @@ public class CartRepositoryAdapter implements CartRepository {
                         cartEntity.setProductCart(existingCart.getProductCart());
                     });
         }
-
-        // 3. Guardar la entidad para obtener un ID si es nueva
         CartEntity savedCartEntity = jpaCartRepository.save(cartEntity);
 
-        // 4. Actualizar los items del carrito
         if (cart.getItems() != null && !cart.getItems().isEmpty()) {
-            // Borrar items actuales
             savedCartEntity.getProductCart().clear();
 
-            // Agregar los nuevos items
             for (CartItem item : cart.getItems()) {
                 ProductCartEntity productCartEntity = productCartMapper.toEntity(item, savedCartEntity);
                 savedCartEntity.addProductCart(productCartEntity);
             }
 
-            // Guardar los cambios
             savedCartEntity = jpaCartRepository.save(savedCartEntity);
         }
 
-        // 5. Convertir el resultado a un modelo de dominio completo
         Cart result = cartMapper.toDomain(savedCartEntity);
 
-        // 6. Añadir los items al modelo de dominio
         if (savedCartEntity.getProductCart() != null) {
             result.setItems(savedCartEntity.getProductCart().stream()
                     .map(productCartEntity -> productCartMapper.toDomain(productCartEntity, result))

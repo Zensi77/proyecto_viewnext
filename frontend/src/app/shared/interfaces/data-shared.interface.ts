@@ -3,7 +3,7 @@ import { Product } from '../../home/interfaces/Data.interface';
 export interface CartResponse {
   cart_id: number;
   products: ProductCart[];
-  total: number;
+  totalPrice: number;
 }
 
 export interface ProductCart {

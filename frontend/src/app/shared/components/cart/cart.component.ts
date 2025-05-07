@@ -9,10 +9,12 @@ import {
   Output,
 } from '@angular/core';
 import { SharedDataService } from '../../services/shared-data.service';
+import { ProductCart } from '../../interfaces/data-shared.interface';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-cart',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './cart.component.html',
   styles: ``,
 })
@@ -24,10 +26,12 @@ export class CartComponent {
   @Input() showCart = false;
   @Output() showCartChange = new EventEmitter<boolean>();
 
-  constructor() {}
-
   changeVisibility() {
     this.showCart = !this.showCart;
     this.showCartChange.emit(this.showCart);
+  }
+
+  deleteCartItem(cartitem: ProductCart) {
+    this._sharedService.deleteProductFromCart(cartitem.product.id);
   }
 }

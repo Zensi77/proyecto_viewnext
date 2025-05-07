@@ -99,14 +99,12 @@ public class CartServiceImpl implements ICartService {
             throw new UsernameNotFoundException("El usuario no existe.");
         }
 
-        // Registrar evento para analíticas
         if (cartItem.getProduct() != null && cartItem.getProduct().getId() != null) {
             metricsService.sendFunnelEvent("add_to_cart", user.get().getId().toString(), Map.of(
                     "product_id", cartItem.getProduct().getId().toString(),
                     "quantity", cartItem.getQuantity()));
         }
 
-        // Obtener o crear el carrito
         Cart cart = cartRepository.findByUserId(user.get().getId());
         if (cart == null) {
             log.debug("Carrito no encontrado para el usuario. Creando nuevo carrito.");
@@ -121,17 +119,14 @@ public class CartServiceImpl implements ICartService {
             log.info("Nuevo carrito creado para el usuario: {}", email);
         }
 
-        // Validar el producto
         Product product = productRepository.findById(cartItem.getProduct().getId());
         if (product == null || product.getPrice() == null) {
             log.error("Producto no encontrado o sin precio válido: {}", cartItem.getProduct().getId());
             throw new ResourceNotFoundException("El producto no existe o no tiene un precio válido.");
         }
 
-        // Validar la disponibilidad de stock
         cartValidator.validateStockAvailability(product, cartItem.getQuantity());
 
-        // Buscar si el producto ya existe en el carrito
         Optional<CartItem> existingItem = cart.getItems().stream()
                 .filter(item -> item.getProduct() != null &&
                         item.getProduct().getId() != null &&
@@ -139,23 +134,19 @@ public class CartServiceImpl implements ICartService {
                 .findFirst();
 
         if (existingItem.isPresent()) {
-            // Actualizar la cantidad si ya existe
             CartItem item = existingItem.get();
             log.debug("Producto ya existe en el carrito. Actualizando cantidad de {} a {}",
                     item.getQuantity(), item.getQuantity() + cartItem.getQuantity());
 
             item.setQuantity(item.getQuantity() + cartItem.getQuantity());
         } else {
-            // Agregar el producto completo al CartItem
             cartItem.setProduct(product);
             log.debug("Añadiendo nuevo producto al carrito: {}", product.getId());
             cart.addItem(cartItem);
         }
 
-        // Actualizar el precio total
         cart.recalculateTotalPrice();
 
-        // Guardar el carrito actualizado
         Cart updatedCart = cartRepository.save(cart);
         log.info("Carrito actualizado para el usuario: {}", email);
 
@@ -188,14 +179,6 @@ public class CartServiceImpl implements ICartService {
         if (cart == null || cart.getId() == null) {
             log.warn("Carrito no encontrado para el usuario: {}", email);
             return; // Si no hay carrito, no hay nada que eliminar
-        }
-
-        // Eliminar el producto del repositorio de relaciones producto-carrito
-        try {
-            productCartRepository.deleteByProductAndCart(productId, UUID.fromString(cart.getId()));
-            log.debug("Producto eliminado de la relación producto-carrito en la base de datos");
-        } catch (Exception e) {
-            log.error("Error al eliminar producto del carrito en la base de datos", e);
         }
 
         // Eliminar el producto del modelo de dominio

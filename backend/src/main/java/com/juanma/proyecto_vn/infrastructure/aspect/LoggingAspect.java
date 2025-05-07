@@ -20,12 +20,10 @@ public class LoggingAspect {
             " || within(@org.springframework.stereotype.Service *)" +
             " || within(@org.springframework.web.bind.annotation.RestController *)")
     public void springBeanPointcut() {
-        // Pointcut para componentes Spring
     }
 
     @Pointcut("within(com.juanma.proyecto_vn..*)")
     public void applicationPackagePointcut() {
-        // Pointcut para todos los métodos dentro del paquete de la aplicación
     }
 
     @AfterThrowing(pointcut = "applicationPackagePointcut() && springBeanPointcut()", throwing = "e")
@@ -36,7 +34,6 @@ public class LoggingAspect {
                 joinPoint.getSignature().getName(),
                 e.getCause() != null ? e.getCause() : "NULL");
 
-        // Log detallado de la excepción
         logger.error("Detalles completos de la excepción:", e);
     }
 

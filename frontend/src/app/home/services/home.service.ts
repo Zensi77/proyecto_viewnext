@@ -46,10 +46,10 @@ export class HomeService {
     });
   }
 
-  getRandomProducts() {
+  getRandomProducts(quantity: number) {
     const url = environment.get_random_products;
     return this._http.get<Product[]>(url, {
-      params: { quantity: '8' },
+      params: { quantity },
     });
   }
 
@@ -87,7 +87,7 @@ export class HomeService {
     });
   }
 
-  getProduct(id: number) {
+  getProduct(id: string) {
     const url = environment.get_product;
 
     return this._http.get<Product>(url + id);

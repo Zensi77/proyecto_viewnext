@@ -16,59 +16,88 @@ import Swal from 'sweetalert2';
   imports: [CommonModule, RouterLink],
   template: `
     <div
-      class="w-full max-w-sm bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg transition duration-300 flex flex-col overflow-hidden"
+      class="space-y-6 h-full overflow-hidden rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 hover:shadow-lg transition-shadow duration-300"
     >
-      <a [routerLink]="['/product', product!.id]" class="relative group">
-        <div class="aspect-[4/3] w-full bg-gray-100 overflow-hidden">
-          <img
-            [src]="product.image"
-            [alt]="product.name"
-            loading="lazy"
-            class="w-full h-full object-cover blur-[0.3px] group-hover:scale-105 transition-transform duration-300"
-          />
-        </div>
-
-        <span
-          *ngIf="product?.stock === 0"
-          class="absolute top-2 right-2 bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded-md shadow"
-        >
-          Sin stock
-        </span>
+      <a
+        [routerLink]="['/product', product.id]"
+        class="overflow-hidden rounded"
+      >
+        <img
+          class="mx-auto h-44 w-44 dark:block hover:scale-105 transition-transform duration-300"
+          [src]="product.image"
+          [alt]="product.name"
+        />
       </a>
-
-      <div class="flex flex-col flex-grow p-4">
-        <h2 class="text-lg font-bold text-gray-900 truncate mb-1">
-          {{ product.name }}
-        </h2>
-
-        <p class="text-sm text-gray-600 line-clamp-2 mb-3">
-          {{ product.description }}
+      <div>
+        <a
+          [routerLink]="['/product', product.id]"
+          class="text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white"
+          >{{ product.name | slice : 0 : 75 }}...</a
+        >
+        <p class="mt-2 text-base font-normal text-gray-500 dark:text-gray-400">
+          {{ product.description | slice : 0 : 30 }}...
         </p>
-
-        <p class="text-xs text-gray-500 leading-5 mb-4">
-          <span class="block">
-            <span class="font-semibold text-gray-700">Categoría:</span>
-            {{ product.category.name }}
-          </span>
-          <span class="block">
-            <span class="font-semibold text-gray-700">Proveedor:</span>
-            {{ product.provider.name }}
-          </span>
+      </div>
+      <div>
+        <p class="text-xl font-bold leading-tight text-gray-900">
+          {{ product.price | currency : 'EUR' }}
         </p>
-
-        <div class="flex items-center justify-between mt-auto">
-          <span class="text-xl font-semibold text-gray-800">
-            {{ product.price | currency : 'EUR' }}
-          </span>
-
-          <button
-            (click)="addToCart(product.id)"
-            [disabled]="product.stock === 0"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-sm px-4 py-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
+      </div>
+      <div class="mt-6 flex items-center gap-2.5">
+        <button
+          data-tooltip-target="favourites-tooltip-3"
+          type="button"
+          class="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"
+        >
+          <svg
+            class="h-5 w-5"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
           >
-            Añadir
-          </button>
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6C6.5 1 1 8 5.8 13l6.2 7 6.2-7C23 8 17.5 1 12 6Z"
+            ></path>
+          </svg>
+        </button>
+        <div
+          id="favourites-tooltip-3"
+          role="tooltip"
+          class="tooltip invisible absolute z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300 dark:bg-gray-700"
+        >
+          Añadir a favoritos
+          <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
+
+        <button
+          (click)="addToCart(product.id)"
+          type="button"
+          class="inline-flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+        >
+          <svg
+            class="-ms-2 me-2 h-5 w-5"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 4h1.5L9 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm-8.5-3h9.25L19 7h-1M8 7h-.688M13 5v4m-2-2h4"
+            />
+          </svg>
+          Añadir al carrito
+        </button>
       </div>
     </div>
   `,

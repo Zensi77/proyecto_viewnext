@@ -28,4 +28,11 @@ export default [
         (m) => m.ProductPageComponent
       ),
   },
+  {
+    path: 'checkout',
+    loadComponent: () =>
+      import('./pages/checkout-page/checkout-page.component').then(
+        (m) => m.CheckoutPageComponent
+      ),
+  },
 ];

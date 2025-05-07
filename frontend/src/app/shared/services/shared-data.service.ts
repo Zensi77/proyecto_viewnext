@@ -18,7 +18,12 @@ export class SharedDataService {
 
   constructor() {
     this.getProductsNames();
-    this.getCart();
+
+    effect(() => {
+      if (this._authService.user()) {
+        this.getCart();
+      }
+    });
   }
 
   getCart() {
@@ -30,6 +35,7 @@ export class SharedDataService {
         this.cart.set(res);
       },
       (err) => {
+        this._authService.signOut();
         console.error(err);
         if (err.status === 500) {
           Swal.fire({
@@ -80,5 +86,13 @@ export class SharedDataService {
     );
   }
 
-  deleteProductFromCart(productId: number) {}
+  deleteProductFromCart(productId: number) {
+    const url = environment.delete_product_from_cart;
+
+    this._http
+      .delete(url, {
+        params: { product_id: productId },
+      })
+      .subscribe(() => this.getCart());
+  }
 }

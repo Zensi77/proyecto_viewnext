@@ -51,8 +51,7 @@ public class Cart {
      */
     public void removeItem(UUID productId) {
         if (this.items != null) {
-            this.items.removeIf(item -> item.getProduct() != null &&
-                    Objects.equals(item.getProduct().getId(), productId));
+            this.items.removeIf(item -> Objects.equals(item.getProduct().getId(), productId));
             recalculateTotalPrice();
         }
     }

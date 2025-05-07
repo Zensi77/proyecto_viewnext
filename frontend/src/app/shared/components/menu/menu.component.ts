@@ -90,8 +90,6 @@ export class MenuComponent implements OnInit {
   }
 
   actionLogged() {
-    console.log('actionLogged', this._user());
-
     if (this._user() != null) {
       this._authService.signOut();
     } else {

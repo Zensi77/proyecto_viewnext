@@ -15,8 +15,8 @@
       class="w-full md:w-[250px] aspect-square overflow-hidden flex items-center justify-center bg-gray-50"
     >
       <img
-        [src]="product.image || ''"
-        [alt]="product.name || ''"
+        [src]="product.image"
+        [alt]="product.name"
         class="w-full h-full object-contain blur-[0.4px] rounded-none p-2"
         loading="lazy"
       />
@@ -93,6 +93,7 @@
           </span>
           <button
             pRipple
+            (click)="addToCart()"
             class="flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg ml-2 hover:bg-blue-700 transition duration-200 ease-in-out cursor-pointer"
           >
             <i class="pi pi-shopping-cart"></i>

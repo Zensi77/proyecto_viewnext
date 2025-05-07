@@ -16,7 +16,7 @@
   -->
   <div class="fixed inset-0 bg-gray-500/75 transition-opacity"></div>
 
-  <div class="fixed inset-0 overflow-hidden" (click)="changeVisibility()">
+  <div class="fixed inset-0 overflow-hidden">
     <div class="absolute inset-0 overflow-hidden">
       <div
         class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10"
@@ -43,7 +43,10 @@
                 >
                   Carrito
                 </h2>
-                <div class="ml-3 flex h-7 items-center">
+                <div
+                  (click)="changeVisibility()"
+                  class="ml-3 flex h-7 items-center"
+                >
                   <button
                     (click)="changeVisibility()"
                     type="button"
@@ -91,10 +94,20 @@
                             class="flex justify-between text-base font-medium text-gray-900"
                           >
                             <h3>
-                              <a href="#">{{ productCart?.product?.name }}</a>
+                              <a
+                                (click)="changeVisibility()"
+                                class="hover:text-blue-300 hover:font-semibold transition-all duration-300 ease-in"
+                                [routerLink]="[
+                                  '../product',
+                                  productCart?.product?.id
+                                ]"
+                                >{{ productCart?.product?.name }}</a
+                              >
                             </h3>
                             <p class="ml-4 text-gray-900">
-                              ${{ productCart?.product?.price }}
+                              {{
+                                productCart?.product?.price | currency : "EUR"
+                              }}
                             </p>
                           </div>
                           <p class="mt-1 text-sm text-gray-500">
@@ -110,6 +123,7 @@
 
                           <div class="flex">
                             <button
+                              (click)="deleteCartItem(productCart)"
                               type="button"
                               class="font-medium text-indigo-600 hover:text-indigo-500"
                             >
@@ -134,12 +148,13 @@
                 <p>Subtotal</p>
                 }
                 <p>
-                  {{ cart()?.total | currency : "EUR" : "symbol" }}
+                  {{ cart()?.totalPrice | currency : "EUR" }}
                 </p>
               </div>
               <div class="mt-6">
                 <a
-                  href="#"
+                  routerLink="/checkout"
+                  (click)="changeVisibility()"
                   class="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-xs hover:bg-indigo-700"
                   >Ir al pago</a
                 >

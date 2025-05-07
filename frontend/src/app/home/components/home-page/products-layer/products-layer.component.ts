@@ -23,7 +23,7 @@ export class ProductsLayerComponent {
   products: Product[] = [];
 
   constructor() {
-    this._homeService.getRandomProducts().subscribe((data: Product[]) => {
+    this._homeService.getRandomProducts(8).subscribe((data: Product[]) => {
       this.products = data;
     });
   }
