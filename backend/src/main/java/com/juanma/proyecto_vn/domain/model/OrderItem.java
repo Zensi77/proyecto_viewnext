@@ -16,6 +16,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OrderItem {
     private UUID orderId;
-    private UUID productId;
+    private Product product;
     private int quantity;
 }

@@ -14,4 +14,6 @@ public interface JpaCartRepository extends JpaRepository<CartEntity, UUID> {
 
     @Query("SELECT c FROM CartEntity c WHERE c.user.id = :userId")
     Optional<CartEntity> findByUserId(UUID userId);
+
+    void deleteByUserId(UUID userId);
 }

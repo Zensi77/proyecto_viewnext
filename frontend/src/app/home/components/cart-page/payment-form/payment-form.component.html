@@ -1,7 +1,8 @@
-<form class="w-full max-w-md mx-auto space-y-6">
+<div class="w-full max-w-md mx-auto space-y-6">
   <div class="flex justify-center gap-2">
     <button
-      (click)="paymentSelect('paypal', $event)"
+      (click)="paymentSelect('paypal')"
+      [class.selected]="paymentMethod() === 'paypal'"
       name="paypal"
       type="button"
       class="flex justify-center items-center p-2 rounded-md bg-white border border-gray-300 hover:bg-gray-200 transition-colors"
@@ -61,7 +62,8 @@
       </svg>
     </button>
     <button
-      (click)="paymentSelect('google-pay', $event)"
+      (click)="paymentSelect('google-pay')"
+      [class.selected]="paymentMethod() === 'google-pay'"
       name="google-pay"
       type="button"
       class="flex justify-center items-center p-2 rounded-md bg-white border border-gray-300 hover:bg-gray-200 transition-colors"
@@ -111,7 +113,8 @@
       </svg>
     </button>
     <button
-      (click)="paymentSelect('apple-pay', $event)"
+      [class.selected]="paymentMethod() === 'apple-pay'"
+      (click)="paymentSelect('apple-pay')"
       class="flex justify-center items-center p-2 rounded-md bg-white border border-gray-300 hover:bg-gray-200 transition-colors"
       type="button"
       name="apple-pay"
@@ -143,12 +146,16 @@
   </div>
 
   <!-- Campos del formulario -->
-  <div class="space-y-4">
+  <div
+    class="space-y-4 transition-all duration-200"
+    [class.opacity-50]="paymentMethod() != 'credit-card'"
+  >
     <div>
       <label class="block mb-1 text-sm font-medium text-gray-700"
         >Nombre del titular</label
       >
       <input
+        [disabled]="paymentMethod() != 'credit-card'"
         type="text"
         class="w-full px-4 py-2 border rounded-md border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-800"
         placeholder="Juan Pérez"
@@ -159,6 +166,7 @@
         >Número de tarjeta</label
       >
       <input
+        [disabled]="paymentMethod() != 'credit-card'"
         type="text"
         class="w-full px-4 py-2 border rounded-md border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-800"
         placeholder="1234 5678 9012 3456"
@@ -170,6 +178,7 @@
           >Fecha de expiración</label
         >
         <input
+          [disabled]="paymentMethod() != 'credit-card'"
           type="text"
           class="w-full px-4 py-2 border rounded-md border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-800"
           placeholder="MM/AA"
@@ -178,6 +187,7 @@
       <div class="w-1/2">
         <label class="block mb-1 text-sm font-medium text-gray-700">CVV</label>
         <input
+          [disabled]="paymentMethod() != 'credit-card'"
           type="text"
           class="w-full px-4 py-2 border rounded-md border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-800"
           placeholder="123"
@@ -189,10 +199,10 @@
   <!-- Botón de envío -->
   <div>
     <button
-      type="submit"
+      (click)="createOrder()"
       class="w-full bg-green-700 hover:bg-green-900 text-white font-semibold py-2 px-4 rounded-md transition-colors"
     >
       Pagar ahora
     </button>
   </div>
-</form>
+</div>

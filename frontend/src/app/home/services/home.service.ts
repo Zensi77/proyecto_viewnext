@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
 import {
   Category,
+  CreateOrder,
   Product,
   Provider,
   SearchProduct,
@@ -92,4 +93,6 @@ export class HomeService {
 
     return this._http.get<Product>(url + id);
   }
+
+  createOrder(order: CreateOrder) {}
 }

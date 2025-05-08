@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import { SharedDataService } from '../../../shared/services/shared-data.service';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -47,4 +47,7 @@ export class CheckoutPageComponent {
   }
 
   goToPayment = false;
+  showPayment() {
+    this.goToPayment = true;
+  }
 }

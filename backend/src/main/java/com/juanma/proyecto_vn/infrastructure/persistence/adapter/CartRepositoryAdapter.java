@@ -104,4 +104,9 @@ public class CartRepositoryAdapter implements CartRepository {
                 })
                 .orElse(null);
     }
+
+    @Override
+    public void deleteByUserId(UUID id) {
+        jpaCartRepository.deleteByUserId(id);
+    }
 }

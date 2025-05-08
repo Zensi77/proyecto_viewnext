@@ -1,5 +1,5 @@
 package com.juanma.proyecto_vn.shared.Utils.enums;
 
 public enum paymentMethodEnum {
-    CARD, PAYPAL, CASH, TRANSFER, CRYPTO, OTHER
+    CREDIT_CARD, PAYPAL, GOOGLE_PAY, APPLE_PAY
 }

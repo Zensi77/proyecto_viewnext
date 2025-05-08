@@ -44,8 +44,8 @@ public class OrderEntity extends BaseEntity {
     @Column(name = "status", nullable = false)
     private String status;
 
-    @Column(name = "payment_method", nullable = false, columnDefinition = "enum('CREDIT_CARD', 'PAYPAL', 'BANK_TRANSFER')")
+    @Column(name = "payment_method", nullable = false, columnDefinition = "enum('CREDIT_CARD', 'PAYPAL', 'GOOGLE_PAY', 'APPLE_PAY')")
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private paymentMethodEnum paymentMethod = paymentMethodEnum.CARD;
+    private paymentMethodEnum paymentMethod = paymentMethodEnum.CREDIT_CARD;
 }

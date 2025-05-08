@@ -24,12 +24,4 @@ public class CreateOrderDto {
 
     @NotNull(message = "El campo paymentMethod no puede ser nulo")
     private paymentMethodEnum paymentMethod;
-
-    @Positive(message = "El campo total_price debe ser positivo")
-    @NotNull(message = "El campo total_price no puede ser nulo")
-    private Double total_price;
-
-    @NotNull(message = "El campo status no puede ser nulo")
-    @Pattern(regexp = "PENDING|COMPLETED|CANCELLED", message = "El campo status solo puede ser PENDING, COMPLETED o CANCELLED")
-    private String status;
 }

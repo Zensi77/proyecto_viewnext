@@ -214,7 +214,7 @@
           </div>
 
           <button
-            (click)="goToPayment = true"
+            (click)="showPayment()"
             class="flex w-full items-center justify-center rounded-lg bg-primary-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300"
           >
             Proceder al pago
@@ -283,9 +283,13 @@
 
 <p-dialog
   [modal]="true"
+  [closeOnEscape]="true"
+  [appendTo]="'body'"
   [(visible)]="goToPayment"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+  [draggable]="false"
+  [resizable]="false"
   [baseZIndex]="10000"
-  style="width: 90vw; max-width: 500px"
 >
-  <payment-form></payment-form>
+  <payment-form *ngIf="goToPayment" [cart]="cart()" />
 </p-dialog>

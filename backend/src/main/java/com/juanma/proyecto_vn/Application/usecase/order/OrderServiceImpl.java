@@ -14,6 +14,7 @@ import com.juanma.proyecto_vn.domain.model.Order;
 import com.juanma.proyecto_vn.domain.model.OrderItem;
 import com.juanma.proyecto_vn.domain.model.Product;
 import com.juanma.proyecto_vn.domain.model.User;
+import com.juanma.proyecto_vn.domain.repository.CartRepository;
 import com.juanma.proyecto_vn.domain.repository.OrderRepository;
 import com.juanma.proyecto_vn.domain.repository.ProductRepository;
 import com.juanma.proyecto_vn.domain.repository.UserRepository;
@@ -37,6 +38,7 @@ public class OrderServiceImpl implements IOrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final CartRepository cartRepository;
     private final MetricsSender metricsService;
     private final OrderValidator orderValidator;
 
@@ -73,6 +75,8 @@ public class OrderServiceImpl implements IOrderService {
 
             // Establecer valores iniciales
             orderRequest.setUserId(user.getId());
+            orderRequest.setStatus("PENDING");
+            orderRequest.calculateTotalPrice();
 
             // Validar la orden completa
             List<String> validationErrors = orderValidator.validateOrder(orderRequest);
@@ -86,12 +90,15 @@ public class OrderServiceImpl implements IOrderService {
                 // Verificar stock disponible (lanzará NoStockException si no hay suficiente)
                 orderValidator.checkStockAvailability(item);
 
-                Product product = productRepository.findById(item.getProductId());
+                Product product = productRepository.findById(item.getProduct().getId());
 
                 // Actualizar stock
                 product.setStock(product.getStock() - item.getQuantity());
                 productRepository.save(product);
             }
+
+            // Eliminar el carrito del usuario
+            cartRepository.deleteByUserId(user.getId());
 
             Order savedOrder = orderRepository.save(orderRequest);
 
@@ -140,7 +147,7 @@ public class OrderServiceImpl implements IOrderService {
 
         // Restaurar stock
         for (OrderItem item : order.getItems()) {
-            Product product = productRepository.findById(item.getProductId());
+            Product product = productRepository.findById(item.getProduct().getId());
 
             product.setStock(product.getStock() + item.getQuantity());
             productRepository.save(product);

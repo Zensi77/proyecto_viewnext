@@ -9,4 +9,5 @@ public interface CartRepository {
 
     Cart findByUserId(UUID id);
 
+    void deleteByUserId(UUID id);
 }

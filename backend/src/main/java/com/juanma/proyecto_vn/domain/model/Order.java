@@ -25,4 +25,9 @@ public class Order {
     private String status;
     private paymentMethodEnum paymentMethod;
 
+    public void calculateTotalPrice() {
+        this.totalPrice = items.stream()
+                .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
+                .sum();
+    }
 }
