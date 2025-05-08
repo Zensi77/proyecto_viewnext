@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
@@ -18,6 +19,7 @@ import org.hibernate.type.SqlTypes;
 @Entity
 @Table(name = "category")
 @Data
+@EqualsAndHashCode(callSuper = true) // Para que no de error al hacer equals y hashCode
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

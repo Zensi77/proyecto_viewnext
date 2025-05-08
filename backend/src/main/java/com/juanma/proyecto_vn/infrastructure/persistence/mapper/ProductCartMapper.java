@@ -30,12 +30,8 @@ public class ProductCartMapper {
             return null;
         }
 
-        ProductCartEntity.ProductCartPK pk = new ProductCartEntity.ProductCartPK();
-        pk.setProductId(cartItem.getProduct().getId());
-        pk.setCartId(cartEntity.getId());
-
         return ProductCartEntity.builder()
-                .id(pk)
+                .id(cartItem.getId())
                 .cart(cartEntity)
                 .product(productMapper.toEntity(cartItem.getProduct()))
                 .quantity(cartItem.getQuantity())
@@ -55,6 +51,7 @@ public class ProductCartMapper {
         }
 
         return CartItem.builder()
+                .id(productCartEntity.getId())
                 .product(productMapper.toDomain(productCartEntity.getProduct()))
                 .cart(cart)
                 .quantity(productCartEntity.getQuantity())

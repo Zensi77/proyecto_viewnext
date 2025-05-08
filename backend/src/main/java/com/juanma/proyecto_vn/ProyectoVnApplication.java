@@ -58,7 +58,7 @@ public class ProyectoVnApplication {
 		String[] corsOrigins = env.getProperty("cors.allowed-origins", String[].class, new String[] {});
 
 		log.info("Servidor escuchando en puerto: {}", port);
-		log.info("Orígenes CORS permitidos: {}", String.join(", ", corsOrigins));
+		log.info("Origenes CORS permitidos: {}", String.join(", ", corsOrigins));
 		log.info("Instance requestId: {}", UUID.randomUUID());
 	}
 
@@ -77,7 +77,7 @@ public class ProyectoVnApplication {
 						.allowedHeaders("*")
 						.allowCredentials(true)
 						.maxAge(3600);
-				log.debug("CORS configurado con orígenes: {}", Arrays.toString(origins));
+				log.debug("CORS configurado con origenes: {}", Arrays.toString(origins));
 			}
 		};
 	}
@@ -93,7 +93,7 @@ public class ProyectoVnApplication {
 				.info(new Info()
 						.title(appName + " Documentation")
 						.version(version)
-						.description("Documentación de la API de " + appName));
+						.description("Documentacion de la API de " + appName));
 		log.debug("OpenAPI configurado: {} v{}", appName, version);
 		return openAPI;
 	}

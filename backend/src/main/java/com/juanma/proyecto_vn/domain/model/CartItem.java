@@ -1,5 +1,7 @@
 package com.juanma.proyecto_vn.domain.model;
 
+import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,6 +17,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CartItem {
+    private UUID id;
+
     private Product product;
 
     private Cart cart;
