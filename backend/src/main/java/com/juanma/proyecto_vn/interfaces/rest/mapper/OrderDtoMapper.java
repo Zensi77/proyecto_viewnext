@@ -68,8 +68,6 @@ public class OrderDtoMapper {
         return Order.builder()
                 .id(UUID.randomUUID()) // Se genera un nuevo ID para el pedido
                 .items(items)
-                .totalPrice(dto.getTotal_price())
-                .status(dto.getStatus())
                 .paymentMethod(dto.getPaymentMethod())
                 .build();
     }
@@ -80,7 +78,10 @@ public class OrderDtoMapper {
     private GetProductOrderDto mapOrderItemToDto(OrderItem item) {
         return GetProductOrderDto.builder()
                 .product(productDtoMapper.toDto(Product.builder()
-                        .id(item.getProductId())
+                        .id(item.getProduct()
+                                .getId())
+                        .name(item.getProduct()
+                                .getName())
                         .build()))
                 .quantity(item.getQuantity())
                 .build();
@@ -93,7 +94,9 @@ public class OrderDtoMapper {
         // El producto completo se establecerá más tarde en la capa de aplicación
         // cuando se recupere de la base de datos
         return OrderItem.builder()
-                .productId(dto.getProductId())
+                .product(Product.builder()
+                        .id(dto.getProductId())
+                        .build())
                 .quantity(dto.getQuantity())
                 .build();
     }

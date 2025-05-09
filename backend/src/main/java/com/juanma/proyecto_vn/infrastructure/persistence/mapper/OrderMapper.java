@@ -78,7 +78,7 @@ public class OrderMapper {
     private OrderItem mapProductOrderToDomain(ProductOrderEntity productOrder) {
         return OrderItem.builder()
                 .orderId(productOrder.getOrder().getId())
-                .productId(productMapper.toDomain(productOrder.getProduct()).getId())
+                .product(productMapper.toDomain(productOrder.getProduct()))
                 .quantity(productOrder.getQuantity())
                 .build();
     }
@@ -101,13 +101,13 @@ public class OrderMapper {
      */
     private ProductOrderEntity createProductOrderEntity(OrderItem item, OrderEntity orderEntity) {
         ProductOrderEntity.ProductOrderPK pk = new ProductOrderEntity.ProductOrderPK();
-        pk.setProductId(item.getProductId());
+        pk.setProductId(item.getProduct().getId());
         pk.setOrderId(orderEntity.getId());
 
         return ProductOrderEntity.builder()
                 .id(pk)
                 .order(orderEntity)
-                .product(productMapper.toEntity(Product.builder().id(item.getProductId()).build()))
+                .product(productMapper.toEntity(Product.builder().id(item.getProduct().getId()).build()))
                 .quantity(item.getQuantity())
                 .build();
     }
