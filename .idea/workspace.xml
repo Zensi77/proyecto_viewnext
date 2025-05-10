@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="036407d6-3b81-4603-8275-4f101733fd4e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/53bc4cea-dbdc-401b-aaf1-2dac82167d02.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
@@ -47,6 +48,9 @@
       <change beforePath="$PROJECT_DIR$/frontend/src/app/shared/components/menu/menu.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/shared/components/menu/menu.component.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/app/shared/services/shared-data.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/app/shared/services/shared-data.service.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/environments/environment.development.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/environments/environment.development.ts" afterDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+>>>>>>> e5c27f731afd3e7b1d3fa7f76a138056b3eb3479
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,7 +82,11 @@
     &quot;accountId&quot;: &quot;09fdf458-98e7-4ac0-9935-0b4250f460a4&quot;
   }
 }</component>
+<<<<<<< HEAD
   <component name="PhpDebugGeneral" listening_started="true" />
+=======
+  <component name="PhpWorkspaceProjectConfiguration" interpreter_name="/bin/php" />
+>>>>>>> e5c27f731afd3e7b1d3fa7f76a138056b3eb3479
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 1
@@ -92,6 +100,7 @@
     <option name="showLibraryContents" value="true" />
     <option name="showVisibilityIcons" value="true" />
   </component>
+<<<<<<< HEAD
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
@@ -121,11 +130,44 @@
     &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+=======
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot.ProyectoVnApplication.executor": "Run",
+    "Spring Boot.Unnamed.executor": "Run",
+    "Spring Boot.proyect.executor": "Run",
+    "git-widget-placeholder": "main",
+    "ignore.preview.features.used": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/USUARIO/Desktop/proyecto_viewnext",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "reference.projectsettings.compiler.annotationProcessors",
+    "vue.rearranger.settings.migration": "true"
+>>>>>>> e5c27f731afd3e7b1d3fa7f76a138056b3eb3479
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="ProyectoVnApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+<<<<<<< HEAD
       <option name="ALTERNATIVE_JRE_PATH" value="21" />
+=======
+      <option name="ALTERNATIVE_JRE_PATH" value="ms-21" />
+>>>>>>> e5c27f731afd3e7b1d3fa7f76a138056b3eb3479
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <module name="proyecto-vn" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.juanma.proyecto_vn.ProyectoVnApplication" />
@@ -176,10 +218,16 @@
       <workItem from="1745390249310" duration="742000" />
       <workItem from="1745391077666" duration="945000" />
       <workItem from="1745392430529" duration="896000" />
+<<<<<<< HEAD
       <workItem from="1746786764209" duration="311000" />
       <workItem from="1746787086365" duration="7215000" />
       <workItem from="1746795088372" duration="11247000" />
       <workItem from="1746863786092" duration="5398000" />
+=======
+      <workItem from="1746772130542" duration="948000" />
+      <workItem from="1746773111718" duration="933000" />
+      <workItem from="1746774072466" duration="812000" />
+>>>>>>> e5c27f731afd3e7b1d3fa7f76a138056b3eb3479
     </task>
     <servers />
   </component>

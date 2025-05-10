@@ -56,8 +56,56 @@ public class OrderDtoMapper {
         }
         return Order.builder()
                 .items(items)
+<<<<<<< HEAD
                 .paymentMethod(orderDto.getPaymentMethod())
                 .build();
     }
 
+=======
+                .paymentMethod(dto.getPaymentMethod())
+                .build();
+    }
+
+    /**
+     * Mapea un OrderItem a un GetProductOrderDto
+     */
+    private GetProductOrderDto mapOrderItemToDto(OrderItem item) {
+        return GetProductOrderDto.builder()
+                .product(productDtoMapper.toDto(Product.builder()
+                        .id(item.getProduct()
+                                .getId())
+                        .name(item.getProduct()
+                                .getName())
+                        .build()))
+                .quantity(item.getQuantity())
+                .build();
+    }
+
+    /**
+     * Mapea un CreateProductOrderDto a un OrderItem
+     */
+    private OrderItem mapDtoToOrderItem(CreateProductOrderDto dto) {
+        // El producto completo se establecerá más tarde en la capa de aplicación
+        // cuando se recupere de la base de datos
+        return OrderItem.builder()
+                .product(Product.builder()
+                        .id(dto.getProductId())
+                        .build())
+                .quantity(dto.getQuantity())
+                .build();
+    }
+
+    /**
+     * Convierte una lista de modelos de dominio a una lista de DTOs
+     */
+    public List<GetOrderDto> toDtoList(List<Order> orders) {
+        if (orders == null) {
+            return new ArrayList<>();
+        }
+
+        return orders.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+>>>>>>> e5c27f731afd3e7b1d3fa7f76a138056b3eb3479
 }
