@@ -1,9 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input, signal } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+  signal,
+} from '@angular/core';
 import { HomeService } from '../../../services/home.service';
-import { SharedDataService } from '../../../../shared/services/shared-data.service';
 import { CartResponse } from '../../../../shared/interfaces/data-shared.interface';
-import { CreateOrder, PaymentMethod } from '../../../interfaces/Data.interface';
+import { PaymentMethod } from '../../../interfaces/order.interface';
 
 @Component({
   selector: 'payment-form',
@@ -22,6 +28,7 @@ export class PaymentFormComponent {
   private readonly _homeService = inject(HomeService);
 
   @Input({ required: true }) cart: CartResponse | null = null;
+  @Output() paymentSuccess = new EventEmitter<void>();
 
   paymentMethod = signal<string>('credit-card');
 
@@ -52,16 +59,18 @@ export class PaymentFormComponent {
   createOrder() {
     console.log(this.cart);
 
-    const body: CreateOrder = {
-      products: this.cart!.products.map((product) => {
-        return {
-          id: product.product.id,
-          quantity: product.quantity,
-        };
-      }),
-      paymentMethod: this.switchToPaymentMethod(),
-    };
-
-    this._homeService.createOrder(body);
+    this._homeService
+      .createOrder({
+        productOrder: this.cart!.products,
+        paymentMethod: this.switchToPaymentMethod(),
+      })
+      .subscribe({
+        next: () => {
+          this.paymentSuccess.emit();
+        },
+        error: (err) => {
+          console.error(err);
+        },
+      });
   }
 }

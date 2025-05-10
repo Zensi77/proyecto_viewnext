@@ -20,10 +20,10 @@ public class CategoryProto {
         this.name = name;
     }
 
-    @ProtoField(number = 1, required = true)
+    @ProtoField(number = 1)
     public UUID id;
 
-    @ProtoField(number = 2, required = true)
+    @ProtoField(number = 2)
     public String name;
 
     public static CategoryProto fromDto(Category categoryDto) {

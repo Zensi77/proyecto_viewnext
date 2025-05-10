@@ -10,6 +10,8 @@
           @for (item of cart()?.products; track $index) {
           <div
             class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm md:p-6"
+            [ngClass]="animationClass($index)"
+            [style.animation-delay.s]="$index * 0.1"
           >
             <div
               class="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0"
@@ -190,7 +192,9 @@
               </dl>
 
               @if(haveDiscount){
-              <dl class="flex items-center justify-between gap-4">
+              <dl
+                class="flex items-center justify-between gap-4 amimate___animated"
+              >
                 <dt
                   class="text-base font-normal text-gray-500 dark:text-gray-400"
                 >
@@ -291,5 +295,21 @@
   [resizable]="false"
   [baseZIndex]="10000"
 >
-  <payment-form *ngIf="goToPayment" [cart]="cart()" />
+  <payment-form
+    *ngIf="goToPayment"
+    [cart]="cart()"
+    (paymentSuccess)="paymentSuccess()"
+  />
+
+  @if (loadingPayment) {
+  <div class="card flex justify-center align-middle">
+    <p-progressSpinner
+      class="m-5"
+      strokeWidth="8"
+      fill="transparent"
+      animationDuration=".5s"
+      [style]="{ width: '50px', height: '50px' }"
+    />
+  </div>
+  }
 </p-dialog>

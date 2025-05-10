@@ -9,11 +9,6 @@ import { MenuComponent } from './shared/components/menu/menu.component';
 import { AutocompleteSearchComponent } from './shared/components/autocomplete-search/autocomplete-search.component';
 import { filter } from 'rxjs';
 
-interface AutoCompleteCompleteEvent {
-  originalEvent: Event;
-  query: string;
-}
-
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, MenuComponent, AutocompleteSearchComponent],

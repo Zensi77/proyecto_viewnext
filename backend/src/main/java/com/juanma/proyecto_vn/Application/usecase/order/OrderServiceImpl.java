@@ -4,16 +4,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.juanma.proyecto_vn.domain.model.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.juanma.proyecto_vn.Application.validator.OrderValidator;
-import com.juanma.proyecto_vn.domain.model.Order;
-import com.juanma.proyecto_vn.domain.model.OrderItem;
-import com.juanma.proyecto_vn.domain.model.Product;
-import com.juanma.proyecto_vn.domain.model.User;
 import com.juanma.proyecto_vn.domain.repository.CartRepository;
 import com.juanma.proyecto_vn.domain.repository.OrderRepository;
 import com.juanma.proyecto_vn.domain.repository.ProductRepository;
@@ -68,6 +65,7 @@ public class OrderServiceImpl implements IOrderService {
     @PreAuthorize("#email == authentication.principal.username")
     public Order createOrder(Order orderRequest, String email) {
         User user = getUserByEmail(email);
+        log.debug("Creando pedido para usuario: {}", orderRequest.getId());
 
         try {
             // Limpiar la caché del validador antes de iniciar la validación
@@ -75,7 +73,6 @@ public class OrderServiceImpl implements IOrderService {
 
             // Establecer valores iniciales
             orderRequest.setUserId(user.getId());
-            orderRequest.setStatus("PENDING");
             orderRequest.calculateTotalPrice();
 
             // Validar la orden completa
@@ -87,19 +84,20 @@ public class OrderServiceImpl implements IOrderService {
 
             // Verificar y completar la información de productos
             for (OrderItem item : orderRequest.getItems()) {
-                // Verificar stock disponible (lanzará NoStockException si no hay suficiente)
                 orderValidator.checkStockAvailability(item);
 
                 Product product = productRepository.findById(item.getProduct().getId());
 
-                // Actualizar stock
                 product.setStock(product.getStock() - item.getQuantity());
                 productRepository.save(product);
             }
 
             // Eliminar el carrito del usuario
-            cartRepository.deleteByUserId(user.getId());
+            Cart cart = cartRepository.findByUserId(user.getId());
+            cart.cleanCart();
+            cartRepository.save(cart);
 
+            // Guardar el pedido para asignarle un id
             Order savedOrder = orderRepository.save(orderRequest);
 
             log.info("Pedido creado con éxito: ID={}, Usuario={}, Total={}, Items={}",
@@ -115,52 +113,22 @@ public class OrderServiceImpl implements IOrderService {
             return savedOrder;
         } catch (Exception e) {
             log.error("Error al crear pedido para usuario {}: {}", email, e.getMessage(), e);
-            throw e;
+            throw new IllegalArgumentException("Error al crear el pedido: " + e.getMessage());
         }
     }
 
     @Override
     @PreAuthorize("#email == authentication.principal.username")
     public void cancelOrder(UUID orderId, String email) {
-        User user = getUserByEmail(email);
-
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new ResourceNotFoundException("El pedido no existe."));
-
-        if (!order.getUserId().equals(user.getId())) {
-            throw new ResourceNotFoundException("El pedido no pertenece al usuario.");
-        }
-
-        // Verificar que el pedido no esté ya cancelado
-        if ("CANCELLED".equals(order.getStatus())) {
-            throw new IllegalOrderStateException("El pedido ya está cancelado.");
-        }
-
-        // Verificar que el pedido no esté en estado COMPLETED
-        if ("COMPLETED".equals(order.getStatus())) {
-            throw new IllegalOrderStateException("No se puede cancelar un pedido ya completado.");
-        }
-
         // Actualizar el estado
-        order.setStatus("CANCELLED");
-        orderRepository.save(order);
+        Order order = orderRepository.cancelOrder(orderId);
 
-        // Restaurar stock
-        for (OrderItem item : order.getItems()) {
-            Product product = productRepository.findById(item.getProduct().getId());
-
-            product.setStock(product.getStock() + item.getQuantity());
-            productRepository.save(product);
-
-            log.info("Stock restaurado: Producto={}, Cantidad={}", product.getId(), item.getQuantity());
-        }
-
-        log.info("Pedido cancelado: ID={}, Usuario={}", order.getId(), user.getId());
+        log.info("Pedido cancelado: ID={}", order.getId());
 
         // Enviar métricas
-        metricsService.sendFunnelEvent("order_cancelled", user.getId().toString(), Map.of(
+        metricsService.sendFunnelEvent("order_cancelled", order.getUserId().toString(), Map.of(
                 "order_id", order.getId().toString(),
-                "user_id", user.getId().toString(),
+                "user_id", order.getUserId().toString(),
                 "order_total", order.getTotalPrice(),
                 "items_count", order.getItems().size(),
                 "payment_method", order.getPaymentMethod().toString()));

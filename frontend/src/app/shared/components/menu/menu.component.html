@@ -42,16 +42,14 @@
           [ngClass]="isLogged()"
           (click)="actionLogged()"
         ></i>
-        <p-overlaybadge
-          [value]="(cart()?.products)!.length"
-          severity="success"
+
+        <i
+          class="text-2xl cursor pointer pi pi-shopping-cart cart-icon"
+          style="font-size: 1.3rem"
+          pBadge
           (click)="actionCart()"
-        >
-          <i
-            [ngClass]="animationCart ? 'animate__animated animate__bounce' : ''"
-            class="pi pi-shopping-cart text-2xl cursor pointer"
-          ></i>
-        </p-overlaybadge>
+          [value]="(cart()?.products)!.length"
+        ></i>
         <app-cart [showCart]="showCart" (showCartChange)="showCartChange()" />
       </div>
     </ng-template>

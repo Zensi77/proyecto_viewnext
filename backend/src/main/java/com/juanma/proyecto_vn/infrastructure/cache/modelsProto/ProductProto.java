@@ -17,37 +17,37 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductProto {
-    @ProtoField(number = 1, required = true)
+    @ProtoField(number = 1)
     String id;
 
-    @ProtoField(number = 2, required = true)
+    @ProtoField(number = 2)
     String name;
 
-    @ProtoField(number = 3, required = true)
+    @ProtoField(number = 3, defaultValue = "0.0")
     double price;
 
-    @ProtoField(number = 4, required = true)
+    @ProtoField(number = 4, defaultValue = "0")
     int stock;
 
-    @ProtoField(number = 5, required = true)
+    @ProtoField(number = 5)
     String image;
 
-    @ProtoField(number = 6, required = true)
+    @ProtoField(number = 6)
     String description;
 
     // Datos de categoría
-    @ProtoField(number = 7, required = true)
+    @ProtoField(number = 7)
     String categoryId;
 
-    @ProtoField(number = 8, required = true)
+    @ProtoField(number = 8)
     String categoryName;
 
     // Datos de proveedor
-    @ProtoField(number = 9, required = true)
+    @ProtoField(number = 9)
     String providerId;
-    @ProtoField(number = 10, required = true)
+    @ProtoField(number = 10)
     String providerName;
-    @ProtoField(number = 11, required = true)
+    @ProtoField(number = 11)
     String providerAddress;
 
 }

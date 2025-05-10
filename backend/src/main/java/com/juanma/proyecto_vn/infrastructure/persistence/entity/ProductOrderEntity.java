@@ -1,11 +1,7 @@
 package com.juanma.proyecto_vn.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -20,6 +16,7 @@ import org.hibernate.type.SqlTypes;
 @Builder
 @Table(name = "product_order")
 @EqualsAndHashCode(callSuper = true) // Para que no de error al hacer equals y hashCode
+@ToString(callSuper = true) // Para que no de error al hacer toString
 public class ProductOrderEntity extends BaseEntity {
 
     @EmbeddedId

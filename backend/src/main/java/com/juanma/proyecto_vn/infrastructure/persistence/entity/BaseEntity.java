@@ -15,12 +15,12 @@ import org.hibernate.annotations.SoftDelete;
                   // una tabla
 @SoftDelete // Indica que esta entidad es una entidad de borrado suave
 public abstract class BaseEntity {
-    @Column(name = "updated_at")
+    @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
-    private LocalDateTime updatedAt;
-
-    @Column(name = "created_at")
-    @UpdateTimestamp
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
 }

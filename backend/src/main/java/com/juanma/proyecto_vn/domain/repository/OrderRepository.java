@@ -34,6 +34,8 @@ public interface OrderRepository {
      */
     Optional<Order> findById(UUID id);
 
+    Order cancelOrder(UUID orderId);
+
     /**
      * Elimina un pedido
      * 

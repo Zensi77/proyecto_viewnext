@@ -1,5 +1,6 @@
 package com.juanma.proyecto_vn.domain.model;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,8 +23,9 @@ public class Order {
     private UUID userId;
     private List<OrderItem> items;
     private Double totalPrice;
-    private String status;
+    private String status = "PENDING";
     private paymentMethodEnum paymentMethod;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     public void calculateTotalPrice() {
         this.totalPrice = items.stream()

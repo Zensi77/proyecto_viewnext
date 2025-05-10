@@ -8,6 +8,7 @@ import org.hibernate.type.SqlTypes;
 
 import com.juanma.proyecto_vn.shared.Utils.enums.RoleEnum;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -45,6 +46,6 @@ public class UserEntity extends BaseEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private CartEntity cart;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private OrderEntity order;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<OrderEntity> orders;
 }

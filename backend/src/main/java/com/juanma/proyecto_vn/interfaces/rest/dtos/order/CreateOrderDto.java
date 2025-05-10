@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateOrderDto {
     @NotEmpty(message = "El campo productOrder no puede estar vacío")
-    private List<@Valid CreateProductOrderDto> productOrder;
+    private List<ProductOrderDto> productOrder;
 
     @NotNull(message = "El campo paymentMethod no puede ser nulo")
     private paymentMethodEnum paymentMethod;

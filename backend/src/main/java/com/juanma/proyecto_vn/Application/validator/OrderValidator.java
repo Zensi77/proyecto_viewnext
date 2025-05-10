@@ -59,8 +59,8 @@ public class OrderValidator {
             errors.addAll(validateOrderItem(item));
 
             // Calcular el subtotal usando el producto del repositorio
-            if (item.getProductId() != null) {
-                Product product = getProduct(item.getProductId());
+            if (item.getProduct().getId()!= null) {
+                Product product = getProduct(item.getProduct().getId());
                 if (product != null) {
                     calculatedTotal += product.getPrice() * item.getQuantity();
                 }
@@ -92,23 +92,23 @@ public class OrderValidator {
             return errors;
         }
 
-        if (item.getProductId() == null) {
+        if (item.getProduct().getId() == null) {
             errors.add("El ID del producto no puede ser nulo");
             return errors;
         }
 
         if (item.getQuantity() <= 0) {
-            errors.add("La cantidad debe ser mayor que cero para el producto " + item.getProductId());
+            errors.add("La cantidad debe ser mayor que cero para el producto " + item.getProduct().getId());
         }
 
         if (item.getQuantity() > 100) {
-            errors.add("La cantidad no puede ser mayor que 100 unidades para el producto " + item.getProductId());
+            errors.add("La cantidad no puede ser mayor que 100 unidades para el producto " + item.getProduct().getId());
         }
 
         // Verificar que el producto existe y tiene stock suficiente
-        Product product = getProduct(item.getProductId());
+        Product product = getProduct(item.getProduct().getId());
         if (product == null) {
-            errors.add("El producto con ID " + item.getProductId() + " no existe");
+            errors.add("El producto con ID " + item.getProduct().getId() + " no existe");
         } else if (product.getStock() < item.getQuantity()) {
             errors.add("No hay stock suficiente para el producto " + product.getName()
                     + " (solicitado: " + item.getQuantity() + ", disponible: " + product.getStock() + ")");
@@ -124,10 +124,10 @@ public class OrderValidator {
      * @param item Item a verificar
      */
     public void checkStockAvailability(OrderItem item) {
-        Product product = getProduct(item.getProductId());
+        Product product = getProduct(item.getProduct().getId());
 
         if (product == null) {
-            throw new NoStockException("El producto con ID " + item.getProductId() + " no existe");
+            throw new NoStockException("El producto con ID " + item.getProduct().getId() + " no existe");
         }
 
         if (product.getStock() < item.getQuantity()) {

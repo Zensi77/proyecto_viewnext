@@ -20,13 +20,13 @@ public class ProviderProto {
         this.address = address;
     }
 
-    @ProtoField(number = 1, required = true)
+    @ProtoField(number = 1)
     public UUID id;
 
-    @ProtoField(number = 2, required = true)
+    @ProtoField(number = 2)
     public String name;
 
-    @ProtoField(number = 3, required = true)
+    @ProtoField(number = 3)
     public String address;
 
     public static ProviderProto fromDto(ProviderDto providerDto) {

@@ -45,7 +45,7 @@ public class OrderController {
     /**
      * Obtiene todos los pedidos del usuario autenticado
      */
-    @GetMapping
+    @GetMapping("/")
     public ResponseEntity<List<GetOrderDto>> getOrders(Authentication authentication) {
         if (authentication == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -53,8 +53,10 @@ public class OrderController {
 
         String email = authentication.getName();
         List<Order> orders = orderService.getAllOrders(email);
-        List<GetOrderDto> orderDtos = orderDtoMapper.toDtoList(orders);
-        return ResponseEntity.ok(orderDtos);
+
+        return ResponseEntity.ok(orders.stream()
+                .map(orderDtoMapper::toDto)
+                .toList());
     }
 
     /**
@@ -80,7 +82,7 @@ public class OrderController {
     /**
      * Crea un nuevo pedido
      */
-    @PostMapping
+    @PostMapping("/")
     public ResponseEntity<Object> createOrder(@Valid @RequestBody CreateOrderDto orderDto,
             BindingResult result,
             Authentication authentication) {

@@ -36,11 +36,17 @@ public class Cart {
             this.items = new ArrayList<>();
         }
 
-        // Establecer la referencia correcta al carrito
         if (item != null) {
             item.setCart(this);
             this.items.add(item);
             recalculateTotalPrice();
+        }
+    }
+
+    public void cleanCart() {
+        if (this.items != null) {
+            this.items.clear();
+            this.totalPrice = 0.0;
         }
     }
 

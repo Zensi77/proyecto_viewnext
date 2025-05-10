@@ -16,6 +16,8 @@ export class SharedDataService {
   productNames = signal<ProductName[]>([]);
   cart = signal<CartResponse | null>(null);
 
+  cartChangeCount = signal(0);
+
   constructor() {
     this.getProductsNames();
 
@@ -67,6 +69,7 @@ export class SharedDataService {
     };
     return this._http.post<CartResponse>(url, body).subscribe(
       (res) => {
+        this.cartChangeCount.update((count) => count + 1);
         this.cart.set(res);
       },
       (err) => {
@@ -105,6 +108,7 @@ export class SharedDataService {
 
     this._http.put<CartResponse>(url, body).subscribe(
       (res) => {
+        this.cartChangeCount.update((count) => count + 1);
         this.cart.set(res);
       },
       (err) => {

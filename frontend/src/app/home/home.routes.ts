@@ -35,4 +35,11 @@ export default [
         (m) => m.CheckoutPageComponent
       ),
   },
+  {
+    path: 'orders',
+    loadComponent: () =>
+      import('./pages/orders-page/orders-page.component').then(
+        (m) => m.OrdersPageComponent
+      ),
+  },
 ];

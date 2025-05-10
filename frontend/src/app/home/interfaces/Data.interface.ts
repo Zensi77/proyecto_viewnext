@@ -45,20 +45,3 @@ export interface SearchProductResponse {
   hasPrevious: boolean;
   products: Product[];
 }
-
-interface ProductOrder {
-  id: number;
-  quantity: number;
-}
-
-export enum PaymentMethod {
-  CREDIT_CARD = 'CREDIT_CARD',
-  PAYPAL = 'PAYPAL',
-  GOOGLE_PAY = 'GOOGLE_PAY',
-  APPLE_PAY = 'APPLE_PAY',
-}
-
-export interface CreateOrder {
-  products: ProductOrder[];
-  paymentMethod: PaymentMethod;
-}

@@ -27,7 +27,6 @@ public class OrderEntity extends BaseEntity {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     @UuidGenerator
     @JdbcTypeCode(SqlTypes.CHAR)
-
     @Column(name = "id", nullable = false, updatable = false, columnDefinition = "char(36)")
     private UUID id;
 
@@ -42,7 +41,7 @@ public class OrderEntity extends BaseEntity {
     private Double total_price;
 
     @Column(name = "status", nullable = false)
-    private String status;
+    private String status = "PENDING";
 
     @Column(name = "payment_method", nullable = false, columnDefinition = "enum('CREDIT_CARD', 'PAYPAL', 'GOOGLE_PAY', 'APPLE_PAY')")
     @Enumerated(EnumType.STRING)

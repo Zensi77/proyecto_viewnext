@@ -1,0 +1,22 @@
+POST http://localhost:8080/api/v1/orders/
+Content-Type: application/json
+Content-Length: 58
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.1.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+{
+  "productOrder": [],
+  "paymentMethod": "CREDIT_CARD"
+}
+
+###
+
+GET http://localhost:8080/api/v1/orders/
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2024.1.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+content-length: 0
+
+###
+

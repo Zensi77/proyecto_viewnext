@@ -1,12 +1,4 @@
-import {
-  Component,
-  computed,
-  effect,
-  inject,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-} from '@angular/core';
+import { Component, computed, effect, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { MenuItem } from 'primeng/api';
@@ -60,6 +52,7 @@ export class MenuComponent implements OnInit {
       {
         label: 'Mis pedidos',
         icon: 'pi pi-shopping-cart',
+        routerLink: '/orders',
       },
       {
         label: 'Lista de deseos',
@@ -79,14 +72,20 @@ export class MenuComponent implements OnInit {
     if (darkMode) this.toogleDarkMode();
 
     effect(() => {
-      const cart = this.cart();
+      console.log('Cart change count:', this._sharedService.cartChangeCount());
 
-      if (cart) {
-        console.log('¡Producto añadido! Activando animación...');
-        this.animationCart = true;
-        setTimeout(() => {
-          this.animationCart = false;
-        }, 1000);
+      if (this._sharedService.cartChangeCount() > 0) {
+        const el = document.querySelector('.cart-icon');
+
+        if (el) {
+          // Elimina clases previas
+          el.classList.remove('animate__animated', 'animate__bounce');
+
+          void (el as HTMLElement).offsetWidth;
+
+          // Añadir clases para reiniciar la animación
+          el.classList.add('animate__animated', 'animate__bounce');
+        }
       }
     });
   }

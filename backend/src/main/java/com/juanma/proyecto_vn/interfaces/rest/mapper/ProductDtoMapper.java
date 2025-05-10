@@ -79,7 +79,7 @@ public class ProductDtoMapper {
         return productDto;
     }
 
-    public Product toEntity(GetProductDto productDto) {
+    public Product toDomain(GetProductDto productDto) {
         if (productDto == null) {
             return null;
         }

@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
 import {
   Category,
-  CreateOrder,
   Product,
   Provider,
   SearchProduct,
@@ -12,6 +11,7 @@ import {
 } from '../interfaces/Data.interface';
 import { ProductName } from '../interfaces/ProductName.interface';
 import Swal from 'sweetalert2';
+import { CreateOrder, OrderResponse } from '../interfaces/order.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -22,6 +22,7 @@ export class HomeService {
 
   categories = signal<Category[]>([]);
   providers = signal<Provider[]>([]);
+  orders = signal<OrderResponse[]>([]);
 
   constructor() {
     this.getCategories();
@@ -94,5 +95,32 @@ export class HomeService {
     return this._http.get<Product>(url + id);
   }
 
-  createOrder(order: CreateOrder) {}
+  createOrder(order: CreateOrder) {
+    const url = environment.create_order;
+
+    return this._http.post(url, order);
+  }
+
+  getOrders() {
+    const url = environment.get_orders;
+
+    this._http.get<OrderResponse[]>(url).subscribe({
+      next: (res) => {
+        this.orders.set(res);
+      },
+      error: (err) => {
+        console.error(err);
+      },
+    });
+  }
+
+  cancel_order(id: string) {
+    const url = environment.cancel_order + id;
+
+    this._http.put(url, {}).subscribe({
+      next: () => {
+        this.getOrders();
+      },
+    });
+  }
 }
