@@ -74,8 +74,8 @@ public class OrderMapper {
 
             List<ProductOrderEntity> productOrders = domain.getItems().stream()
                     .map(item -> {
-            pk.setOrderId(entity.getId());
-            pk.setProductId(item.getProduct().getId());
+                        pk.setOrderId(entity.getId());
+                        pk.setProductId(item.getProduct().getId());
                         return ProductOrderEntity.builder()
                                 .id(pk)
                                 .order(entity)
@@ -99,56 +99,9 @@ public class OrderMapper {
      */
     private OrderItem mapProductOrderToDomain(ProductOrderEntity productOrder) {
         return OrderItem.builder()
-<<<<<<< HEAD
-=======
-                .orderId(productOrder.getOrder().getId())
->>>>>>> e5c27f731afd3e7b1d3fa7f76a138056b3eb3479
                 .product(productMapper.toDomain(productOrder.getProduct()))
                 .quantity(productOrder.getQuantity())
                 .build();
     }
 
-<<<<<<< HEAD
-=======
-    /**
-     * Crea una lista de ProductOrderEntity a partir de un Order del dominio
-     */
-    public List<ProductOrderEntity> createProductOrderEntities(Order domain, OrderEntity orderEntity) {
-        if (domain.getItems() == null) {
-            return new ArrayList<>();
-        }
-
-        return domain.getItems().stream()
-                .map(item -> createProductOrderEntity(item, orderEntity))
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Crea un ProductOrderEntity a partir de un OrderItem del dominio
-     */
-    private ProductOrderEntity createProductOrderEntity(OrderItem item, OrderEntity orderEntity) {
-        ProductOrderEntity.ProductOrderPK pk = new ProductOrderEntity.ProductOrderPK();
-        pk.setProductId(item.getProduct().getId());
-        pk.setOrderId(orderEntity.getId());
-
-        return ProductOrderEntity.builder()
-                .id(pk)
-                .order(orderEntity)
-                .product(productMapper.toEntity(Product.builder().id(item.getProduct().getId()).build()))
-                .quantity(item.getQuantity())
-                .build();
-    }
-
-    /**
-     * Establece el usuario en la entidad Order
-     */
-    public void setUserEntity(OrderEntity orderEntity, User user) {
-        if (user == null) {
-            return;
-        }
-
-        UserEntity userEntity = userMapper.toEntity(user);
-        orderEntity.setUser(userEntity);
-    }
->>>>>>> e5c27f731afd3e7b1d3fa7f76a138056b3eb3479
 }
