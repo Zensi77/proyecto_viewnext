@@ -1,0 +1,67 @@
+<div class="flex bg-gray-200">
+  <aside class="w-64 h-screen bg-white shadow-xl flex flex-col z-50">
+    <div class="px-6 py-4">
+      <h2 class="text-2xl font-bold text-green-700">Tecno Shop</h2>
+    </div>
+
+    <div class="flex-1 overflow-y-auto">
+      <p-menu
+        [model]="items"
+        styleClass=" shadow-none! border-none! w-full"
+        [baseZIndex]="1000"
+        appendTo="body"
+      >
+        <ng-template pTemplate="item" let-item>
+          <a
+            pRipple
+            class="flex items-center px-4 py-2 hover:bg-green-100 cursor-pointer transition-colors rounded-md mx-2"
+          >
+            <i [class]="item.icon" class="mr-2 text-green-600"></i>
+            <span class="text-green-800 font-medium">{{ item.label }}</span>
+          </a>
+        </ng-template>
+      </p-menu>
+    </div>
+
+    <div class="p-4 bg-gray-50 mt-auto">
+      <div class="flex items-center space-x-3">
+        <img
+          src="https://i.pravatar.cc/40"
+          class="w-10 h-10 rounded-full"
+          alt="Avatar"
+        />
+        <div class="flex flex-col">
+          <span class="font-semibold text-sm text-gray-800">{{
+            userName
+          }}</span>
+          <span class="text-xs text-gray-500">Admin</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="w-full h-full bg-cristal m-16">
+    <h1 class="text-zinc-900">Hola</h1>
+    <h1 class="text-zinc-900">Hola</h1>
+    <h1 class="text-zinc-900">Hola</h1>
+    <h1 class="text-zinc-900">Hola</h1>
+    <h1 class="text-zinc-900">Hola</h1>
+    <h1 class="text-zinc-900">Hola</h1>
+    <h1 class="text-zinc-900">Hola</h1>
+    <h1 class="text-zinc-900">Hola</h1>
+    <h1 class="text-zinc-900">Hola</h1>
+    <h1 class="text-zinc-900">Hola</h1>
+    <h1 class="text-zinc-900">Hola</h1>
+    <h1 class="text-zinc-900">Hola</h1>
+    <h1 class="text-zinc-900">Hola</h1>
+    <h1 class="text-zinc-900">Hola</h1>
+    <h1 class="text-zinc-900">Hola</h1>
+    <h1 class="text-zinc-900">Hola</h1>
+    <h1 class="text-zinc-900">Hola</h1>
+    <h1 class="text-zinc-900">Hola</h1>
+    <h1 class="text-zinc-900">Hola</h1>
+    <h1 class="text-zinc-900">Hola</h1>
+    <h1 class="text-zinc-900">Hola</h1>
+    <!-- <router-outlet></router-outlet> -->
+  </div>
+</div>

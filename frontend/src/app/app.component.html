@@ -1,5 +1,5 @@
 <div class="flex flex-col min-h-screen">
-  <header class="fixed top-0 h-16 z-50 shadow-md">
+  <header class="fixed top-0 h-16 z-50 shadow-md" *ngIf="!authService.isAdmin">
     <app-menu></app-menu>
   </header>
   @if (showSearchBar) {

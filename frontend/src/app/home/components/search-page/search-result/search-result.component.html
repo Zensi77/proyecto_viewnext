@@ -1,4 +1,5 @@
-<div class="flex w-full justify-end pt-4 px-4">
+<!-- Ordenar por -->
+<div class="flex justify-end px-4 pt-6">
   <p-select
     [options]="orderBy"
     [checkmark]="true"
@@ -10,50 +11,58 @@
   />
 </div>
 
+<!-- Loading -->
 @if (loading) {
-<div class="card flex justify-center items-center h-3/4">
-  <p-progress-spinner ariaLabel="loading" />
+<div class="flex justify-center items-center min-h-[300px] py-10">
+  <p-progress-spinner ariaLabel="Cargando..." />
 </div>
 } @else {
 
-<div class="w-full flex flex-col gap-6 p-6 items-center justify-start">
+<div class="w-full px-4 py-6 flex flex-col gap-8">
+  <!-- Sin resultados -->
   @if (productsSearch?.products?.length == 0) {
-  <div class="flex flex-col items-center justify-center w-full h-full">
-    <h2 class="text-2xl font-bold text-gray-600">No hay productos</h2>
+  <div class="text-center text-gray-500">
+    <h2 class="text-2xl font-semibold">No hay productos disponibles</h2>
   </div>
   }
-  <div>
-    <div
-      class="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-    >
-      @for (prod of productsSearch?.products; track $index) {
-      <product-card [product]="prod" />
-      }
-    </div>
+
+  <!-- Grid de productos -->
+  <div
+    class="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+  >
+    @for (prod of productsSearch?.products; track $index) {
+    <product-card [product]="prod" />
+    }
   </div>
 
+  <!-- Paginación -->
   @if (productsSearch?.products?.length != 0) {
-  <div class="flex justify-center items-center gap-2 w-full">
-    <span>Productos por pagina</span>
-    <div class="flex flex-col items-center justify-center mx-4">
-      <input
-        type="text"
-        pInputText
-        [(ngModel)]="searchParams.size"
-        class="w-12 mb-3"
-      />
-      <p-slider
-        class="-translate-y-2"
-        [(ngModel)]="searchParams.size"
-        (ngModelChange)="(productsSearch!.pageSize)"
-        (onChange)="onSizePageChange($event)"
-        [style]="{ width: '10rem' }"
-        [min]="12"
-        [max]="28"
-        [step]="4"
-      />
+  <div
+    class="flex flex-col md:flex-row justify-between items-center gap-6 border-t pt-6 mt-4"
+  >
+    <!-- Tamaño de página -->
+    <div class="flex items-center gap-4">
+      <span class="text-sm text-gray-700">Productos por página</span>
+      <div class="flex flex-col items-center gap-1">
+        <input
+          type="text"
+          pInputText
+          [(ngModel)]="searchParams.size"
+          class="w-12 text-center"
+        />
+        <p-slider
+          [(ngModel)]="searchParams.size"
+          (ngModelChange)="(productsSearch!.pageSize)"
+          (onChange)="onSizePageChange($event)"
+          [style]="{ width: '10rem' }"
+          [min]="12"
+          [max]="28"
+          [step]="4"
+        />
+      </div>
     </div>
 
+    <!-- Paginador -->
     <p-paginator
       (onPageChange)="onPageChange($event)"
       [first]="
@@ -64,9 +73,8 @@
       [showFirstLastIcon]="false"
       [showCurrentPageReport]="true"
       currentPageReportTemplate="{first} - {last} de {totalRecords}"
-    ></p-paginator>
+    />
   </div>
   }
 </div>
-
 }

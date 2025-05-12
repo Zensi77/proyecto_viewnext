@@ -51,7 +51,7 @@ public class UserServiceImpl implements IUserService {
                 User newUser = User.builder()
                                 .email(user.getEmail())
                                 .password(passwordEncoder.encode(user.getPassword()))
-                                .fullName(user.getName())
+                                .name(user.getName())
                                 .role(RoleEnum.USER)
                                 .build();
 
@@ -66,6 +66,7 @@ public class UserServiceImpl implements IUserService {
                 response.put("user", UserResponseDto.builder()
                                 .name(user.getName())
                                 .email(savedUser.getEmail())
+                                .name(savedUser.getName())
                                 .role(savedUser.getRole().toString())
                                 .build());
                 response.put("token", token);
@@ -89,8 +90,9 @@ public class UserServiceImpl implements IUserService {
                 // Crear respuesta con token y datos del usuario
                 Map<String, Object> response = new HashMap<>();
                 response.put("user", UserResponseDto.builder()
-                                .name(userFind.get().getFullName())
+                                .name(userFind.get().getName())
                                 .email(userFind.get().getEmail())
+                                .name(userFind.get().getName())
                                 .role(userFind.get().getRole().toString())
                                 .build());
                 response.put("token", token);
@@ -102,7 +104,7 @@ public class UserServiceImpl implements IUserService {
         public Map<String, Object> saveAdmin(UserCreateDto user) {
                 User newUser = User.builder()
                                 .email(user.getEmail())
-                                .fullName(user.getName())
+                                .name(user.getName())
                                 .password(passwordEncoder.encode(user.getPassword()))
                                 .role(RoleEnum.ADMIN)
                                 .build();

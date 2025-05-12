@@ -67,7 +67,11 @@ export class AuthService {
           text: `Bienvenido, ${res.user.name}`,
         });
         this.loading.set(false);
-        this._router.navigate(['/']);
+        if (res.user.role === Role.admin) {
+          this._router.navigate(['/admin']);
+        } else {
+          this._router.navigate(['/']);
+        }
       },
       error: (err) => {
         console.error(err);

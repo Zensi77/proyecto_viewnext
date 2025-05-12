@@ -13,7 +13,6 @@ import { Select } from 'primeng/select';
 
 import { ActivatedRoute } from '@angular/router';
 import { Chip } from 'primeng/chip';
-import { combineLatest, tap } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { Category, Provider } from '../../../interfaces/Data.interface';
 import { HomeService } from '../../../services/home.service';

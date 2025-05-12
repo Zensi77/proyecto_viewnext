@@ -13,7 +13,7 @@ public class UserDtoMapper {
 
         return UserResponseDto.builder()
                 .email(user.getEmail())
-                .name(user.getFullName())
+                .name(user.getName())
                 .role(user.getRole().name())
                 .build();
     }
