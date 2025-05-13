@@ -8,6 +8,7 @@ import org.infinispan.client.hotrod.marshall.MarshallerUtil;
 import org.infinispan.commons.marshall.ProtoStreamMarshaller;
 import org.infinispan.spring.remote.provider.SpringRemoteCacheManager;
 import org.infinispan.protostream.SerializationContext;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,6 +19,12 @@ import com.juanma.proyecto_vn.infrastructure.cache.ProductProtoSchemaInitializer
 // @EnableCaching // Activa @Cacheable
 public class InfinispanConfig {
 
+    @Value("${infinispan.server.host}")
+    private String host;
+
+    @Value("${infinispan.server.port}")
+    private int port;
+
     @Bean
     public RemoteCacheManager remoteCacheManager(ProductProtoSchemaInitializer schema) {
         ConfigurationBuilder builder = new ConfigurationBuilder();
@@ -26,7 +33,7 @@ public class InfinispanConfig {
                 // que no es necesario
                 // Al estar en docker se le pone BASIC para que no use la IP del servidor
                 .clientIntelligence(ClientIntelligence.BASIC)
-                .addServer().host("localhost").port(11222)
+                .addServer().host(host).port(port)
                 .security().authentication()
                 .enabled(true)
                 .saslMechanism("SCRAM-SHA-512")

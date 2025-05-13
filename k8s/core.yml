@@ -1,3 +1,11 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: connection-sql
+type: Opaque
+stringData:
+  JDBC_DATABASE_URL: jdbc:mysql://mysql:3306/tienda-vn
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -55,6 +63,14 @@ spec:
       containers:
         - name: backend
           image: backend:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: JDBC_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: connection-sql
+                  key: JDBC_DATABASE_URL
           livenessProbe:
             httpGet:
               path: /health

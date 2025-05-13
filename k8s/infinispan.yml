@@ -40,3 +40,19 @@ spec:
                 secretKeyRef:
                   name: credentials-infinispan
                   key: password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cache
+  namespace: app
+spec:
+  selector:
+    app: cache
+  ports:
+    - protocol: TCP
+      port: 11222
+      targetPort: 11222
+  type: ClusterIP
+---
+
