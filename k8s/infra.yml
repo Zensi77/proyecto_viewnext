@@ -1,0 +1,76 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: app
+  labels:
+    name: app
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: stats
+  labels:
+    name: stats
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: app-quota
+  namespace: app
+spec:
+  hard:
+    pods: '6'
+    requests.cpu: '2'
+    requests.memory: 2Gi
+    limits.cpu: '3'
+    limits.memory: 3Gi
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: stats-quota
+  namespace: stats
+spec:
+  hard:
+    pods: '4'
+    requests.cpu: '0.5'
+    requests.memory: 512Mi
+    limits.cpu: '1.5'
+    limits.memory: 2Gi
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: app-limitrange
+  namespace: app
+spec:
+  limits:
+    - max:
+        cpu: 1
+        memory: 1Gi
+      min:
+        cpu: 0.1
+        memory: 128Mi
+      default:
+        cpu: 0.5
+        memory: 512Mi
+      defaultRequest:
+        cpu: 0.2
+        memory: 256Mi
+      type: Container
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: stats-limitrange
+  namespace: stats
+spec:
+  limits:
+    - max:
+        cpu: 1
+        memory: 1Gi
+      min:
+        cpu: 0.1
+        memory: 128Mi
+      type: Container
