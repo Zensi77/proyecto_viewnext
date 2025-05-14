@@ -29,7 +29,7 @@ export class SharedDataService {
   }
 
   getCart() {
-    const url = environment.get_cart;
+    const url = environment.base_url + environment.get_cart;
     return this._http.get<CartResponse>(url).subscribe(
       (res) => {
         this.cart.set(res);
@@ -54,14 +54,14 @@ export class SharedDataService {
   }
 
   getProductsNames() {
-    const url = environment.get_names_products;
+    const url = environment.base_url + environment.get_names_products;
     return this._http.get<ProductName[]>(url).subscribe((res) => {
       this.productNames.set(res);
     });
   }
 
   addProductToCart(productId: number, quantity: number = 1) {
-    const url = environment.add_to_cart;
+    const url = environment.base_url + environment.add_to_cart;
     const body = {
       cart_id: this.cart()!.cart_id,
       product_id: productId,
@@ -88,7 +88,7 @@ export class SharedDataService {
   }
 
   deleteProductFromCart(productId: number) {
-    const url = environment.delete_product_from_cart;
+    const url = environment.base_url + environment.delete_product_from_cart;
 
     this._http
       .delete(url, {
@@ -98,7 +98,7 @@ export class SharedDataService {
   }
 
   updateProductQuantity(productItem: ProductCart, quantity: number) {
-    const url = environment.modify_product_quantity;
+    const url = environment.base_url + environment.modify_product_quantity;
 
     const body = {
       cart_id: this.cart()!.cart_id,

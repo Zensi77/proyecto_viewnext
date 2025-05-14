@@ -44,16 +44,14 @@ public class MetricsFilter extends OncePerRequestFilter {
 
             Map<String, Object> extra = Map.of(
                     "url", requestURI,
-                    "processing_time_ms", time,
-                    "has_error", false);
+                    "processing_time_ms", time);
             metricsService.sendMetrics("request_success", userId, request.getRequestURI(), extra);
         } catch (Exception e) {
             long time = System.currentTimeMillis() - start;
 
             Map<String, Object> extra = Map.of(
                     "url", requestURI,
-                    "processing_time_ms", time,
-                    "has_error", false);
+                    "processing_time_ms", time);
 
             metricsService.sendMetrics("request_error", userId, request.getRequestURI(), extra);
         }

@@ -1,5 +1,5 @@
 # Etapa 1: Construcción
-FROM node:23-slim AS build
+FROM node:20-alpine AS build
  
 WORKDIR /app
  
@@ -8,7 +8,7 @@ RUN npm install
  
 COPY . .
  
-RUN npx ng build --configuration=production
+RUN npm run build
  
 # Etapa 2: Servir la aplicación
 FROM nginx:stable-alpine

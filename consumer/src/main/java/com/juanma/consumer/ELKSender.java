@@ -16,7 +16,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ELKSender {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objMapper = new ObjectMapper();
-    private String ELKURL = "http://localhost:9200/";
+
+    @Value("${elk.url}")
+    private String ELKURL;
 
     @Value("${elk.mapping.directory}")
     private String mappingDirectory;

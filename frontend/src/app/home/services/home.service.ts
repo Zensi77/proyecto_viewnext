@@ -30,33 +30,33 @@ export class HomeService {
   }
 
   getProductsNamesObs() {
-    const url = environment.get_names_products;
+    const url = environment.base_url + environment.get_names_products;
     return this._http.get<ProductName[]>(url);
   }
 
   getCategories() {
-    const url = environment.get_all_categories;
+    const url = environment.base_url + environment.get_all_categories;
     return this._http.get<Category[]>(url).subscribe((res: Category[]) => {
       this.categories.set(res.sort(() => Math.random() - 0.5));
     });
   }
 
   getProviders() {
-    const url = environment.get_all_providers;
+    const url = environment.base_url + environment.get_all_providers;
     return this._http.get<Provider[]>(url).subscribe((res: Provider[]) => {
       this.providers.set(res.sort(() => Math.random() - 0.5));
     });
   }
 
   getRandomProducts(quantity: number) {
-    const url = environment.get_random_products;
+    const url = environment.base_url + environment.get_random_products;
     return this._http.get<Product[]>(url, {
       params: { quantity },
     });
   }
 
   searchProducts(search: SearchProduct) {
-    const url = environment.get_all_products;
+    const url = environment.base_url + environment.get_all_products;
     let params = new HttpParams();
 
     params = params.append('page', search.page.toString());
@@ -90,19 +90,19 @@ export class HomeService {
   }
 
   getProduct(id: string) {
-    const url = environment.get_product;
+    const url = environment.base_url + environment.get_product;
 
     return this._http.get<Product>(url + id);
   }
 
   createOrder(order: CreateOrder) {
-    const url = environment.create_order;
+    const url = environment.base_url + environment.create_order;
 
     return this._http.post(url, order);
   }
 
   getOrders() {
-    const url = environment.get_orders;
+    const url = environment.base_url + environment.get_orders;
 
     this._http.get<OrderResponse[]>(url).subscribe({
       next: (res) => {
@@ -115,7 +115,7 @@ export class HomeService {
   }
 
   cancel_order(id: string) {
-    const url = environment.cancel_order + id;
+    const url = environment.base_url + environment.cancel_order + id;
 
     this._http.put(url, {}).subscribe({
       next: () => {

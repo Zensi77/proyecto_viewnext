@@ -29,7 +29,7 @@ export class AuthService {
   }
 
   signUp(user: User) {
-    const url = environment.sign_up;
+    const url = environment.base_url + environment.sign_up;
     this.loading.set(true);
 
     this._http.post<UserResponse>(url, user).subscribe({
@@ -43,7 +43,7 @@ export class AuthService {
         this.loading.set(false);
         this._router.navigate(['/']);
       },
-      error: (err) => {
+      error: () => {
         Swal.fire({
           icon: 'error',
           text: 'Error en el registro',
@@ -55,7 +55,7 @@ export class AuthService {
 
   // Iniciar sesión con email y contraseña
   signIn(user: User) {
-    const url = environment.sign_in;
+    const url = environment.base_url + environment.sign_in;
 
     this.loading.set(true);
     this._http.post<UserResponse>(url, user).subscribe({

@@ -32,6 +32,5 @@ public class MetricsServiceAdapter implements IMetricsService {
     @Override
     public void sendMetrics(String eventName, String userId, Map<String, Object> eventData) {
         metricsSender.sendOrderMetrics(eventName, userId, eventData);
-        metricsSender.sendFunnelEvent(eventName, userId, eventData);
     }
 }
