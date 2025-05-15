@@ -19,7 +19,6 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  storageClassName: gp2-inmediate
 ---
 apiVersion: apps/v1
 kind: Deployment
