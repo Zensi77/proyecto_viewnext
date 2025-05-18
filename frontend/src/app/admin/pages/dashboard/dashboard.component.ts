@@ -4,19 +4,20 @@ import { MenuModule } from 'primeng/menu';
 import { BadgeModule } from 'primeng/badge';
 import { RippleModule } from 'primeng/ripple';
 import { AvatarModule } from 'primeng/avatar';
-import { RouterModule } from '@angular/router';
+import { RouterLink, RouterModule } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
 
 @Component({
-  imports: [MenuModule, BadgeModule, RippleModule, AvatarModule, RouterModule],
+  imports: [
+    MenuModule,
+    BadgeModule,
+    RippleModule,
+    AvatarModule,
+    RouterModule,
+    RouterLink,
+  ],
   templateUrl: './dashboard.component.html',
-  styles: `.bg-cristal {
-    background: rgba(255, 255, 255, 0.3);
-    -webkit-backdrop-filter: blur(5px);
-    backdrop-filter: blur(3px);
-    border: 1.5px solid rgba(209, 213, 219, 0.3);
-    overflow: hidden;
-  }`,
+  styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit {
   private readonly _authService = inject(AuthService);
@@ -40,6 +41,7 @@ export class DashboardComponent implements OnInit {
           {
             label: 'Search',
             icon: 'pi pi-search',
+            routerLink: './products',
           },
         ],
       },
@@ -53,7 +55,8 @@ export class DashboardComponent implements OnInit {
           },
           {
             label: 'Search',
-            icon: 'pi pi-inbox',
+            icon: 'pi pi-search',
+            routerLink: './categories',
           },
         ],
       },
@@ -68,6 +71,7 @@ export class DashboardComponent implements OnInit {
           {
             label: 'Search',
             icon: 'pi pi-search',
+            routerLink: './providers',
           },
         ],
       },
@@ -81,6 +85,7 @@ export class DashboardComponent implements OnInit {
           {
             label: 'Search',
             icon: 'pi pi-search',
+            routerLink: './users',
           },
         ],
       },
@@ -88,8 +93,10 @@ export class DashboardComponent implements OnInit {
   }
 
   get userName() {
-    console.log(this.user());
-
     return this.user()?.name;
+  }
+
+  logout() {
+    this._authService.signOut();
   }
 }

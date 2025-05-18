@@ -41,9 +41,8 @@ public class CategoryServiceImpl implements ICategoryService {
     @Override
     public Category updateCategory(UUID id, Category category) {
         log.debug("Actualizando categoría en BD: {}", category);
-        Category existingCategory = categoryRepository.findById(id);
-                
-        return categoryRepository.update(existingCategory);
+
+        return categoryRepository.update(category);
     }
 
     @Override

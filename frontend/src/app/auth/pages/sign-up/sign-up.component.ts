@@ -37,7 +37,6 @@ import { ValidatorService } from '../../services/validator.service';
 })
 export default class SignUpComponent {
   private readonly fb = inject(NonNullableFormBuilder);
-  private readonly _router = inject(Router);
   private readonly _authService = inject(AuthService);
   private readonly _validator = inject(ValidatorService);
 
@@ -66,6 +65,8 @@ export default class SignUpComponent {
 
   onSubmit() {
     if (!this.registerForm.valid) return this.registerForm.markAllAsTouched();
+
+    console.log(this.registerForm.value);
 
     const email = this.registerForm.get('email')?.value as string;
     const password = this.registerForm.get('password')?.value as string;

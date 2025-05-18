@@ -19,7 +19,7 @@ public class CategoryMapper {
      */
     public Category toDomain(CategoryResponseDto dto) {
         return Category.builder()
-                .id(UUID.randomUUID())
+                .id(dto.getId())
                 .name(dto.getName())
                 .build();
     }

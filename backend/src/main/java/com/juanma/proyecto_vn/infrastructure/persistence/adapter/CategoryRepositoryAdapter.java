@@ -63,15 +63,14 @@ public class CategoryRepositoryAdapter implements CategoryRepository {
     public Category update(Category category) {
         log.debug("Actualizando categoría en BD: {}", category);
 
-        // Verificar primero si existe
-        if (jpaCategoryRepository.existsById(category.getId())) {
-            CategoryEntity entity = categoryMapper.toEntity(category);
-            CategoryEntity updatedEntity = jpaCategoryRepository.save(entity);
-            return categoryMapper.toDomain(updatedEntity);
-        } else {
-            log.warn("Intento de actualizar una categoría inexistente con ID: {}", category.getId());
-            throw new IllegalArgumentException("No se puede actualizar una categoría que no existe");
-        }
+        CategoryEntity existingEntity = jpaCategoryRepository.findById(category.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
+
+        // Actualizar los campos de la entidad existente con los nuevos valores
+        existingEntity.setName(category.getName());
+        CategoryEntity updatedEntity = jpaCategoryRepository.save(existingEntity);
+        return categoryMapper.toDomain(updatedEntity);
+
     }
 
     @Override

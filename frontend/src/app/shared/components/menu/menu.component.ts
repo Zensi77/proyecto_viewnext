@@ -70,24 +70,6 @@ export class MenuComponent implements OnInit {
 
     const darkMode = localStorage.getItem('dark-mode');
     if (darkMode) this.toogleDarkMode();
-
-    effect(() => {
-      console.log('Cart change count:', this._sharedService.cartChangeCount());
-
-      if (this._sharedService.cartChangeCount() > 0) {
-        const el = document.querySelector('.cart-icon');
-
-        if (el) {
-          // Elimina clases previas
-          el.classList.remove('animate__animated', 'animate__bounce');
-
-          void (el as HTMLElement).offsetWidth;
-
-          // Añadir clases para reiniciar la animación
-          el.classList.add('animate__animated', 'animate__bounce');
-        }
-      }
-    });
   }
 
   toogleDarkMode() {

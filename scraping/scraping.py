@@ -14,6 +14,7 @@ from selenium.common.exceptions import TimeoutException
 import os
 import dotenv
 import random
+from datetime import datetime
 
 dotenv.load_dotenv()
 
@@ -74,19 +75,19 @@ def saveCategoriesAndProvider(categories, providers):
     try:
         cursor = conn.cursor()
         sql = '''
-            INSERT INTO provider (id, name, address, deleted)
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO provider (id, name, address, deleted, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, %s, %s)
         '''
         for provider in providers.values():
-            cursor.execute(sql, (str(uuid.uuid4()), provider.split(".")[1], provider, False))
+            cursor.execute(sql, (str(uuid.uuid4()), provider.split(".")[1], provider, False, datetime.now(), datetime.now()))
             conn.commit()
         cursor = conn.cursor()
         sql = '''
-            INSERT INTO category (id, name, deleted)
-            VALUES (%s, %s, %s)
+            INSERT INTO category (id, name, deleted, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, %s)
         '''
         for category in categories.values():
-            cursor.execute(sql, (str(uuid.uuid4()), category, False))
+            cursor.execute(sql, (str(uuid.uuid4()), category, False, datetime.now(), datetime.now()))
             conn.commit()
         print("[INFO] Categorías y proveedores guardados.")
     except mysql.connector.Error as err:
@@ -221,8 +222,8 @@ def saveProduct(data, search_term):
             data["provider"] = None
 
         sql_insert = '''
-            INSERT INTO product (id, provider_id, name, image, price, category_id, description, deleted, stock)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO product (id, provider_id, name, image, price, category_id, description, deleted, stock, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         '''
 
         # Manejo del precio
@@ -257,7 +258,9 @@ def saveProduct(data, search_term):
             category[0] if category else None,
             description if description else "Descripción no disponible",
             False,
-            random.randint(0, 100) 
+            random.randint(0, 100) ,
+            datetime.now(),
+            datetime.now()
         )
 
         cursor.execute(sql_insert, values)

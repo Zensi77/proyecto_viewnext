@@ -1,11 +1,4 @@
-import {
-  Component,
-  effect,
-  inject,
-  OnChanges,
-  OnInit,
-  signal,
-} from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Product } from '../../interfaces/Data.interface';
 import { HomeService } from '../../services/home.service';

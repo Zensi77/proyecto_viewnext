@@ -60,7 +60,7 @@ export class SharedDataService {
     });
   }
 
-  addProductToCart(productId: number, quantity: number = 1) {
+  addProductToCart(productId: string, quantity: number = 1) {
     const url = environment.base_url + environment.add_to_cart;
     const body = {
       cart_id: this.cart()!.cart_id,
@@ -87,7 +87,7 @@ export class SharedDataService {
     );
   }
 
-  deleteProductFromCart(productId: number) {
+  deleteProductFromCart(productId: string) {
     const url = environment.base_url + environment.delete_product_from_cart;
 
     this._http

@@ -1,7 +1,7 @@
 import { Product } from '../../home/interfaces/Data.interface';
 
 export interface CartResponse {
-  cart_id: number;
+  cart_id: string;
   products: ProductCart[];
   totalPrice: number;
 }

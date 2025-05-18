@@ -11,7 +11,7 @@ export const environment = {
   get_names_products: 'api/v1/products/get-names',
   get_all_products: 'api/v1/products/',
   get_random_products: 'api/v1/products/random',
-  get_product: '/v1/products/',
+  get_product: 'api/v1/products/',
   create_product: 'api/v1/products/',
   update_product: 'api/v1/products/',
   delete_product: 'api/v1/products/',

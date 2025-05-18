@@ -135,7 +135,7 @@ public class CategoryController {
      * @return DTO con la categoría actualizada
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<?> updateCategory(
             @PathVariable UUID id,
             @Valid @RequestBody CategoryResponseDto categoryRequestDto,

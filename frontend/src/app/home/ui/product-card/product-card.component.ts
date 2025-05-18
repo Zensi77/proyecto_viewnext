@@ -112,7 +112,7 @@ export class ProductCardComponent {
 
   @Input({ required: true }) product!: Product;
 
-  addToCart(productId: number) {
+  addToCart(productId: string) {
     if (this._sharedService.cart() === null) {
       this._router.navigate(['/auth/sign-in']);
       return;

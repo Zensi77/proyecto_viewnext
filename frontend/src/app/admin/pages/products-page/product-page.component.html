@@ -1,0 +1,87 @@
+<div class="virtual-scroller-container">
+  <div class="flex justify-between p-4 bg-white shadow">
+    <h2 class="text-2xl font-bold mb-4">Lista de Productos</h2>
+    <input
+      [(ngModel)]="query"
+      (ngModelChange)="searchProducts($event)"
+      type="text"
+      placeholder="Buscar productos..."
+      class="search-input"
+    />
+  </div>
+
+  <div *ngIf="!products" class="loading-indicator">
+    <div class="flex justify-center items-center h-20">
+      <div
+        class="animate-spin rounded-full h-10 w-10 border-b-2 border-green-700"
+      ></div>
+    </div>
+    <p class="text-center text-gray-600">Cargando productos...</p>
+  </div>
+
+  <ng-container *ngIf="products && products && products.length > 0">
+    <cdk-virtual-scroll-viewport
+      itemSize="80"
+      class="virtual-scroller-viewport"
+      (scrolledIndexChange)="onScroll($event)"
+    >
+      <ng-container *cdkVirtualFor="let product of products">
+        <div class="product-item">
+          <div
+            class="flex items-center justify-between p-4 border-b hover:bg-gray-50"
+          >
+            <div class="flex items-center space-x-4">
+              <img
+                [src]="product?.image || ''"
+                [alt]="product?.name || ''"
+                class="w-12 h-12 object-contain"
+              />
+              <div>
+                <h3 class="font-medium">{{ product?.name }}</h3>
+                <span class="text-sm text-gray-600">
+                  {{ product?.price | currency : "EUR" }}
+                </span>
+              </div>
+            </div>
+
+            <div class="flex space-x-2">
+              <button
+                (click)="onEditProduct(product)"
+                class="px-3 py-1 text-blue-600 cursor-pointer hover:bg-blue-50 rounded"
+              >
+                Editar
+              </button>
+              <p-button
+                #deleteButton
+                (click)="onDeleteProduct($event, product.id)"
+                severity="danger"
+                label="Eliminar"
+              >
+              </p-button>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </cdk-virtual-scroll-viewport>
+  </ng-container>
+
+  <div *ngIf="products && products.length === 0" class="no-products">
+    No hay productos disponibles
+  </div>
+</div>
+
+<p-dialog
+  [header]="productToEdit ? 'Editar Producto' : 'Agregar Producto'"
+  [(visible)]="showProductDialog"
+  [modal]="true"
+  [closable]="true"
+  [style]="{ width: '70%' }"
+  [responsive]="true"
+  [breakpoints]="{ '960px': '90vw' }"
+>
+  <product-dialog
+    [action]="'edit'"
+    [product]="productToEdit"
+    (closeDialog)="actionCompleted()"
+  />
+</p-dialog>

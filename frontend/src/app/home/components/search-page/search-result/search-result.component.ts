@@ -167,8 +167,6 @@ export class SearchResultComponent implements OnInit, OnChanges {
     this.loading = true;
     this._homeService.searchProducts(this.searchParams).subscribe({
       next: (res) => {
-        console.log('Productos obtenidos:', res);
-
         this.productsSearch = res;
         this.loading = false;
       },

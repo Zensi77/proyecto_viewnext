@@ -1,4 +1,4 @@
-<div class="flex bg-gray-200">
+<div class="flex w-full h-full bg bg-gray-200">
   <aside class="w-64 h-screen bg-white shadow-xl flex flex-col z-50">
     <div class="px-6 py-4">
       <h2 class="text-2xl font-bold text-green-700">Tecno Shop</h2>
@@ -14,6 +14,7 @@
         <ng-template pTemplate="item" let-item>
           <a
             pRipple
+            [routerLink]="item.routerLink"
             class="flex items-center px-4 py-2 hover:bg-green-100 cursor-pointer transition-colors rounded-md mx-2"
           >
             <i [class]="item.icon" class="mr-2 text-green-600"></i>
@@ -36,32 +37,18 @@
           }}</span>
           <span class="text-xs text-gray-500">Admin</span>
         </div>
+        <i
+          class="pi pi-sign-out text-red-500 cursor-pointer ml-auto"
+          (click)="logout()"
+        ></i>
       </div>
     </div>
   </aside>
 
-  <div class="w-full h-full bg-cristal m-16">
-    <h1 class="text-zinc-900">Hola</h1>
-    <h1 class="text-zinc-900">Hola</h1>
-    <h1 class="text-zinc-900">Hola</h1>
-    <h1 class="text-zinc-900">Hola</h1>
-    <h1 class="text-zinc-900">Hola</h1>
-    <h1 class="text-zinc-900">Hola</h1>
-    <h1 class="text-zinc-900">Hola</h1>
-    <h1 class="text-zinc-900">Hola</h1>
-    <h1 class="text-zinc-900">Hola</h1>
-    <h1 class="text-zinc-900">Hola</h1>
-    <h1 class="text-zinc-900">Hola</h1>
-    <h1 class="text-zinc-900">Hola</h1>
-    <h1 class="text-zinc-900">Hola</h1>
-    <h1 class="text-zinc-900">Hola</h1>
-    <h1 class="text-zinc-900">Hola</h1>
-    <h1 class="text-zinc-900">Hola</h1>
-    <h1 class="text-zinc-900">Hola</h1>
-    <h1 class="text-zinc-900">Hola</h1>
-    <h1 class="text-zinc-900">Hola</h1>
-    <h1 class="text-zinc-900">Hola</h1>
-    <h1 class="text-zinc-900">Hola</h1>
-    <!-- <router-outlet></router-outlet> -->
+  <div class="flex-1 flex flex-col p-8 h-screen">
+    <!-- Contenedor del router-outlet con altura y ancho completos -->
+    <div class="flex-1 w-full rounded-lg shadow-lg bg-cristal">
+      <router-outlet></router-outlet>
+    </div>
   </div>
 </div>

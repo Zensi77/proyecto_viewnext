@@ -1,6 +1,6 @@
 import { Component, computed, inject, OnInit } from '@angular/core';
 import { HomeService } from '../../services/home.service';
-import { OrderResponse, ProductOrder } from '../../interfaces/order.interface';
+import { ProductOrder } from '../../interfaces/order.interface';
 import { CommonModule } from '@angular/common';
 import { OrderStatusDirective } from '../../../shared/directives/OrderStatus.directive';
 import { ConfirmationService, MessageService } from 'primeng/api';

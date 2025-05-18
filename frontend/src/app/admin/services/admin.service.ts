@@ -1,0 +1,62 @@
+import { inject, Injectable, signal } from '@angular/core';
+import {
+  Category,
+  Product,
+  Provider,
+} from '../../home/interfaces/Data.interface';
+import { User } from '../../auth/interfaces/user.interface';
+import { environment } from '../../../environments/environment';
+import { HttpClient } from '@angular/common/http';
+import { CreateProduct } from '../interfaces/admin-data.interface';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class AdminService {
+  private readonly _http = inject(HttpClient);
+
+  providers = signal<Provider[]>([]);
+  loading = signal<boolean>(false);
+  categories = signal<Category[]>([]);
+  Users = signal<User[]>([]);
+
+  constructor() {}
+
+  getUsers() {}
+
+  deleteProduct(id: string) {
+    const url = environment.base_url + environment.delete_product + id;
+
+    return this._http.delete<Product>(url);
+  }
+
+  updateProduct(id: string, product: CreateProduct) {
+    const url = environment.base_url + environment.update_product + id;
+
+    return this._http.put<Product>(url, product);
+  }
+
+  updateCategory(id: string, category: Category) {
+    const url = environment.base_url + environment.update_category + id;
+
+    return this._http.put<Category>(url, category);
+  }
+
+  deleteCategory(id: string) {
+    const url = environment.base_url + environment.delete_category + id;
+
+    return this._http.delete<Category>(url);
+  }
+
+  updateProvider(id: string, provider: Provider) {
+    const url = environment.base_url + environment.update_provider + id;
+
+    return this._http.put<Provider>(url, provider);
+  }
+
+  deleteProvider(id: string) {
+    const url = environment.base_url + environment.delete_provider + id;
+
+    return this._http.delete<Provider>(url);
+  }
+}

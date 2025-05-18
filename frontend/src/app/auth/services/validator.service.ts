@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn } from '@angular/forms';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { debounceTime, map } from 'rxjs';
 
@@ -12,7 +12,7 @@ export class ValidatorService {
 
   validateEmail(): AsyncValidatorFn {
     return (control: AbstractControl) => {
-      const url = environment.check_email;
+      const url = `${environment.base_url}${environment.check_email}`;
       const email = control.value;
 
       return this._http

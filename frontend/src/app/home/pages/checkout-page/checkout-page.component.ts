@@ -46,7 +46,7 @@ export class CheckoutPageComponent {
     this._sharedService.updateProductQuantity(productItemId, quantity);
   }
 
-  removeFromCart(productId: number) {
+  removeFromCart(productId: string) {
     this._sharedService.deleteProductFromCart(productId);
   }
 
