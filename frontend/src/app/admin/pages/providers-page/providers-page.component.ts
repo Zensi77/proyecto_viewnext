@@ -44,7 +44,7 @@ export class ProvidersPageComponent {
           summary: 'Proveedor actualizado',
         });
       },
-      error: (err) => {
+      error: () => {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',

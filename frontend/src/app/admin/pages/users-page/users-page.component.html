@@ -1,1 +1,100 @@
-<p>users-page works!</p>
+<p-toast />
+
+<div class="flex justify-between p-4 bg-white shadow-lg">
+  <h2 class="text-2xl font-bold">Usuarios</h2>
+  <input
+    [(ngModel)]="query"
+    (ngModelChange)="searchUsers($event)"
+    type="text"
+    placeholder="Buscar usuarios..."
+    class="search-input"
+  />
+</div>
+<div class="h-5/6 overflow-auto shadow-lg rounded-lg">
+  <p-table
+    [value]="usersFiltered.length > 0 && query !== '' ? usersFiltered : users"
+    editMode="cell"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Nombre</th>
+        <th>Correo</th>
+        <th>Rol</th>
+        <th>Estado</th>
+        <th class="flex justify-end">Acciones</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-user let-editing="editing">
+      <tr>
+        <td pEditableColumn>
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <input
+                type="text"
+                [(ngModel)]="user.name"
+                (keydown.enter)="updateUser(user)"
+                (blur)="updateUser(user)"
+                class="p-inputtext-sm"
+              />
+            </ng-template>
+            <ng-template pTemplate="output">
+              {{ user.name }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td pEditableColumn>
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <input
+                type="text"
+                [(ngModel)]="user.email"
+                (keydown.enter)="updateUser(user)"
+                (blur)="updateUser(user)"
+                class="p-inputtext-sm"
+              />
+            </ng-template>
+            <ng-template pTemplate="output">
+              {{ user.email }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td>
+          <p-dropdown
+            [options]="roles"
+            [(ngModel)]="user.role"
+            (onChange)="updateUser(user)"
+            placeholder="Seleccionar rol"
+            class="w-full"
+          ></p-dropdown>
+        </td>
+        <td pEditableColumn>
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <input
+                type="text"
+                [(ngModel)]="user.status"
+                (keydown.enter)="updateUser(user)"
+                (blur)="updateUser(user)"
+                class="p-inputtext-sm"
+              />
+            </ng-template>
+            <ng-template pTemplate="output">
+              {{ user.status }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+
+        <td class="flex gap-3 justify-end">
+          <button
+            pButton
+            icon="pi pi-trash"
+            severity="danger"
+            (click)="onDeleteUser(user.id)"
+            class="p-button-sm"
+          ></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

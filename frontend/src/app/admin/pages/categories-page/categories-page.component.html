@@ -4,7 +4,7 @@
   <h2 class="text-2xl font-bold">Categorías</h2>
   <input
     [(ngModel)]="query"
-    (ngModelChange)="searchCategories($event)"
+    (ngModelChange)="searchCategories()"
     type="text"
     placeholder="Buscar categorías..."
     class="search-input"
@@ -12,7 +12,11 @@
 </div>
 <div class="h-5/6 overflow-auto shadow-lg rounded-lg">
   <p-table
-    [value]="categoriesFiltered"
+    [value]="
+      categoriesFiltered.length > 0 && query !== ''
+        ? categoriesFiltered
+        : categories()
+    "
     editMode="cell"
     class="p-datatable-sm overflow-auto"
   >
@@ -33,7 +37,8 @@
                 [id]="category.id"
                 type="text"
                 [(ngModel)]="category.name"
-                (blur)="updateProduct(category)"
+                (keydown.enter)="updateCategory(category)"
+                (blur)="updateCategory(category)"
                 class="p-inputtext-sm"
               />
             </ng-template>

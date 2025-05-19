@@ -1,5 +1,8 @@
 package com.juanma.proyecto_vn.interfaces.rest.controller;
 
+import com.juanma.proyecto_vn.domain.model.User;
+import com.juanma.proyecto_vn.interfaces.rest.dtos.auth.UserResponseDto;
+import com.juanma.proyecto_vn.interfaces.rest.mapper.UserDtoMapper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -25,6 +29,20 @@ import com.juanma.proyecto_vn.interfaces.rest.dtos.auth.UserCreateDto;
 public class UserController {
     @Autowired
     private IUserService userService;
+    @Autowired
+    private UserDtoMapper userDtoMapper;
+
+    @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<List<UserResponseDto>> getAll() {
+        List<User> users = userService.getAll();
+
+        List<UserResponseDto> response = users.stream()
+                .map(userDtoMapper::toDto)
+                .toList();
+
+        return ResponseEntity.ok(response);
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> createUser(@Valid @RequestBody UserCreateDto user, BindingResult result) {

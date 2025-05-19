@@ -21,6 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -46,7 +47,10 @@ public class UserServiceImpl implements IUserService {
         @Autowired
         private AuthenticationManager authenticationManager;
 
-        @Transactional
+        public List<User> getAll() {
+                return userRepository.findAll();
+        }
+
         public Map<String, Object> saveUser(UserCreateDto user) {
                 User newUser = User.builder()
                                 .email(user.getEmail())
@@ -74,7 +78,6 @@ public class UserServiceImpl implements IUserService {
                 return response;
         }
 
-        @Transactional
         public Map<String, Object> login(LoginDto user) {
                 // Intentar autenticar al usuario
                 authenticationManager.authenticate(
@@ -100,7 +103,6 @@ public class UserServiceImpl implements IUserService {
                 return response;
         }
 
-        @Transactional
         public Map<String, Object> saveAdmin(UserCreateDto user) {
                 User newUser = User.builder()
                                 .email(user.getEmail())
@@ -127,7 +129,6 @@ public class UserServiceImpl implements IUserService {
                 return response;
         }
 
-        @Transactional
         public boolean emailExist(String email) {
                 Optional<User> user = userRepository.findByEmail(email);
 

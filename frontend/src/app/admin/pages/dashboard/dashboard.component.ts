@@ -6,15 +6,20 @@ import { RippleModule } from 'primeng/ripple';
 import { AvatarModule } from 'primeng/avatar';
 import { RouterLink, RouterModule } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
+import { DialogModule } from 'primeng/dialog';
+import { ProductDialogComponent } from '../../components/product-dialog/product-dialog.component';
+import Swal from 'sweetalert2';
 
 @Component({
   imports: [
     MenuModule,
     BadgeModule,
     RippleModule,
+    DialogModule,
     AvatarModule,
     RouterModule,
     RouterLink,
+    ProductDialogComponent,
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
@@ -25,6 +30,8 @@ export class DashboardComponent implements OnInit {
   user = computed(() => this._authService.user());
 
   items: MenuItem[] | undefined;
+
+  showProductDialog = false;
 
   ngOnInit() {
     this.items = [
@@ -92,8 +99,18 @@ export class DashboardComponent implements OnInit {
     ];
   }
 
+  productCreated() {
+    Swal.fire({
+      title: 'Producto creado',
+      icon: 'success',
+      confirmButtonText: 'Aceptar',
+    }).then(() => {
+      this.showProductDialog = false;
+    });
+  }
+
   get userName() {
-    return this.user()?.name;
+    return this.user()!.name || this._authService.user()!.name;
   }
 
   logout() {

@@ -1,6 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
-import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import {
   Category,
@@ -10,14 +9,12 @@ import {
   SearchProductResponse,
 } from '../interfaces/Data.interface';
 import { ProductName } from '../interfaces/ProductName.interface';
-import Swal from 'sweetalert2';
 import { CreateOrder, OrderResponse } from '../interfaces/order.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HomeService {
-  private readonly _router = inject(Router);
   private readonly _http = inject(HttpClient);
 
   categories = signal<Category[]>([]);

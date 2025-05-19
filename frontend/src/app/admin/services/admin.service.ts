@@ -22,7 +22,11 @@ export class AdminService {
 
   constructor() {}
 
-  getUsers() {}
+  getAllUsers() {
+    const url = environment.base_url + environment.get_all_users;
+
+    return this._http.get<User[]>(url);
+  }
 
   deleteProduct(id: string) {
     const url = environment.base_url + environment.delete_product + id;

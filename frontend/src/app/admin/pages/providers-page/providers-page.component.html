@@ -12,14 +12,18 @@
 </div>
 <div class="h-5/6 overflow-auto shadow-lg rounded-lg">
   <p-table
-    [value]="providersFiltered"
+    [value]="
+      providersFiltered.length > 0 && query !== ''
+        ? providersFiltered
+        : providers()
+    "
     editMode="cell"
     class="p-datatable-sm overflow-auto"
   >
     <ng-template pTemplate="header">
       <tr>
         <th>Nombre</th>
-        <td>Direccion</td>
+        <th>Direccion</th>
         <th class="flex justify-end">Acciones</th>
       </tr>
     </ng-template>
@@ -30,9 +34,9 @@
           <p-cellEditor>
             <ng-template pTemplate="input">
               <input
-                [id]="provider.id"
                 type="text"
                 [(ngModel)]="provider.name"
+                (keydown.enter)="updateProduct(provider)"
                 (blur)="updateProduct(provider)"
                 class="p-inputtext-sm"
               />
@@ -46,9 +50,9 @@
           <p-cellEditor>
             <ng-template pTemplate="input">
               <input
-                [id]="provider.id"
                 type="text"
                 [(ngModel)]="provider.address"
+                (keydown.enter)="updateProduct(provider)"
                 (blur)="updateProduct(provider)"
                 class="p-inputtext-sm"
               />
@@ -57,8 +61,6 @@
               {{ provider.address }}
             </ng-template>
           </p-cellEditor>
-
-          <!-- Botón eliminar -->
         </td>
 
         <td class="flex gap-3 justify-end">

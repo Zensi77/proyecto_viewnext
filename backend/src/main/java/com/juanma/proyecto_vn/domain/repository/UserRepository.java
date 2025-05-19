@@ -1,5 +1,6 @@
 package com.juanma.proyecto_vn.domain.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -9,6 +10,13 @@ import com.juanma.proyecto_vn.domain.model.User;
  * Puerto secundario (salida) para la persistencia de usuarios
  */
 public interface UserRepository {
+    /**
+     * Busca todos los usuarios
+     *
+     * @return Lista de usuarios
+     */
+    List<User> findAll();
+
     /**
      * Busca un usuario por su email
      * 

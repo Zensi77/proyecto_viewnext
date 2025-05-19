@@ -5,11 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @Getter
 @Builder
 public class UserResponseDto {
+    private UUID id;
 
     private String email;
 

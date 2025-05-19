@@ -13,7 +13,7 @@ import { HomeService } from '../../../home/services/home.service';
 import { TableModule } from 'primeng/table';
 import { BehaviorSubject, debounceTime } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import Swal from 'sweetalert2';
 import { ProductDialogComponent } from '../../components/product-dialog/product-dialog.component';
 import { DialogModule } from 'primeng/dialog';
@@ -68,7 +68,7 @@ export class ProductPageComponent implements OnInit {
   ngOnInit(): void {
     this.loadMore();
 
-    this.query$.pipe(debounceTime(700)).subscribe((query) => {
+    this.query$.pipe(debounceTime(700)).subscribe(() => {
       this.paginateParams.filterName = this.query;
       this.paginateParams.page = 0;
       this.products = [];

@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import { HomeService } from '../../../home/services/home.service';
 import { TableModule } from 'primeng/table';
 import { CommonModule } from '@angular/common';
@@ -21,21 +21,21 @@ export class CategoriesPageComponent {
   private readonly _homeService = inject(HomeService);
   private readonly _adminService = inject(AdminService);
 
-  constructor(private messageService: MessageService) {}
-
   categories = computed(() => this._homeService.categories());
   categoriesFiltered: Category[] = this.categories();
 
   name = '';
   query = '';
 
-  searchCategories(event: Event) {
+  constructor(private messageService: MessageService) {}
+
+  searchCategories() {
     this.categoriesFiltered = this.categories().filter((category) =>
       category.name.toLowerCase().includes(this.query.toLowerCase())
     );
   }
 
-  updateProduct(category: Category) {
+  updateCategory(category: Category) {
     this._adminService.updateCategory(category.id, category).subscribe({
       next: () => {
         this.messageService.add({
@@ -43,7 +43,7 @@ export class CategoriesPageComponent {
           summary: 'Categoria actualizada',
         });
       },
-      error: (err) => {
+      error: () => {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',

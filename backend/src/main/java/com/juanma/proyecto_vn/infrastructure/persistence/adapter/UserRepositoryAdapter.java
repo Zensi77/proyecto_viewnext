@@ -1,5 +1,6 @@
 package com.juanma.proyecto_vn.infrastructure.persistence.adapter;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,6 +24,12 @@ public class UserRepositoryAdapter implements UserRepository {
 
     private final JpaUserRepository jpaUserRepository;
     private final UserMapper userMapper;
+
+    @Override
+    public List<User> findAll() {
+        List<UserEntity> userEntities = jpaUserRepository.findAll();
+        return userEntities.stream().map(userMapper::toDomain).toList();
+    }
 
     @Override
     public Optional<User> findByEmail(String email) {

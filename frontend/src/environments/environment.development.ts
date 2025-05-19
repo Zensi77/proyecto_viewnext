@@ -7,6 +7,7 @@ export const environment = {
   sign_up: 'api/v1/user/register',
   register_admin: 'api/v1/user/register-admin',
   check_email: 'api/v1/user/email-exist',
+  get_all_users: 'api/v1/user',
 
   get_names_products: 'api/v1/products/get-names',
   get_all_products: 'api/v1/products/',

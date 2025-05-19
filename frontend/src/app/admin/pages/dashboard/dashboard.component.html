@@ -46,9 +46,24 @@
   </aside>
 
   <div class="flex-1 flex flex-col p-8 h-screen">
-    <!-- Contenedor del router-outlet con altura y ancho completos -->
     <div class="flex-1 w-full rounded-lg shadow-lg bg-cristal">
       <router-outlet></router-outlet>
     </div>
   </div>
 </div>
+
+<p-dialog
+  [header]="'Agregar Producto'"
+  [(visible)]="showProductDialog"
+  [modal]="true"
+  [closable]="true"
+  [style]="{ width: '70%' }"
+  [responsive]="true"
+  [breakpoints]="{ '960px': '90vw' }"
+>
+  <product-dialog
+    [action]="'edit'"
+    [product]="null"
+    (closeDialog)="productCreated()"
+  />
+</p-dialog>
