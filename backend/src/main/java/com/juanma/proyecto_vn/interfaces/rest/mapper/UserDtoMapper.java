@@ -14,10 +14,11 @@ public class UserDtoMapper {
         }
 
         return UserResponseDto.builder()
-                .id(user.getId())
                 .email(user.getEmail())
                 .name(user.getUsername())
-                .roles(user.getRoles())
+                .roles(user.getRoles().stream()
+                        .map(role -> role.getName().name())
+                        .toList())
                 .build();
     }
 }

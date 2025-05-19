@@ -14,12 +14,15 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.security.auth.login.AccountLockedException;
 import java.util.*;
 
 /**
@@ -52,7 +55,10 @@ public class UserServiceImpl implements IUserService {
                 User newUser = User.builder()
                                 .email(user.getEmail())
                                 .password(passwordEncoder.encode(user.getPassword()))
+                                .roles(new HashSet<>())
                                 .username(user.getUsername())
+                                .enabled(true)
+                                .accountNonLocked(true)
                                 .build();
 
                 User savedUser = userRepository.save(newUser,false);
@@ -67,7 +73,11 @@ public class UserServiceImpl implements IUserService {
                                 .name(user.getUsername())
                                 .email(savedUser.getEmail())
                                 .name(savedUser.getUsername())
-                                .roles(savedUser.getRoles())
+                                .roles(savedUser.getRoles().stream()
+                                                .map(role -> role.getName().name())
+                                                .toList())
+                                .enabled(savedUser.isEnabled())
+                                .accountNonLocked(savedUser.isAccountNonLocked())
                                 .build());
                 response.put("token", token);
 
@@ -84,6 +94,13 @@ public class UserServiceImpl implements IUserService {
 
                 // Generar token JWT
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userFind.get().getEmail());
+
+                if (!userDetails.isEnabled()){
+                        throw new DisabledException("Usuario deshabilitado");
+                } else if (!userDetails.isAccountNonLocked()) {
+                        throw new LockedException("Usuario bloqueado");
+                }
+
                 String token = jwtUtil.generateToken(userDetails);
 
                 // Crear respuesta con token y datos del usuario
@@ -91,7 +108,11 @@ public class UserServiceImpl implements IUserService {
                 response.put("user", UserResponseDto.builder()
                                 .name(userFind.get().getUsername())
                                 .email(userFind.get().getEmail())
-                                .roles(userFind.get().getRoles())
+                                .roles(userFind.get().getRoles().stream()
+                                                .map(role -> role.getName().name())
+                                                .toList())
+                                .enabled(userFind.get().isEnabled())
+                                .accountNonLocked(userFind.get().isAccountNonLocked())
                                 .build());
                 response.put("token", token);
 
@@ -116,7 +137,9 @@ public class UserServiceImpl implements IUserService {
                 response.put("user", UserResponseDto.builder()
                                 .name(user.getUsername())
                                 .email(savedUser.getEmail())
-                                .roles(savedUser.getRoles())
+                                .roles(savedUser.getRoles().stream()
+                                                .map(role -> role.getName().name())
+                                                .toList())
                                 .build());
                 response.put("token", token);
 

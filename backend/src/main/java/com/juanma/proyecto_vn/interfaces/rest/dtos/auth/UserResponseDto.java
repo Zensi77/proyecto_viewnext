@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -14,13 +15,12 @@ import java.util.UUID;
 @Getter
 @Builder
 public class UserResponseDto {
-    private UUID id;
 
     private String email;
 
     private String name;
 
-    private Set<Role> roles;
+    private List<String> roles;
 
     private boolean enabled;
 

@@ -41,10 +41,10 @@ public class UserEntity extends BaseEntity implements UserDetails {
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles = new HashSet<>();
 
-    @Column(name = "enabled", nullable = false)
-    private boolean enabled = false;
+    @Column(name = "enabled", nullable = false, columnDefinition = "boolean default true")
+    private boolean enabled = true;
 
-    @Column(name = "account_non_locked", nullable = false)
+    @Column(name = "account_non_locked", nullable = false, columnDefinition = "boolean default true")
     private boolean accountNonLocked = true;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

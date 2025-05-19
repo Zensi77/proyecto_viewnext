@@ -25,6 +25,8 @@ public class UserMapper {
                 .username(entity.getUsername())
                 .password(entity.getPassword())
                 .roles(entity.getRoles())
+                .enabled(entity.isEnabled())
+                .accountNonLocked(entity.isAccountNonLocked())
                 .build();
     }
 
@@ -42,6 +44,8 @@ public class UserMapper {
                 .password(domain.getPassword())
                 .username(domain.getUsername())
                 .roles(domain.getRoles())
+                .enabled(domain.isEnabled())
+                .accountNonLocked(domain.isAccountNonLocked())
                 .build();
     }
 }
