@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.juanma.proyecto_vn.infrastructure.persistence.entity.RoleType;
+import com.juanma.proyecto_vn.infrastructure.persistence.repository.JpaRoleRepository;
 import org.springframework.stereotype.Component;
 
 import com.juanma.proyecto_vn.domain.model.User;
@@ -23,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class UserRepositoryAdapter implements UserRepository {
 
     private final JpaUserRepository jpaUserRepository;
+    private final JpaRoleRepository jpaRoleRepository;
     private final UserMapper userMapper;
 
     @Override
@@ -44,8 +47,13 @@ public class UserRepositoryAdapter implements UserRepository {
     }
 
     @Override
-    public User save(User user) {
+    public User save(User user, boolean isAdmin) {
         UserEntity userEntity = userMapper.toEntity(user);
+        if (isAdmin){
+            userEntity.getRoles().add(jpaRoleRepository.findByName(RoleType.ROLE_ADMIN));
+        } else {
+            userEntity.getRoles().add(jpaRoleRepository.findByName(RoleType.ROLE_USER));
+        }
         UserEntity savedUserEntity = jpaUserRepository.save(userEntity);
         return userMapper.toDomain(savedUserEntity);
     }

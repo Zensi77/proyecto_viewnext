@@ -17,9 +17,9 @@ public class JwtUtil {
     private final long validityInMilliseconds = 3600000; // 1 hora
 
     // Generar token con el email y el rol
-    public String generateToken(UserDetails userDetails, String role) {
+    public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", role);
+        claims.put("role", userDetails.getAuthorities());
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -57,6 +57,6 @@ public class JwtUtil {
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
-                .get("role", String.class);
+                .get("roles", String.class);
     }
 }

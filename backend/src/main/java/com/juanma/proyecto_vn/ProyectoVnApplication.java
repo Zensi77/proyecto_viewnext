@@ -1,9 +1,13 @@
 package com.juanma.proyecto_vn;
 
+import com.juanma.proyecto_vn.infrastructure.persistence.entity.Role;
+import com.juanma.proyecto_vn.infrastructure.persistence.entity.RoleType;
+import com.juanma.proyecto_vn.infrastructure.persistence.repository.JpaRoleRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
@@ -27,12 +31,32 @@ import java.util.UUID;
 @SpringBootApplication
 @EnableAspectJAutoProxy // Habilita el soporte para AspectJ
 @EnableJms // Habilita la configuración de JMS(Java Message Service)
-public class ProyectoVnApplication {
+public class ProyectoVnApplication implements CommandLineRunner {
 
 	private static final Logger log = LoggerFactory.getLogger(ProyectoVnApplication.class);
 
 	@Autowired
 	private Environment env;
+
+	@Autowired
+	private JpaRoleRepository roleRepository;
+
+	@Override
+	public void run(String... args) throws Exception {
+		if(roleRepository.findByName(RoleType.ROLE_ADMIN) == null) {
+			roleRepository.save(Role.builder().name(RoleType.ROLE_ADMIN).build());
+			log.info("Rol ROLE_ADMIN creado");
+		} else {
+			log.info("Rol ROLE_ADMIN ya existe");
+		}
+
+		if(roleRepository.findByName(RoleType.ROLE_USER) == null) {
+			roleRepository.save(Role.builder().name(RoleType.ROLE_USER).build());
+			log.info("Rol ROLE_USER creado");
+		} else {
+			log.info("Rol ROLE_USER ya existe");
+		}
+	}
 
 	public static void main(String[] args) {
 		// Desactivar banner y construir la aplicación

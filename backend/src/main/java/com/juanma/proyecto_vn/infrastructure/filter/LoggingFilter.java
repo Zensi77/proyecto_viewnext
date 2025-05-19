@@ -58,7 +58,7 @@ public class LoggingFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
-                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role)));
+                        userDetails.getAuthorities());
 
                 authentication.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request));

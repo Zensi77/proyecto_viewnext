@@ -39,5 +39,5 @@ public interface UserRepository {
      * @param user Usuario a guardar
      * @return Usuario guardado
      */
-    User save(User user);
+    User save(User user, boolean isAdmin);
 }

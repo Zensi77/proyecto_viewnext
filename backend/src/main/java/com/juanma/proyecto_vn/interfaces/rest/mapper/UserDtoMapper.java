@@ -16,8 +16,8 @@ public class UserDtoMapper {
         return UserResponseDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
-                .name(user.getName())
-                .role(user.getRole().name())
+                .name(user.getUsername())
+                .roles(user.getRoles())
                 .build();
     }
 }

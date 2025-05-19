@@ -20,10 +20,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Implementación de los casos de uso relacionados con usuarios
@@ -55,23 +52,22 @@ public class UserServiceImpl implements IUserService {
                 User newUser = User.builder()
                                 .email(user.getEmail())
                                 .password(passwordEncoder.encode(user.getPassword()))
-                                .name(user.getName())
-                                .role(RoleEnum.USER)
+                                .username(user.getUsername())
                                 .build();
 
-                User savedUser = userRepository.save(newUser);
+                User savedUser = userRepository.save(newUser,false);
 
                 // Cargar detalles del usuario para generar token
                 UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getEmail());
-                String token = jwtUtil.generateToken(userDetails, savedUser.getRole().toString());
+                String token = jwtUtil.generateToken(userDetails);
 
                 // Crear respuesta con token y datos del usuario
                 Map<String, Object> response = new HashMap<>();
                 response.put("user", UserResponseDto.builder()
-                                .name(user.getName())
+                                .name(user.getUsername())
                                 .email(savedUser.getEmail())
-                                .name(savedUser.getName())
-                                .role(savedUser.getRole().toString())
+                                .name(savedUser.getUsername())
+                                .roles(savedUser.getRoles())
                                 .build());
                 response.put("token", token);
 
@@ -88,15 +84,14 @@ public class UserServiceImpl implements IUserService {
 
                 // Generar token JWT
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userFind.get().getEmail());
-                String token = jwtUtil.generateToken(userDetails, userFind.get().getRole().toString());
+                String token = jwtUtil.generateToken(userDetails);
 
                 // Crear respuesta con token y datos del usuario
                 Map<String, Object> response = new HashMap<>();
                 response.put("user", UserResponseDto.builder()
-                                .name(userFind.get().getName())
+                                .name(userFind.get().getUsername())
                                 .email(userFind.get().getEmail())
-                                .name(userFind.get().getName())
-                                .role(userFind.get().getRole().toString())
+                                .roles(userFind.get().getRoles())
                                 .build());
                 response.put("token", token);
 
@@ -106,23 +101,22 @@ public class UserServiceImpl implements IUserService {
         public Map<String, Object> saveAdmin(UserCreateDto user) {
                 User newUser = User.builder()
                                 .email(user.getEmail())
-                                .name(user.getName())
+                                .username(user.getUsername())
                                 .password(passwordEncoder.encode(user.getPassword()))
-                                .role(RoleEnum.ADMIN)
                                 .build();
 
-                User savedUser = userRepository.save(newUser);
+                User savedUser = userRepository.save(newUser, true);
 
                 // Cargar detalles del usuario para generar token
                 UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getEmail());
-                String token = jwtUtil.generateToken(userDetails, savedUser.getRole().toString());
+                String token = jwtUtil.generateToken(userDetails);
 
                 // Crear respuesta con token y datos del usuario
                 Map<String, Object> response = new HashMap<>();
                 response.put("user", UserResponseDto.builder()
-                                .name(user.getName())
+                                .name(user.getUsername())
                                 .email(savedUser.getEmail())
-                                .role(savedUser.getRole().toString())
+                                .roles(savedUser.getRoles())
                                 .build());
                 response.put("token", token);
 

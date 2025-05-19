@@ -22,9 +22,9 @@ public class UserMapper {
         return User.builder()
                 .id(entity.getId())
                 .email(entity.getEmail())
-                .name(entity.getName())
+                .username(entity.getUsername())
                 .password(entity.getPassword())
-                .role(entity.getRole())
+                .roles(entity.getRoles())
                 .build();
     }
 
@@ -40,8 +40,8 @@ public class UserMapper {
                 .id(domain.getId())
                 .email(domain.getEmail())
                 .password(domain.getPassword())
-                .name(domain.getName())
-                .role(domain.getRole())
+                .username(domain.getUsername())
+                .roles(domain.getRoles())
                 .build();
     }
 }

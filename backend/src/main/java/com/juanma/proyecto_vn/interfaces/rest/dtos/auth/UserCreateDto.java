@@ -1,9 +1,12 @@
 package com.juanma.proyecto_vn.interfaces.rest.dtos.auth;
 
+import com.juanma.proyecto_vn.infrastructure.persistence.entity.Role;
 import com.juanma.proyecto_vn.interfaces.rest.validation.UniqueEmail;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
+
+import java.util.Set;
 
 @Data
 @Getter
@@ -22,8 +25,5 @@ public class UserCreateDto {
 
     @NotNull(message = "El nombre no puede ser nulo")
     @Size(min = 3, message = "El nombre debe tener al menos 3 caracteres")
-    private String name;
-
-    @Pattern(regexp = "USER|ADMIN", message = "El rol debe ser 'USER' o 'ADMIN'")
-    private String role;
+    private String username;
 }

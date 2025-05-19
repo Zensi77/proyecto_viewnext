@@ -47,7 +47,7 @@ export class UsersPageComponent implements OnInit {
 
   searchUsers(event: Event) {
     this.usersFiltered = this.users.filter((user) =>
-      user.name.toLowerCase().includes(this.query.toLowerCase())
+      user.username.toLowerCase().includes(this.query.toLowerCase())
     );
   }
 

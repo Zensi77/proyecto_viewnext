@@ -64,7 +64,7 @@ export class AuthService {
         this.user.set(res.user);
         Swal.fire({
           icon: 'success',
-          text: `Bienvenido, ${res.user.name}`,
+          text: `Bienvenido, ${res.user.username}`,
         });
         this.loading.set(false);
         if (res.user.role === Role.admin) {

@@ -1,7 +1,9 @@
 package com.juanma.proyecto_vn.domain.model;
 
+import java.util.Set;
 import java.util.UUID;
 
+import com.juanma.proyecto_vn.infrastructure.persistence.entity.Role;
 import com.juanma.proyecto_vn.shared.Utils.enums.RoleEnum;
 
 import lombok.AllArgsConstructor;
@@ -20,6 +22,8 @@ public class User {
     private UUID id;
     private String email;
     private String password;
-    private String name;
-    private RoleEnum role;
+    private String username;
+    private Set<Role> roles;
+    private boolean enabled;
+    private boolean accountNonLocked;
 }

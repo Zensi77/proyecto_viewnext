@@ -47,7 +47,7 @@ export default class SignUpComponent {
         [Validators.required, Validators.email],
         [this._validator.validateEmail()],
       ],
-      name: ['', [Validators.required, Validators.minLength(3)]],
+      username: ['', [Validators.required, Validators.minLength(3)]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]],
     },
@@ -70,7 +70,7 @@ export default class SignUpComponent {
 
     const email = this.registerForm.get('email')?.value as string;
     const password = this.registerForm.get('password')?.value as string;
-    const name = this.registerForm.get('name')?.value as string;
-    this._authService.signUp({ email, password, name } as User);
+    const username = this.registerForm.get('username')?.value as string;
+    this._authService.signUp({ email, password, username } as User);
   }
 }
