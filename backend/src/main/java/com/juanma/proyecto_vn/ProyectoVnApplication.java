@@ -46,15 +46,10 @@ public class ProyectoVnApplication implements CommandLineRunner {
 		if(roleRepository.findByName(RoleType.ROLE_ADMIN) == null) {
 			roleRepository.save(Role.builder().name(RoleType.ROLE_ADMIN).build());
 			log.info("Rol ROLE_ADMIN creado");
-		} else {
-			log.info("Rol ROLE_ADMIN ya existe");
 		}
-
 		if(roleRepository.findByName(RoleType.ROLE_USER) == null) {
 			roleRepository.save(Role.builder().name(RoleType.ROLE_USER).build());
 			log.info("Rol ROLE_USER creado");
-		} else {
-			log.info("Rol ROLE_USER ya existe");
 		}
 	}
 

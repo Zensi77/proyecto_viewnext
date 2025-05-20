@@ -4,10 +4,10 @@ import com.juanma.proyecto_vn.domain.model.User;
 import com.juanma.proyecto_vn.domain.repository.UserRepository;
 import com.juanma.proyecto_vn.domain.service.IUserService;
 import com.juanma.proyecto_vn.infrastructure.security.jwt.JwtUtil;
+import com.juanma.proyecto_vn.interfaces.rest.advice.customExceptions.ResourceNotFoundException;
 import com.juanma.proyecto_vn.interfaces.rest.dtos.auth.LoginDto;
-import com.juanma.proyecto_vn.interfaces.rest.dtos.auth.UserCreateDto;
 import com.juanma.proyecto_vn.interfaces.rest.dtos.auth.UserResponseDto;
-import com.juanma.proyecto_vn.shared.Utils.enums.RoleEnum;
+import com.juanma.proyecto_vn.interfaces.rest.mapper.UserDtoMapper;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.security.auth.login.AccountLockedException;
 import java.util.*;
 
 /**
@@ -47,21 +46,20 @@ public class UserServiceImpl implements IUserService {
         @Autowired
         private AuthenticationManager authenticationManager;
 
-        public List<User> getAll() {
-                return userRepository.findAll();
+        @Autowired
+        private UserDtoMapper userDtoMapper;
+
+        public List<UserResponseDto> getAll() {
+                List<User> users = userRepository.findAll();
+
+                return users.stream()
+                                .map(userDtoMapper::toDto)
+                                .toList();
         }
 
-        public Map<String, Object> saveUser(UserCreateDto user) {
-                User newUser = User.builder()
-                                .email(user.getEmail())
-                                .password(passwordEncoder.encode(user.getPassword()))
-                                .roles(new HashSet<>())
-                                .username(user.getUsername())
-                                .enabled(true)
-                                .accountNonLocked(true)
-                                .build();
-
-                User savedUser = userRepository.save(newUser,false);
+        public Map<String, Object> saveUser(User user) {
+                user.setPassword(passwordEncoder.encode(user.getPassword()));
+                User savedUser = userRepository.save(user,false);
 
                 // Cargar detalles del usuario para generar token
                 UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getEmail());
@@ -69,16 +67,7 @@ public class UserServiceImpl implements IUserService {
 
                 // Crear respuesta con token y datos del usuario
                 Map<String, Object> response = new HashMap<>();
-                response.put("user", UserResponseDto.builder()
-                                .name(user.getUsername())
-                                .email(savedUser.getEmail())
-                                .name(savedUser.getUsername())
-                                .roles(savedUser.getRoles().stream()
-                                                .map(role -> role.getName().name())
-                                                .toList())
-                                .enabled(savedUser.isEnabled())
-                                .accountNonLocked(savedUser.isAccountNonLocked())
-                                .build());
+                response.put("user", userDtoMapper.toDto(savedUser));
                 response.put("token", token);
 
                 return response;
@@ -92,7 +81,6 @@ public class UserServiceImpl implements IUserService {
                 // Si llegamos aquí, la autenticación fue exitosa
                 Optional<User> userFind = userRepository.findByEmail(user.getEmail());
 
-                // Generar token JWT
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userFind.get().getEmail());
 
                 if (!userDetails.isEnabled()){
@@ -105,28 +93,15 @@ public class UserServiceImpl implements IUserService {
 
                 // Crear respuesta con token y datos del usuario
                 Map<String, Object> response = new HashMap<>();
-                response.put("user", UserResponseDto.builder()
-                                .name(userFind.get().getUsername())
-                                .email(userFind.get().getEmail())
-                                .roles(userFind.get().getRoles().stream()
-                                                .map(role -> role.getName().name())
-                                                .toList())
-                                .enabled(userFind.get().isEnabled())
-                                .accountNonLocked(userFind.get().isAccountNonLocked())
-                                .build());
+                response.put("user", userDtoMapper.toDto(userFind.get()));
                 response.put("token", token);
 
                 return response;
         }
 
-        public Map<String, Object> saveAdmin(UserCreateDto user) {
-                User newUser = User.builder()
-                                .email(user.getEmail())
-                                .username(user.getUsername())
-                                .password(passwordEncoder.encode(user.getPassword()))
-                                .build();
+        public Map<String, Object> saveAdmin(User user) {
 
-                User savedUser = userRepository.save(newUser, true);
+                User savedUser = userRepository.save(user, true);
 
                 // Cargar detalles del usuario para generar token
                 UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getEmail());
@@ -134,17 +109,41 @@ public class UserServiceImpl implements IUserService {
 
                 // Crear respuesta con token y datos del usuario
                 Map<String, Object> response = new HashMap<>();
-                response.put("user", UserResponseDto.builder()
-                                .name(user.getUsername())
-                                .email(savedUser.getEmail())
-                                .roles(savedUser.getRoles().stream()
-                                                .map(role -> role.getName().name())
-                                                .toList())
-                                .build());
+                response.put("user", userDtoMapper.toDto(savedUser));
                 response.put("token", token);
 
                 return response;
         }
+
+        public Map<String, Object> updateUser(User user, UUID userId){
+                Optional<User> userFind = userRepository.findById(userId);
+
+                if (userFind.isPresent()){
+                        User userDb = User.builder()
+                                .id(user.getId())
+                                .email(user.getEmail())
+                                .username(user.getUsername())
+                                .roles(user.getRoles())
+                                .enabled(user.isEnabled())
+                                .accountNonLocked(user.isAccountNonLocked())
+                                .build();
+
+                        if (user.getPassword() != null){
+                                userDb.setPassword(passwordEncoder.encode(user.getPassword()));
+                        } else {
+                                userDb.setPassword(userFind.get().getPassword());
+                        }
+
+                        User savedUser = userRepository.modify(userDb);
+
+                        Map<String, Object> response = new HashMap<>();
+                        response.put("user", userDtoMapper.toDto(savedUser));
+                        return response;
+                } else {
+                        throw new IllegalArgumentException("Usuario no encontrado");
+                }
+        }
+
 
         public boolean emailExist(String email) {
                 Optional<User> user = userRepository.findByEmail(email);

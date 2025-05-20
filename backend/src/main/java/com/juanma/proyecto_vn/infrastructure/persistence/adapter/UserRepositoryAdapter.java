@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.juanma.proyecto_vn.infrastructure.persistence.entity.Role;
 import com.juanma.proyecto_vn.infrastructure.persistence.entity.RoleType;
 import com.juanma.proyecto_vn.infrastructure.persistence.repository.JpaRoleRepository;
+import com.juanma.proyecto_vn.interfaces.rest.advice.customExceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
 
 import com.juanma.proyecto_vn.domain.model.User;
@@ -37,12 +39,18 @@ public class UserRepositoryAdapter implements UserRepository {
     @Override
     public Optional<User> findByEmail(String email) {
         Optional<UserEntity> userEntityOpt = jpaUserRepository.findByEmail(email);
+        if (userEntityOpt.isEmpty()) {
+            throw new ResourceNotFoundException("Usuario no encontrado");
+        }
         return userEntityOpt.map(userMapper::toDomain);
     }
 
     @Override
     public Optional<User> findById(UUID id) {
         Optional<UserEntity> userEntityOpt = jpaUserRepository.findById(id);
+        if (userEntityOpt.isEmpty()) {
+            throw new ResourceNotFoundException("Usuario no encontrado");
+        }
         return userEntityOpt.map(userMapper::toDomain);
     }
 
@@ -54,6 +62,33 @@ public class UserRepositoryAdapter implements UserRepository {
         } else {
             userEntity.getRoles().add(jpaRoleRepository.findByName(RoleType.ROLE_USER));
         }
+        UserEntity savedUserEntity = jpaUserRepository.save(userEntity);
+        return userMapper.toDomain(savedUserEntity);
+    }
+
+    @Override
+    public User modify(User user) {
+        UserEntity userEntity = jpaUserRepository.findById(user.getId()).orElseThrow(
+                () -> new ResourceNotFoundException("Usuario no encontrado"));
+
+        if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+            userEntity.getRoles().clear();
+            for (Role rol : user.getRoles()) {
+                Role role = jpaRoleRepository.findByName(rol.getName());
+                if (role != null) {
+                    userEntity.getRoles().add(role);
+                }
+            }
+        }
+
+        userEntity.setEmail(user.getEmail());
+        userEntity.setUsername(user.getUsername());
+        if (user.getPassword()!= null) {
+            userEntity.setPassword(user.getPassword());
+        }
+        userEntity.setEnabled(user.isEnabled());
+        userEntity.setAccountNonLocked(user.isAccountNonLocked());
+
         UserEntity savedUserEntity = jpaUserRepository.save(userEntity);
         return userMapper.toDomain(savedUserEntity);
     }

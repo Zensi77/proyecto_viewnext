@@ -1,6 +1,7 @@
 package com.juanma.proyecto_vn.interfaces.rest.controller;
 
 import com.juanma.proyecto_vn.domain.model.User;
+import com.juanma.proyecto_vn.interfaces.rest.dtos.auth.UserDto;
 import com.juanma.proyecto_vn.interfaces.rest.dtos.auth.UserResponseDto;
 import com.juanma.proyecto_vn.interfaces.rest.mapper.UserDtoMapper;
 import jakarta.validation.Valid;
@@ -9,16 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.web.bind.annotation.GetMapping;
+import java.util.UUID;
 
 import com.juanma.proyecto_vn.domain.service.IUserService;
 import com.juanma.proyecto_vn.interfaces.rest.dtos.auth.LoginDto;
@@ -35,13 +32,7 @@ public class UserController {
     @GetMapping
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<UserResponseDto>> getAll() {
-        List<User> users = userService.getAll();
-
-        List<UserResponseDto> response = users.stream()
-                .map(userDtoMapper::toDto)
-                .toList();
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(userService.getAll());
     }
 
     @PostMapping("/register")
@@ -50,7 +41,9 @@ public class UserController {
             return validation(result);
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.saveUser(user));
+        User userDomain = userDtoMapper.toDomain(user);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.saveUser(userDomain));
     }
 
     @PostMapping("/register-admin")
@@ -60,7 +53,9 @@ public class UserController {
             return validation(result);
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.saveAdmin(user));
+        Map<String, Object> userCreated = userService.saveAdmin(userDtoMapper.toDomain(user));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);
     }
 
     @PostMapping("/login")
@@ -69,12 +64,21 @@ public class UserController {
             return validation(result);
         }
 
-        try {
             Map<String, Object> response = userService.login(user);
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
+
+    }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<?> updateUser(@Valid @RequestBody UserDto user, @PathVariable UUID userId, BindingResult result) {
+        if (result.hasErrors()) {
+            return validation(result);
         }
+
+        User userDomain = userDtoMapper.toDomain(user);
+        Map<String, Object> userUpdated = userService.updateUser(userDomain, userId);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(userUpdated);
     }
 
     @GetMapping("/email-exist")

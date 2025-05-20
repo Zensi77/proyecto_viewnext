@@ -6,7 +6,9 @@ import com.juanma.proyecto_vn.interfaces.rest.validation.UniqueEmail;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 @Getter
@@ -26,4 +28,10 @@ public class UserCreateDto {
     @NotNull(message = "El nombre no puede ser nulo")
     @Size(min = 3, message = "El nombre debe tener al menos 3 caracteres")
     private String username;
+
+    private List<Role> roles;
+
+    private boolean enabled;
+
+    private boolean accountNonExpired;
 }

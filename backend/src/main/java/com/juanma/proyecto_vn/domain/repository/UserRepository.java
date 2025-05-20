@@ -37,7 +37,10 @@ public interface UserRepository {
      * Guarda un usuario
      * 
      * @param user Usuario a guardar
+     * @param isAdmin Indica si el usuario es administrador
      * @return Usuario guardado
      */
     User save(User user, boolean isAdmin);
+
+    User modify(User user);
 }

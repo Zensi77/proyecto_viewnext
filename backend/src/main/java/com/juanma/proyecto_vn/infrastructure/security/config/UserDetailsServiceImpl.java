@@ -1,6 +1,7 @@
 package com.juanma.proyecto_vn.infrastructure.security.config;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,10 +29,18 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException("Usuario no encontrado con email: " + username);
         }
 
-        return org.springframework.security.core.userdetails.User.builder()
+        return User.builder()
                 .username(user.get().getEmail())
                 .password(user.get().getPassword())
-                .authorities(new SimpleGrantedAuthority(user.get().getRoles().toString()))
+                .authorities(
+                        user.get().getRoles().stream()
+                                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                                .toList()
+                )
+                .disabled(!user.get().isEnabled())
+                .accountLocked(!user.get().isAccountNonLocked())
+                .accountExpired(false)
+                .credentialsExpired(false)
                 .build();
     }
 }

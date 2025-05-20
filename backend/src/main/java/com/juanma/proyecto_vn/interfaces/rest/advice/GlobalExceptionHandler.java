@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -233,6 +235,32 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                 .build();
                 return buildResponse(apiErr, ex);
         }
+
+        @ExceptionHandler(DisabledException.class)
+        protected ResponseEntity<Object> handleDisabled(DisabledException ex, WebRequest req) {
+                ApiError apiErr = ApiError.builder()
+                                .timestamp(LocalDateTime.now())
+                                .status(HttpStatus.FORBIDDEN.value())
+                                .error("User Disabled")
+                                .message(ex.getMessage())
+                                .path(req.getDescription(false).substring(4))
+                                .build();
+                return buildResponse(apiErr, ex);
+        }
+
+        @ExceptionHandler(LockedException.class)
+        protected ResponseEntity<Object> handleLocked(LockedException ex, WebRequest req) {
+                ApiError apiErr = ApiError.builder()
+                                .timestamp(LocalDateTime.now())
+                                .status(HttpStatus.LOCKED.value())
+                                .error("User Locked")
+                                .message(ex.getMessage())
+                                .path(req.getDescription(false).substring(4))
+                                .build();
+                return buildResponse(apiErr, ex);
+        }
+
+
 
         @ExceptionHandler(ResourceNotFoundException.class)
         protected ResponseEntity<Object> handleResourceNotFound(ResourceNotFoundException ex,
