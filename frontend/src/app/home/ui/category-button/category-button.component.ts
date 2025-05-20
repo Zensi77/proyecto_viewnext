@@ -17,7 +17,7 @@ import { RippleModule } from 'primeng/ripple';
       pRipple
       type="button"
       [ngClass]="buttonClass()"
-      class="transition-all max-h-16 duration-400 ease-in-out shadow-3xl w-full flex gap-1 md:gap-4 items-center justify-center font-bold hover:scale-102 hover:shadow-4xl cursor-pointer"
+      class="transition-all max-h-10 duration-400 ease-in-out shadow-3xl w-full flex gap-1 md:gap-4 items-center justify-center font-bold hover:scale-102 hover:shadow-4xl cursor-pointer"
       (click)="onClick()"
     >
       <i [ngClass]="selectIcon()"></i> {{ category | titlecase }}
@@ -30,13 +30,13 @@ export class CategoryButtonComponent {
   private readonly _router = inject(Router);
 
   @Input({ required: true }) category: string = '';
-  @Input() color: string = 'bg-green-500';
+  @Input() color: string = 'bg-green-600';
   @Input() textColor: string = 'text-white';
-  @Input() hoverColor: string = 'hover:bg-green-700';
+  @Input() hoverColor: string = 'hover:bg-green-800';
   @Input() hoverTextColor: string = 'hover:text-white';
-  @Input() borderColor: string = 'border-green-500';
-  @Input() borderRadius: string = 'rounded-md';
-  @Input() padding: string = 'p-6';
+  @Input() borderColor: string = 'border-green-800';
+  @Input() borderRadius: string = 'rounded-full';
+  @Input() padding: string = 'px-6 py-4';
   @Input() margin: string = 'm-2';
 
   selectIcon(): string {
