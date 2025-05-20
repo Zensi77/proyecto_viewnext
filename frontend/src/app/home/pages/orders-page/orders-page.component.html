@@ -1,159 +1,106 @@
 <p-toast />
 <p-confirmpopup />
 
-<section class="bg-white antialiased dark:bg-gray-900 pt-20 h-screen w-full">
-  <div class="mx-auto max-w-3/4 px-4 2xl:px-0">
-    <div class="mx-auto max-w-5xl">
-      <div class="gap-4 sm:flex sm:items-center sm:justify-between">
-        <h2
-          class="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl"
-        >
+<section class="bg-gray-100 antialiased pt-20 min-h-screen w-full">
+  <div class="mx-auto max-w-7xl px-4 2xl:px-0">
+    <div>
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <h2 class="text-2xl font-semibold text-gray-900">
           Mis pedidos
-          <p class="text-sm text-gray-500 dark:text-gray-400">
+          <p class="text-sm text-gray-500 mt-1">
             Aquí puedes ver el estado de tus pedidos y detalles de cada uno.
           </p>
         </h2>
 
-        <div
-          class="mt-6 gap-4 space-y-4 sm:mt-0 sm:flex sm:items-center sm:justify-end sm:space-y-0"
-        >
+        <div class="mt-6 sm:mt-0 flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-4 sm:space-y-0">
           <div>
-            <label
-              for="order-type"
-              class="sr-only mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-              >Select order type</label
-            >
+            <label for="order-type" class="sr-only">Seleccionar tipo de pedido</label>
             <select
               id="order-type"
-              class="block w-full min-w-[8rem] rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
+              class="block w-full min-w-[8rem] rounded-lg border border-gray-300 bg-white p-2.5 text-sm text-gray-900 focus:border-indigo-600 focus:ring-indigo-600 focus:outline-none focus:ring-1 transition"
             >
-              <option selected>All orders</option>
-              <option value="pre-order">Pre-order</option>
-              <option value="transit">In transit</option>
-              <option value="confirmed">Confirmed</option>
-              <option value="cancelled">Cancelled</option>
+              <option selected>Todos los pedidos</option>
+              <option value="pre-order">Pre-orden</option>
+              <option value="transit">En tránsito</option>
+              <option value="confirmed">Confirmado</option>
+              <option value="cancelled">Cancelado</option>
             </select>
           </div>
 
-          <span class="inline-block text-gray-500 dark:text-gray-400">
-            from
+          <span class="inline-block text-gray-500 self-center">
+            desde
           </span>
 
           <div>
-            <label
-              for="duration"
-              class="sr-only mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-              >Select duration</label
-            >
+            <label for="duration" class="sr-only">Seleccionar duración</label>
             <select
               id="duration"
-              class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"
+              class="block w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm text-gray-900 focus:border-indigo-600 focus:ring-indigo-600 focus:outline-none focus:ring-1 transition"
             >
-              <option selected>this week</option>
-              <option value="this month">this month</option>
-              <option value="last 3 months">the last 3 months</option>
-              <option value="lats 6 months">the last 6 months</option>
-              <option value="this year">this year</option>
+              <option selected>esta semana</option>
+              <option value="this month">este mes</option>
+              <option value="last 3 months">últimos 3 meses</option>
+              <option value="last 6 months">últimos 6 meses</option>
+              <option value="this year">este año</option>
             </select>
           </div>
         </div>
       </div>
 
-      <div class="mt-6 flow-root sm:mt-8">
-        <div class="divide-y divide-gray-200 dark:divide-gray-700">
+      <div class="mt-8 flow-root">
+        <div class="divide-y divide-gray-200">
           @for (order of orders(); track $index) {
           <div
-            class="flex flex-wrap items-center gap-y-4 py-6 my-4 px-3 clearfix bg-green-50 dark:bg-gray-600 rounded-lg shadow-sm"
+            class="flex flex-wrap items-center gap-y-4 py-6 my-4 px-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
             [ngClass]="animationClass($index)"
             [style.animation-delay.s]="$index * 0.2"
           >
-            <dl class="w-full sm:w-1/4 lg:w-auto lg:flex-1">
-              <dt
-                class="text-base font-medium text-gray-500 dark:text-gray-400"
-              >
-                ID pedido:
-              </dt>
-              <dd
-                class="mt-1.5 text-base font-semibold text-gray-900 dark:text-white"
-              >
-                #{{ order.id | slice : 4 : 18 }}
-              </dd>
+            <dl class="w-full sm:w-1/4 xl:w-auto xl:flex-1">
+              <dt class="text-sm font-medium text-gray-500">ID pedido:</dt>
+              <dd class="mt-1 text-base font-semibold text-gray-900">#{{ order.id | slice : 4 : 18 }}</dd>
             </dl>
 
-            <dl class="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
-              <dt
-                class="text-base font-medium text-gray-500 dark:text-gray-400"
-              >
-                Fecha de pedido:
-              </dt>
-              <dd
-                class="mt-1.5 text-base font-semibold text-gray-900 dark:text-white"
-              >
-                {{ order.createdAt | date : "MMM d, y" }}
-              </dd>
+            <dl class="w-1/2 sm:w-1/4 xl:w-auto xl:flex-1">
+              <dt class="text-sm font-medium text-gray-500">Fecha de pedido:</dt>
+              <dd class="mt-1 text-base font-semibold text-gray-900">{{ order.createdAt | date : "MMM d, y" }}</dd>
             </dl>
 
-            <dl class="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
-              <dt
-                class="text-base font-medium text-gray-500 dark:text-gray-400"
-              >
-                Total:
-              </dt>
-              <dd
-                class="mt-1.5 text-base font-semibold text-gray-900 dark:text-white"
-              >
-                {{ order.totalPrice | currency : "EUR" }}
-              </dd>
+            <dl class="w-1/2 sm:w-1/4 xl:w-auto xl:flex-1">
+              <dt class="text-sm font-medium text-gray-500">Total:</dt>
+              <dd class="mt-1 text-base font-semibold text-gray-900">{{ order.totalPrice | currency : "EUR" }}</dd>
             </dl>
 
-            <dl class="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
-              <dt
-                class="text-base font-medium text-gray-500 dark:text-gray-400"
-              >
-                Metodo de pago:
-              </dt>
-              <dd
-                class="mt-1.5 text-base font-semibold text-gray-900 dark:text-white"
-              >
-                {{ order.paymentMethod | paymentMethod }}
-              </dd>
+            <dl class="w-1/2 sm:w-1/4 xl:w-auto xl:flex-1">
+              <dt class="text-sm font-medium text-gray-500">Método de pago:</dt>
+              <dd class="mt-1 text-base font-semibold text-gray-900">{{ order.paymentMethod | paymentMethod }}</dd>
             </dl>
 
-            <dl class="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
-              <dt
-                class="text-base font-medium text-gray-500 dark:text-gray-400"
-              >
-                Estado:
-              </dt>
-              <span
-                class="mt-1.5 flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white"
-              >
-                <i
-                  [appOrderStatus]="order.status"
-                  class="flex gap-3 p-2 rounded-full"
-                ></i>
-                {{ order.status | titlecase }}
-              </span>
-            </dl>
+            <div class="lg:flex justify-between w-full ">
+              <dl class="w-1/2 sm:w-1/4 xl:w-auto xl:flex-1 flex items-center gap-2">
+                <dt class="text-sm font-medium text-gray-500">Estado:</dt>
+                <span class="text-base font-semibold text-gray-900 flex items-center gap-2">
+                  <i [appOrderStatus]="order.status" class="p-2 rounded-full"></i>
+                  {{ order.status | titlecase }}
+                </span>
+              </dl>
 
-            <div
-              class="w-full grid sm:grid-cols-2 lg:flex lg:w-64 lg:items-center lg:justify-end gap-4"
-            >
-              <p-button
-                *ngIf="order.status !== 'CANCELLED'"
-                (onClick)="cancelOrder($event, order.id)"
-                label="Cancelar pedido"
-                icon="pi pi-times"
-                severity="danger"
-                [outlined]="true"
-              />
-              <p-button
-                (onClick)="viewOrderDetails(order.items)"
-                label="Ver detalles"
-                icon="pi pi-eye"
-                severity="info"
-                [outlined]="true"
-              />
+              <div class="w-full grid justify-items-center sm:grid-cols-2 lg:flex lg:w-[100%] xl:items-center lg:justify-end gap-4 mt-4 sm:mt-0">
+                <p-button
+                  *ngIf="order.status !== 'CANCELLED'"
+                  (onClick)="cancelOrder($event, order.id)"
+                  label="Cancelar pedido"
+                  icon="pi pi-times"
+                  severity="danger"
+                  [outlined]="true"
+                ></p-button>
+                <p-button
+                  (onClick)="viewOrderDetails(order.items)"
+                  label="Ver detalles"
+                  icon="pi pi-eye"
+                  severity="info"
+                  [outlined]="true"
+                ></p-button>
+              </div>
             </div>
           </div>
           }
@@ -170,40 +117,36 @@
   [style]="{ width: '50vw' }"
   [draggable]="false"
   [resizable]="false"
+  class="p-shadow-24 rounded-lg"
 >
-  @for (productCart of orderToShow; track $index) {
-  <li class="flex py-6">
-    <div
-      class="size-24 shrink-0 overflow-hidden rounded-md border border-gray-200"
-    >
-      <img
-        [src]="productCart?.product?.image"
-        [alt]="productCart?.product?.name"
-        class="size-full object-cover"
-      />
-    </div>
-    <div class="ml-4 flex flex-1 flex-col">
-      <div class="flex justify-between text-base font-medium text-gray-900">
-        <h3>
-          <a
-            [routerLink]="['../product', productCart?.product?.id]"
-            class="hover:text-blue-300 transition-all duration-300 ease-in"
-          >
-            {{ productCart?.product?.name }}
-          </a>
-        </h3>
-        <p class="ml-4 text-gray-900">
-          {{ productCart?.product?.price | currency : "EUR" }}
-        </p>
+  <ul>
+    @for (productCart of orderToShow; track $index) {
+    <li class="flex py-6 border-b border-gray-200 last:border-0">
+      <div class="w-24 h-24 shrink-0 overflow-hidden rounded-md border border-gray-200">
+        <img
+          [src]="productCart?.product?.image"
+          [alt]="productCart?.product?.name"
+          class="w-full h-full object-cover"
+        />
       </div>
-      <p class="mt-1 text-sm text-gray-500">
-        {{ productCart?.product?.category?.name }}
-      </p>
-      <div class="flex flex-1 items-end justify-between text-sm mt-2">
-        <p class="text-gray-500">Cantidad: {{ productCart?.quantity }}</p>
+      <div class="ml-4 flex flex-1 flex-col justify-between">
+        <div class="flex justify-between text-base font-medium text-gray-900">
+          <h3>
+            <a
+              [routerLink]="['../product', productCart?.product?.id]"
+              class="hover:text-indigo-600 transition-colors duration-300"
+            >
+              {{ productCart?.product?.name }}
+            </a>
+          </h3>
+          <p class="ml-4 text-gray-900">{{ productCart?.product?.price | currency : "EUR" }}</p>
+        </div>
+        <p class="mt-1 text-sm text-gray-500">{{ productCart?.product?.category?.name }}</p>
+        <div class="flex justify-between items-end text-sm mt-2">
+          <p class="text-gray-500">Cantidad: {{ productCart?.quantity }}</p>
+        </div>
       </div>
-    </div>
-  </li>
-
-  }
+    </li>
+    }
+  </ul>
 </p-dialog>
