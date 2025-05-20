@@ -67,30 +67,6 @@ export class MenuComponent implements OnInit {
         visible: this._user() != null && this._user()?.role === 'ADMIN',
       },
     ];
-
-    const darkMode = localStorage.getItem('dark-mode');
-    if (darkMode) this.toogleDarkMode();
-  }
-
-  toogleDarkMode() {
-    const element = document.querySelector('html');
-    element?.classList.toggle('dark-mode');
-
-    if (element?.classList.contains('dark-mode')) {
-      localStorage.setItem('dark-mode', 'true');
-    } else {
-      localStorage.removeItem('dark-mode');
-    }
-
-    document.querySelector('#darkMode')?.classList.remove('pi-moon');
-    document.querySelector('#darkMode')?.classList.add('pi-sun');
-  }
-
-  isDarkMode = () =>
-    document.querySelector('html')?.classList.contains('dark-mode');
-
-  getIconMode() {
-    return this.isDarkMode() ? 'pi pi-sun' : 'pi pi-moon';
   }
 
   isLogged() {
