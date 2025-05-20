@@ -1,7 +1,7 @@
 <!-- Slide-over backdrop y contenedor -->
 <div
   *ngIf="showCart"
-  class="fixed inset-0 z-50 overflow-hidden animate__animated animate__fadeIn"
+  class="fixed inset-0 z-50 overflow-hidden animate__animated animate__fadeIn animate__faster"
   role="dialog"
   aria-modal="true"
 >
@@ -15,7 +15,7 @@
   <div class="fixed inset-y-0 right-0 flex max-w-full pl-10">
     <!-- Panel lateral -->
     <div
-      class="pointer-events-auto w-full max-w-md"
+      class="pointer-events-auto w-[100vw] sm:w-[400px]"
       [ngClass]="animationClass()"
     >
       <div class="flex h-full flex-col bg-white shadow-xl overflow-y-auto">
@@ -48,7 +48,14 @@
 
         <!-- Contenido del carrito -->
         <div class="flex-1 px-4 sm:px-6">
-          <ul role="list" class="-my-6 divide-y divide-gray-200">
+          <ul
+            *ngIf="
+              cart() != null && (cart()?.products)!.length > 0;
+              else notProductMessage
+            "
+            role="list"
+            class="-my-6 divide-y divide-gray-200"
+          >
             @for (productCart of cart()?.products; track $index) {
             <li class="flex py-6">
               <div
@@ -96,10 +103,65 @@
             </li>
             }
           </ul>
-        </div>
 
+          <ng-template #notProductMessage>
+            <div
+              class="flex flex-col items-center justify-center text-center py-12 px-4"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                x="0px"
+                y="0px"
+                width="75"
+                height="75"
+                viewBox="0,0,256,256"
+              >
+                <g
+                  fill="#cbcbcb"
+                  fill-rule="nonzero"
+                  stroke="none"
+                  stroke-width="1"
+                  stroke-linecap="butt"
+                  stroke-linejoin="miter"
+                  stroke-miterlimit="10"
+                  stroke-dasharray=""
+                  stroke-dashoffset="0"
+                  font-family="none"
+                  font-weight="none"
+                  font-size="none"
+                  text-anchor="none"
+                  style="mix-blend-mode: normal"
+                >
+                  <g transform="scale(5.12,5.12)">
+                    <path
+                      d="M1,3v12h48v-12zM3,17v31h44v-31zM17.5,20h15c1.38281,0 2.5,1.11719 2.5,2.5c0,1.38281 -1.11719,2.5 -2.5,2.5h-15c-1.38281,0 -2.5,-1.11719 -2.5,-2.5c0,-1.38281 1.11719,-2.5 2.5,-2.5z"
+                    ></path>
+                  </g>
+                </g>
+              </svg>
+              <h3
+                class="text-lg font-semibold mt-3"
+              >
+                Tu carrito está vacío
+              </h3>
+              <p class="mt-2 text-sm text-gray-500">
+                Aún no has añadido ningún producto.
+              </p>
+              <a
+                routerLink="/search"
+                (click)="changeVisibility()"
+                class="mt-4 inline-block text-sm text-indigo-600 hover:underline font-medium"
+              >
+                Explorar productos
+              </a>
+            </div>
+          </ng-template>
+        </div>
         <!-- Footer -->
-        <div class="border-t border-gray-200 px-4 py-6 sm:px-6">
+        <div
+          *ngIf="cart() !== null && (cart()?.products)!.length > 0"
+          class="border-t border-gray-200 px-4 py-6 sm:px-6"
+        >
           <div class="flex justify-between text-base font-medium text-gray-900">
             <p>Subtotal</p>
             <p>{{ cart()?.totalPrice | currency : "EUR" }}</p>

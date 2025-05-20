@@ -1,8 +1,11 @@
 import {
   Component,
+  ElementRef,
   EventEmitter,
+  HostListener,
   OnInit,
   Output,
+  ViewChild,
   computed,
   inject,
 } from '@angular/core';
@@ -38,6 +41,8 @@ export class SearchFilterComponent implements OnInit {
   categories = computed(() => this._homeService.categories());
   providers = computed(() => this._homeService.providers());
 
+  isMenuOpen = false;
+
   ngOnInit(): void {
     this._route.queryParams.subscribe((params) => {
       console.log('params', params);
@@ -58,6 +63,18 @@ export class SearchFilterComponent implements OnInit {
     });
   }
 
+  @ViewChild('filter') miElemento!: ElementRef;
+
+  @HostListener('document:click', ['$event'])
+  clickFuera(event: MouseEvent) {
+    if (
+      this.miElemento &&
+      !this.miElemento.nativeElement.contains(event.target)
+    ) {
+      this.isMenuOpen = false;
+    }
+  }
+
   clearFilters() {
     this.selectedCategoryValue = null;
     this.selectedProviderValue = null;
@@ -66,5 +83,9 @@ export class SearchFilterComponent implements OnInit {
     this.selectedCategory.emit(this.selectedCategoryValue);
     this.selectedProvider.emit(this.selectedProviderValue);
     this.rangePrices.emit(this.rangePricesValue);
+  }
+
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
   }
 }
