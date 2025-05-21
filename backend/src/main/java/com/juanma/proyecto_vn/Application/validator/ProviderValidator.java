@@ -24,9 +24,9 @@ public class ProviderValidator {
      * @throws ResourceNotFoundException si no existe el proveedor
      */
     public void validateProviderExists(String name) {
-        if (providerRepository.findByNameContaining(name).isEmpty()) {
+        if (!providerRepository.findByNameContaining(name).isEmpty()) {
             log.warn("No se encontró ningún proveedor con el nombre: {}", name);
-            throw new ResourceNotFoundException("No existe ningún proveedor con el nombre: " + name);
+            throw new ResourceNotFoundException("Ya existe algun proveedor con el nombre: " + name);
         }
     }
 

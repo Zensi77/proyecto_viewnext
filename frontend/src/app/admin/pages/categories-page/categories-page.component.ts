@@ -35,6 +35,25 @@ export class CategoriesPageComponent {
     );
   }
 
+  async onAddCategory() {
+    const { value: name } = await Swal.fire({
+      input: 'text',
+      inputLabel: 'Nombre de la categoría',
+      inputPlaceholder: 'Ingrese el nombre de la categoría',
+    });
+    if (name === '') return;
+
+    this._adminService.createCategory(name).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Categoria creada',
+        });
+        this._homeService.getCategories();
+      },
+    });
+  }
+
   updateCategory(category: Category) {
     this._adminService.updateCategory(category.id, category).subscribe({
       next: () => {

@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.juanma.proyecto_vn.infrastructure.persistence.entity.Role;
-import com.juanma.proyecto_vn.shared.Utils.enums.RoleEnum;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

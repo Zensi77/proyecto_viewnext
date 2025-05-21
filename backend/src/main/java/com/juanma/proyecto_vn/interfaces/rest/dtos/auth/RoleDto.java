@@ -16,5 +16,5 @@ import lombok.NoArgsConstructor;
 public class RoleDto {
     @NotNull(message = "El nombre no puede ser nulo")
     @Pattern(regexp = "ROLE_ADMIN|ROLE_USER", message = "El nombre del rol no es válido")
-    private String name;
+    private String authority;
 }

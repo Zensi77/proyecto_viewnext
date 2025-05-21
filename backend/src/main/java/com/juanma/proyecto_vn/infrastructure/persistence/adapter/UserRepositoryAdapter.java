@@ -58,9 +58,9 @@ public class UserRepositoryAdapter implements UserRepository {
     public User save(User user, boolean isAdmin) {
         UserEntity userEntity = userMapper.toEntity(user);
         if (isAdmin){
-            userEntity.getRoles().add(jpaRoleRepository.findByName(RoleType.ROLE_ADMIN));
+            userEntity.getRoles().add(jpaRoleRepository.findByAuthority(RoleType.ROLE_ADMIN));
         } else {
-            userEntity.getRoles().add(jpaRoleRepository.findByName(RoleType.ROLE_USER));
+            userEntity.getRoles().add(jpaRoleRepository.findByAuthority(RoleType.ROLE_USER));
         }
         UserEntity savedUserEntity = jpaUserRepository.save(userEntity);
         return userMapper.toDomain(savedUserEntity);
@@ -74,7 +74,7 @@ public class UserRepositoryAdapter implements UserRepository {
         if (user.getRoles() != null && !user.getRoles().isEmpty()) {
             userEntity.getRoles().clear();
             for (Role rol : user.getRoles()) {
-                Role role = jpaRoleRepository.findByName(rol.getName());
+                Role role = jpaRoleRepository.findByAuthority(rol.getAuthority());
                 if (role != null) {
                     userEntity.getRoles().add(role);
                 }

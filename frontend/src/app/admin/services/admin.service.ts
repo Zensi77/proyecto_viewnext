@@ -28,6 +28,12 @@ export class AdminService {
     return this._http.get<User[]>(url);
   }
 
+  createProduct(product: CreateProduct) {
+    const url = environment.base_url + environment.create_product;
+
+    return this._http.post<Product>(url, product);
+  }
+
   deleteProduct(id: string) {
     const url = environment.base_url + environment.delete_product + id;
 
@@ -40,6 +46,12 @@ export class AdminService {
     return this._http.put<Product>(url, product);
   }
 
+  createCategory(name: string) {
+    const url = environment.base_url + environment.create_category;
+
+    return this._http.post<Category>(url, { name });
+  }
+
   updateCategory(id: string, category: Category) {
     const url = environment.base_url + environment.update_category + id;
 
@@ -50,6 +62,12 @@ export class AdminService {
     const url = environment.base_url + environment.delete_category + id;
 
     return this._http.delete<Category>(url);
+  }
+
+  createProvider(provider: Provider) {
+    const url = environment.base_url + environment.create_provider;
+
+    return this._http.post<Provider>(url, provider);
   }
 
   updateProvider(id: string, provider: Provider) {

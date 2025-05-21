@@ -1,16 +1,10 @@
-<div
-  class="grid gap-4 p-4"
-  [ngClass]="{
-    'grid-cols-1 place-items-center': categories().length === 1,
-    'grid-cols-2 justify-items-center lg:grid-cols-3 xl:grid-cols-4': categories().length > 1
-  }"
->
-  @for (category of categories().slice(0, 8); track $index) {
-    <div
-      [ngClass]="animationClass($index)"
-      [style.animation-delay.s]="$index * 0.2"
-    >
-      <category-button [category]="category.name" />
-    </div>
+<div class="grid grid-cols-2 xl:grid-cols-3 gap-2">
+  @for (category of categories().slice(0, 6); track $index) {
+  <div
+    [ngClass]="animationClass($index)"
+    [style.animation-delay.s]="$index * 0.2"
+  >
+    <category-button [category]="category.name" />
+  </div>
   }
 </div>

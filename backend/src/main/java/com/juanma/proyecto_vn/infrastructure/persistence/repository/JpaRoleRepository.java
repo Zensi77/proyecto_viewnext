@@ -5,5 +5,6 @@ import com.juanma.proyecto_vn.infrastructure.persistence.entity.RoleType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface JpaRoleRepository extends JpaRepository<Role, Long> {
-    Role findByName(RoleType name);
+    Role findByAuthority(RoleType name);
 }
+

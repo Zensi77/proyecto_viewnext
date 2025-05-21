@@ -121,6 +121,11 @@ export class ProductPageComponent implements OnInit {
     this.loadMore();
   }
 
+  onAddProduct() {
+    this.productToEdit = null;
+    this.showProductDialog = true;
+  }
+
   onDeleteProduct(event: Event, productId: string) {
     Swal.fire({
       title: '¿Estás seguro?',

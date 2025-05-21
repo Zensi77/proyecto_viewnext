@@ -36,7 +36,6 @@ export class ProductDialogComponent implements OnChanges {
   providers = computed(() => this._homeService.providers());
 
   @Input() product: Product | null = null;
-  @Input() action: 'create' | 'edit' = 'create';
   @Output() closeDialog = new EventEmitter<void>();
 
   imagePreviewUrl: string | null = null;
@@ -59,8 +58,8 @@ export class ProductDialogComponent implements OnChanges {
   productForm = this._fb.group({
     name: ['', Validators.required],
     description: [''],
-    price: [0, Validators.required],
-    stock: [0, Validators.min(1)],
+    price: [0, [Validators.required, Validators.min(0)]],
+    stock: [0, [Validators.required, Validators.min(1)]],
     category: [null as Category | null, Validators.required],
     provider: [null as Provider | null, Validators.required],
     image: [''],
@@ -79,10 +78,18 @@ export class ProductDialogComponent implements OnChanges {
       image: this.productForm.get('image')?.value || '',
     };
 
-    this._adminService
-      .updateProduct(this.product ? this.product.id : '', product)
-      .subscribe({
-        next: (res) => {
+    this.product &&
+      this._adminService
+        .updateProduct(this.product ? this.product.id : '', product)
+        .subscribe({
+          next: () => {
+            this.closeDialog.emit();
+          },
+        });
+
+    this.product === null &&
+      this._adminService.createProduct(product).subscribe({
+        next: () => {
           this.closeDialog.emit();
         },
       });

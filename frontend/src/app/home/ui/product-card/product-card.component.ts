@@ -15,35 +15,34 @@ import { SharedDataService } from '../../../shared/services/shared-data.service'
   imports: [CommonModule, RouterLink],
   template: `
     <div
-      class="h-full overflow-hidden rounded-xl border border-gray-200 bg-white p-4 md:p-6 shadow-sm hover:shadow-lg transition-shadow duration-300"
+      class="h-full overflow-hidden rounded-lg border border-gray-200 bg-white p-4 md:p-6 shadow-sm hover:shadow-lg transition-shadow duration-300"
     >
       <a
         [routerLink]="['/product', product.id]"
-        class="block overflow-hidden rounded-lg text-center"
+        class="block overflow-hidden rounded text-center"
       >
         <img
-          class="mx-auto h-32 w-32 sm:h-40 sm:w-40 md:h-44 md:w-44 object-cover transition-transform duration-300 hover:scale-105"
+          class="mx-auto h-32 w-32 sm:h-40 sm:w-40 md:h-44 md:w-44 hover:scale-105 transition-transform duration-300"
           [src]="product.image"
           [alt]="product.name"
         />
       </a>
-
-      <!-- Nombre y descripción -->
-      <div class="mt-4 h-auto md:h-24">
+      <div class="h-auto md:h-24">
         <a
           [routerLink]="['/product', product.id]"
-          class="block text-base sm:text-lg font-semibold leading-tight text-gray-900 hover:text-indigo-600 transition-colors line-clamp-2"
+          class="text-base sm:text-lg font-semibold leading-tight text-gray-900 hover:underline line-clamp-2"
+          >{{ product.name }}</a
         >
-          {{ product.name }}
-        </a>
-        <p class="mt-1 text-sm sm:text-base text-gray-500 line-clamp-2">
+        <p
+          class="mt-2 text-sm sm:text-base font-normal text-gray-500 line-clamp-2"
+        >
           {{ product.description }}
         </p>
       </div>
-
-      <!-- Precio -->
-      <div class="mt-4">
-        <p class="text-lg sm:text-xl font-bold text-gray-900">
+      <div>
+        <p
+          class="text-lg sm:text-xl mt-4 md:mt-6 font-bold leading-tight text-gray-900"
+        >
           {{ product.price | currency : 'EUR' }}
         </p>
       </div>
@@ -73,7 +72,6 @@ import { SharedDataService } from '../../../shared/services/shared-data.service'
           </svg>
         </button>
 
-        <!-- Tooltip (opcional, si usas librerías tipo Popper.js) -->
         <div
           id="favourites-tooltip-3"
           role="tooltip"

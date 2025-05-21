@@ -6,6 +6,7 @@ import { RippleModule } from 'primeng/ripple';
 import { AvatarModule } from 'primeng/avatar';
 import { RouterLink, RouterModule } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
+import { HomeService } from '../../../home/services/home.service';
 
 @Component({
   imports: [
@@ -21,10 +22,16 @@ import { AuthService } from '../../../auth/services/auth.service';
 })
 export class DashboardComponent implements OnInit {
   private readonly _authService = inject(AuthService);
+  private readonly _homeService = inject(HomeService);
 
   user = computed(() => this._authService.user());
 
   items: MenuItem[] | undefined;
+
+  constructor() {
+    this._homeService.getCategories();
+    this._homeService.getProviders();
+  }
 
   ngOnInit() {
     this.items = [
@@ -55,7 +62,7 @@ export class DashboardComponent implements OnInit {
   }
 
   get userName() {
-    return this._authService.user()?.username;
+    return this.user()?.email || this.user()?.username;
   }
 
   logout() {

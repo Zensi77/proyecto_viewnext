@@ -19,7 +19,8 @@ public class JwtUtil {
     // Generar token con el email y el rol
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", userDetails.getAuthorities());
+        claims.put("username", userDetails.getUsername());
+        claims.put("roles", userDetails.getAuthorities());
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -51,12 +52,12 @@ public class JwtUtil {
     }
 
     // Obtener rol del token
-    public String getRoleFromToken(String token) {
+    public Map<String, String> getRolesFromToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
-                .get("roles", String.class);
+                .get("roles", Map.class);
     }
 }

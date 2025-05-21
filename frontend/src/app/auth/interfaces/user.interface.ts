@@ -1,6 +1,10 @@
 export enum Role {
-  user = 'USER',
-  admin = 'ADMIN',
+  user = 'ROLE_USER',
+  admin = 'ROLE_ADMIN',
+}
+
+interface userRole {
+  authority: Role;
 }
 
 export interface User {
@@ -8,7 +12,9 @@ export interface User {
   email: string;
   username: string;
   password?: string;
-  role?: Role;
+  roles: userRole[];
+  enabled: boolean;
+  accountLocked: boolean;
 }
 
 export interface UserResponse {

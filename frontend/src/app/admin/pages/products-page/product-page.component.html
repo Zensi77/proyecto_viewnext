@@ -1,13 +1,22 @@
-<div class="virtual-scroller-container">
-  <div class="flex justify-between p-4 bg-white shadow">
+<div>
+  <div class="flex justify-between p-4 bg-white shadow-lg">
     <h2 class="text-2xl font-bold mb-4">Lista de Productos</h2>
-    <input
-      [(ngModel)]="query"
-      (ngModelChange)="searchProducts($event)"
-      type="text"
-      placeholder="Buscar productos..."
-      class="search-input"
-    />
+    <div>
+      <button
+        pButton
+        icon="pi pi-plus"
+        label="Agregar Producto"
+        (click)="onAddProduct()"
+        class="mx-4 p-button-sm"
+      ></button>
+      <input
+        [(ngModel)]="query"
+        (ngModelChange)="searchProducts($event)"
+        type="text"
+        placeholder="Buscar productos..."
+        class="p-2"
+      />
+    </div>
   </div>
 
   <div *ngIf="!products" class="loading-indicator">
@@ -19,7 +28,7 @@
     <p class="text-center text-gray-600">Cargando productos...</p>
   </div>
 
-  <ng-container *ngIf="products && products && products.length > 0">
+  <ng-container *ngIf="products && products.length > 0">
     <cdk-virtual-scroll-viewport
       itemSize="80"
       class="virtual-scroller-viewport"
@@ -52,7 +61,6 @@
                 Editar
               </button>
               <p-button
-                #deleteButton
                 (click)="onDeleteProduct($event, product.id)"
                 severity="danger"
                 label="Eliminar"
@@ -79,9 +87,5 @@
   [responsive]="true"
   [breakpoints]="{ '960px': '90vw' }"
 >
-  <product-dialog
-    [action]="'edit'"
-    [product]="productToEdit"
-    (closeDialog)="actionCompleted()"
-  />
+  <product-dialog [product]="productToEdit" (closeDialog)="actionCompleted()" />
 </p-dialog>

@@ -47,7 +47,7 @@ public class UserDtoMapper {
         } else {
             roles = userResponseDto.getRoles().stream()
                     .map(roleName -> Role.builder()
-                            .name(RoleType.valueOf(String.valueOf(roleName)))
+                            .authority(RoleType.valueOf(String.valueOf(roleName)))
                             .build())
                     .collect(Collectors.toSet());
         }
@@ -88,7 +88,7 @@ public class UserDtoMapper {
         }
 
         return RoleDto.builder()
-                .name(role.getName().name())
+                .authority(role.getAuthority().name())
                 .build();
     }
 
@@ -98,7 +98,7 @@ public class UserDtoMapper {
         }
 
         return Role.builder()
-                .name(RoleType.valueOf(roleDto.getName()))
+                .authority(RoleType.valueOf(roleDto.getAuthority()))
                 .build();
     }
 }

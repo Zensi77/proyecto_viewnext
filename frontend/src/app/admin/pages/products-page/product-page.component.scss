@@ -2,7 +2,7 @@
 .virtual-scroller-container {
   height: 100%;
   width: 100%;
-  padding: 1rem;
+  padding: 0.7rem;
   display: flex;
   flex-direction: column;
 }
@@ -71,7 +71,6 @@
     width: 100%;
   }
 
-  /* Estilos específicos para SweetAlert2 */
   .swal2-popup {
     font-size: 1rem !important;
     border-radius: 0.5rem !important;

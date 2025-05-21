@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
@@ -223,6 +224,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                 .build();
                 return buildResponse(apiErr, ex);
         }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    protected ResponseEntity<Object> badCredentials(BadCredentialsException ex, WebRequest req) {
+        ApiError apiErr = ApiError.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.UNAUTHORIZED.value())
+                .error("Credenciales errores")
+                .message(ex.getMessage())
+                .path(req.getDescription(false).substring(4))
+                .build();
+        return buildResponse(apiErr, ex);
+    }
 
         @ExceptionHandler(NoStockException.class)
         protected ResponseEntity<Object> handleNoStock(NoStockException ex, WebRequest req) {

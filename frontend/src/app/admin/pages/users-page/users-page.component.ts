@@ -41,6 +41,8 @@ export class UsersPageComponent implements OnInit {
     });
   }
 
+  onCreateAdmin() {}
+
   updateUser(user: User) {
     // this._adminService.updateUser(user.id, user).subscribe()
   }

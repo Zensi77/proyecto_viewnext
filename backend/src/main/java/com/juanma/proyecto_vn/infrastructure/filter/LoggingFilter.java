@@ -1,5 +1,7 @@
 package com.juanma.proyecto_vn.infrastructure.filter;
 
+import com.juanma.proyecto_vn.domain.model.User;
+import com.juanma.proyecto_vn.domain.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,7 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,12 +17,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.juanma.proyecto_vn.infrastructure.persistence.entity.UserEntity;
-import com.juanma.proyecto_vn.infrastructure.persistence.repository.JpaUserRepository;
 import com.juanma.proyecto_vn.infrastructure.security.jwt.JwtUtil;
 
 import java.io.IOException;
-import java.util.Collections;
 
 /**
  * Filtro de autenticación JWT que se ejecuta en cada solicitud HTTP.
@@ -32,7 +30,7 @@ import java.util.Collections;
 @Component
 public class LoggingFilter extends OncePerRequestFilter {
     @Autowired
-    private JpaUserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -48,10 +46,8 @@ public class LoggingFilter extends OncePerRequestFilter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
-            System.out.println("Token: " + token); // Debugging line
             if (jwtUtil.validateToken(token)) {
                 String email = jwtUtil.getEmailFromToken(token);
-                String role = jwtUtil.getRoleFromToken(token);
 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
@@ -65,7 +61,7 @@ public class LoggingFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                UserEntity user = userRepository.findByEmail(email).orElse(null);
+                User user = userRepository.findByEmail(email).orElse(null);
                 if (user != null) {
                     request.setAttribute("userId", user.getId());
                 }

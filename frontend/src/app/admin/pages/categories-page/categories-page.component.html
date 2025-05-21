@@ -2,18 +2,28 @@
 
 <div class="flex justify-between p-4 bg-white shadow-lg">
   <h2 class="text-2xl font-bold">Categorías</h2>
-  <input
-    [(ngModel)]="query"
-    (ngModelChange)="searchCategories()"
-    type="text"
-    placeholder="Buscar categorías..."
-    class="search-input"
-  />
+  <div>
+    <button
+      pButton
+      icon="pi pi-plus"
+      label="Agregar categoría"
+      (click)="onAddCategory()"
+      class="p-button-sm mx-4"
+    ></button>
+    <input
+      pInputText
+      [(ngModel)]="query"
+      (ngModelChange)="searchCategories()"
+      type="text"
+      placeholder="Buscar categorías..."
+      class="p-2"
+    />
+  </div>
 </div>
 <div class="h-5/6 overflow-auto shadow-lg rounded-lg">
   <p-table
     [value]="
-      categoriesFiltered.length > 0 && query !== ''
+      categoriesFiltered.length > 0 || query !== ''
         ? categoriesFiltered
         : categories()
     "

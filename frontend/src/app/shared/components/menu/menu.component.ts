@@ -12,6 +12,7 @@ import { Router, RouterLink, RouterModule } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
 import { CartComponent } from '../cart/cart.component';
 import { SharedDataService } from '../../services/shared-data.service';
+import { Role } from '../../../auth/interfaces/user.interface';
 
 @Component({
   selector: 'app-menu',
@@ -64,7 +65,9 @@ export class MenuComponent implements OnInit {
         label: 'Admin Panel',
         icon: 'pi pi-cog',
         routerLink: '/admin',
-        visible: this._user() != null && this._user()?.role === 'ADMIN',
+        visible:
+          this._user() != null &&
+          this._user()?.roles[0].authority === Role.admin,
       },
     ];
   }

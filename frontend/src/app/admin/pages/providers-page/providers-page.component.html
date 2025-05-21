@@ -2,18 +2,27 @@
 
 <div class="flex justify-between p-4 bg-white shadow-lg">
   <h2 class="text-2xl font-bold">Proveedores</h2>
-  <input
-    [(ngModel)]="query"
-    (ngModelChange)="searchProviders($event)"
-    type="text"
-    placeholder="Buscar proveedores..."
-    class="search-input"
-  />
+  <div>
+    <button
+      pButton
+      icon="pi pi-plus"
+      label="Agregar Proveedor"
+      (click)="onAddProvider()"
+      class="mx-4 p-button-sm"
+    ></button>
+    <input
+      [(ngModel)]="query"
+      (ngModelChange)="searchProviders()"
+      type="text"
+      placeholder="Buscar proveedores..."
+      class="search-input"
+    />
+  </div>
 </div>
-<div class="h-5/6 overflow-auto shadow-lg rounded-lg">
+<div class="my-auto overflow-auto shadow-lg rounded-lg">
   <p-table
     [value]="
-      providersFiltered.length > 0 && query !== ''
+      providersFiltered.length > 0 || query !== ''
         ? providersFiltered
         : providers()
     "
@@ -36,8 +45,8 @@
               <input
                 type="text"
                 [(ngModel)]="provider.name"
-                (keydown.enter)="updateProduct(provider)"
-                (blur)="updateProduct(provider)"
+                (keydown.enter)="updateProvider(provider)"
+                (blur)="updateProvider(provider)"
                 class="p-inputtext-sm"
               />
             </ng-template>
@@ -52,8 +61,8 @@
               <input
                 type="text"
                 [(ngModel)]="provider.address"
-                (keydown.enter)="updateProduct(provider)"
-                (blur)="updateProduct(provider)"
+                (keydown.enter)="updateProvider(provider)"
+                (blur)="updateProvider(provider)"
                 class="p-inputtext-sm"
               />
             </ng-template>

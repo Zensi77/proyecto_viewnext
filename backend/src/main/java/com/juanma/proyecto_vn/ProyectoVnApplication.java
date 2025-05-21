@@ -43,12 +43,12 @@ public class ProyectoVnApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		if(roleRepository.findByName(RoleType.ROLE_ADMIN) == null) {
-			roleRepository.save(Role.builder().name(RoleType.ROLE_ADMIN).build());
+		if(roleRepository.findByAuthority(RoleType.ROLE_ADMIN) == null) {
+			roleRepository.save(Role.builder().authority(RoleType.ROLE_ADMIN).build());
 			log.info("Rol ROLE_ADMIN creado");
 		}
-		if(roleRepository.findByName(RoleType.ROLE_USER) == null) {
-			roleRepository.save(Role.builder().name(RoleType.ROLE_USER).build());
+		if(roleRepository.findByAuthority(RoleType.ROLE_USER) == null) {
+			roleRepository.save(Role.builder().authority(RoleType.ROLE_USER).build());
 			log.info("Rol ROLE_USER creado");
 		}
 	}

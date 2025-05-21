@@ -21,7 +21,6 @@ export class AuthService {
     const token = sessionStorage.getItem('token');
     if (token) {
       const user = JSON.parse(atob(token.split('.')[1]));
-
       this.user.set(user);
     } else {
       this.user.set(null);
@@ -67,7 +66,7 @@ export class AuthService {
           text: `Bienvenido, ${res.user.username}`,
         });
         this.loading.set(false);
-        if (res.user.role === Role.admin) {
+        if (res.user.roles[0].authority === Role.admin) {
           this._router.navigate(['/admin']);
         } else {
           this._router.navigate(['/']);
@@ -75,10 +74,23 @@ export class AuthService {
       },
       error: (err) => {
         console.error(err);
-        Swal.fire({
-          icon: 'error',
-          text: 'Error en las credenciales',
-        });
+
+        err.status === 401 &&
+          Swal.fire({
+            icon: 'error',
+            text: 'Error en las credenciales',
+          });
+        err.status === 403 &&
+          Swal.fire({
+            icon: 'warning',
+            text: 'Tu usuario ha sido deshabilitado',
+          });
+        err.status === 429 &&
+          Swal.fire({
+            icon: 'warning',
+            text: 'Usuario bloqueado',
+          });
+
         this.loading.set(false);
       },
     });
@@ -98,7 +110,7 @@ export class AuthService {
   get isAdmin() {
     const user = this.user();
     if (user) {
-      return user.role === Role.admin;
+      return user.roles[0].authority === Role.admin;
     }
     return false;
   }
