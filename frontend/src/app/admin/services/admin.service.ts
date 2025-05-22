@@ -28,6 +28,12 @@ export class AdminService {
     return this._http.get<User[]>(url);
   }
 
+  updateUser(userId: string, user: User) {
+    const url = environment.base_url + environment.update_user + userId;
+
+    return this._http.put<User>(url, user);
+  }
+
   createProduct(product: CreateProduct) {
     const url = environment.base_url + environment.create_product;
 

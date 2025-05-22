@@ -2,108 +2,74 @@
 
 <div class="flex justify-between p-4 bg-white shadow-lg">
   <h2 class="text-2xl font-bold">Usuarios</h2>
-  <div>
-    <button
-      pButton
-      icon="pi pi-plus"
-      label="Agregar administrador"
-      (click)="onCreateAdmin()"
-      class="p-button-sm mx-4"
-    ></button>
+  <div class="flex items-center gap-4">
     <input
       [(ngModel)]="query"
       (ngModelChange)="searchUsers($event)"
       type="text"
       placeholder="Buscar usuarios..."
-      class="search-input"
+      class="p-2"
     />
   </div>
 </div>
-<div class="shadow-lg rounded-lg">
-  <p-table
-    [value]="usersFiltered.length > 0 && query !== '' ? usersFiltered : users"
-    editMode="cell"
+
+<div class="my-auto h-[calc(100vh-12rem)] shadow-lg rounded-lg bg-white">
+  <div class="grid w-auto grid-cols-5 p-4 font-semibold border-b">
+    <div>Nombre</div>
+    <div>Correo</div>
+    <div>Rol</div>
+    <div>Estado</div>
+    <div>Acciones</div>
+  </div>
+
+  <div
+    *ngFor="
+      let user of usersFiltered.length > 0 || query !== ''
+        ? usersFiltered
+        : users
+    "
+    class="grid grid-cols-5 gap-4 p-4 items-center border-b"
   >
-    <ng-template pTemplate="header">
-      <tr>
-        <th>Nombre</th>
-        <th>Correo</th>
-        <th>Rol</th>
-        <th>Estado</th>
-        <th class="flex justify-end">Acciones</th>
-      </tr>
-    </ng-template>
+    <div>
+      <p>
+        {{ user.username }}
+      </p>
+    </div>
 
-    <ng-template pTemplate="body" let-user let-editing="editing">
-      <tr>
-        <td pEditableColumn>
-          <p-cellEditor>
-            <ng-template pTemplate="input">
-              <input
-                type="text"
-                [(ngModel)]="user.username"
-                (keydown.enter)="updateUser(user)"
-                (blur)="updateUser(user)"
-                class="p-inputtext-sm"
-              />
-            </ng-template>
-            <ng-template pTemplate="output">
-              {{ user.username }}
-            </ng-template>
-          </p-cellEditor>
-        </td>
-        <td pEditableColumn>
-          <p-cellEditor>
-            <ng-template pTemplate="input">
-              <input
-                type="text"
-                [(ngModel)]="user.email"
-                (keydown.enter)="updateUser(user)"
-                (blur)="updateUser(user)"
-                class="p-inputtext-sm"
-              />
-            </ng-template>
-            <ng-template pTemplate="output">
-              {{ user.email }}
-            </ng-template>
-          </p-cellEditor>
-        </td>
-        <td>
-          <p-dropdown
-            [options]="roles"
-            [(ngModel)]="user.role"
-            (onChange)="updateUser(user)"
-            placeholder="Seleccionar rol"
-            class="w-full"
-          ></p-dropdown>
-        </td>
-        <td pEditableColumn>
-          <p-cellEditor>
-            <ng-template pTemplate="input">
-              <input
-                type="text"
-                [(ngModel)]="user.status"
-                (keydown.enter)="updateUser(user)"
-                (blur)="updateUser(user)"
-                class="p-inputtext-sm"
-              />
-            </ng-template>
-            <ng-template pTemplate="output">
-              {{ user.status }}
-            </ng-template>
-          </p-cellEditor>
-        </td>
+    <div>
+      <p>
+        {{ user.email }}
+      </p>
+    </div>
 
-        <td class="flex gap-3 justify-end">
-          <button
-            pButton
-            icon="pi pi-trash"
-            severity="danger"
-            (click)="onDeleteUser(user.id)"
-            class="p-button-sm"
-          ></button>
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
+    <div>
+      <p-dropdown
+        [options]="roles"
+        optionLabel="name"
+        optionValue="value"
+        [(ngModel)]="user.roles[0].authority"
+        placeholder="Seleccionar rol"
+        class="w-full"
+      ></p-dropdown>
+    </div>
+
+    <div>
+      <p-dropdown
+        [options]="state"
+        optionLabel="name"
+        optionValue="value"
+        [(ngModel)]="user.enabled"
+        class="w-full text-sm"
+      ></p-dropdown>
+    </div>
+    <td class="flex gap-3 justify-center">
+      <button
+        pButton
+        icon="pi pi-check"
+        severity="success"
+        (click)="updateUser(user)"
+        class="p-button-sm"
+      ></button>
+    </td>
+  </div>
 </div>

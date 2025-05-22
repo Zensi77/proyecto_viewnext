@@ -1,7 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import Swal from 'sweetalert2';
-import { Category, Provider } from '../../../home/interfaces/Data.interface';
+import { Provider } from '../../../home/interfaces/Data.interface';
 import { HomeService } from '../../../home/services/home.service';
 import { AdminService } from '../../services/admin.service';
 import { CommonModule } from '@angular/common';

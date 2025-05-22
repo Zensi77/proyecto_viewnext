@@ -18,13 +18,13 @@ import { PaginatorModule, PaginatorState } from 'primeng/paginator';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { Slider, SliderChangeEvent } from 'primeng/slider';
-import { ProgressSpinner } from 'primeng/progressspinner';
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { ProductCardComponent } from '../../../ui/product-card/product-card.component';
 import { CommonModule } from '@angular/common';
 import { Select, SelectChangeEvent } from 'primeng/select';
+import { Skeleton } from 'primeng/skeleton';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -34,11 +34,11 @@ import { ActivatedRoute } from '@angular/router';
     ButtonModule,
     DividerModule,
     Slider,
-    ProgressSpinner,
     FormsModule,
     ProductCardComponent,
     CommonModule,
     Select,
+    Skeleton,
   ],
   templateUrl: './search-result.component.html',
   styles: ``,
@@ -46,16 +46,16 @@ import { ActivatedRoute } from '@angular/router';
 export class SearchResultComponent implements OnInit, OnChanges {
   private readonly _homeService = inject(HomeService);
   private readonly _route = inject(ActivatedRoute);
-  private sliderSubject = new Subject<number>(); // Subject para manejar los cambios del slider
+  private sliderSubject = new Subject<number>();
   private rangePricesSubject = new Subject<number[]>();
 
   loading: boolean = false;
   productsSearch: SearchProductResponse | null = null;
   orderBy = [
-    { id: 1, name: 'Menores precio primero' },
-    { id: 2, name: 'Mayores precio primero' },
-    { id: 3, name: 'A - Z' },
-    { id: 4, name: 'Z - A' },
+    { name: 'Menores precio primero', value: 'price', order: 'asc' },
+    { name: 'Mayores precio primero', value: 'price', order: 'desc' },
+    { name: 'A - Z', value: 'name', order: 'asc' },
+    { name: 'Z - A', value: 'name', order: 'desc' },
   ];
 
   @Input({ required: true }) rangePrices: number[] = [0, 3000];
@@ -189,24 +189,26 @@ export class SearchResultComponent implements OnInit, OnChanges {
   }
 
   onOrderByChange($event: SelectChangeEvent) {
-    switch ($event.value.id) {
-      case 1:
-        this.searchParams.sortBy = 'price';
-        this.searchParams.orderBy = 'asc';
-        break;
-      case 2:
-        this.searchParams.sortBy = 'price';
-        this.searchParams.orderBy = 'desc';
-        break;
-      case 3:
-        this.searchParams.sortBy = 'name';
-        this.searchParams.orderBy = 'asc';
-        break;
-      case 4:
-        this.searchParams.sortBy = 'name';
-        this.searchParams.orderBy = 'desc';
-        break;
+    this.clearOrderBy();
+
+    if ($event.value.value === 'price') {
+      this.searchParams.sortBy = 'price';
+      this.searchParams.orderBy = $event.value.order;
+    } else if ($event.value.value === 'name') {
+      this.searchParams.sortBy = 'name';
+      this.searchParams.orderBy = $event.value.order;
+    } else {
+      this.searchParams.sortBy = 'id';
+      this.searchParams.orderBy = $event.value.order;
     }
+    this.searchParams.page = 0;
+    this.getProducts();
+  }
+
+  clearOrderBy() {
+    this.searchParams.sortBy = 'id';
+    this.searchParams.orderBy = 'asc';
+
     this.getProducts();
   }
 }
