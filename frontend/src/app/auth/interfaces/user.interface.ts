@@ -1,3 +1,5 @@
+import { Product } from '../../home/interfaces/Data.interface';
+
 export enum Role {
   user = 'ROLE_USER',
   admin = 'ROLE_ADMIN',
@@ -12,6 +14,7 @@ export interface User {
   email: string;
   username: string;
   password?: string;
+  wishList: Product[];
   roles: userRole[];
   enabled: boolean;
   accountLocked: boolean;

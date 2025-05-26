@@ -1,15 +1,21 @@
 package com.juanma.proyecto_vn.infrastructure.persistence.mapper;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.juanma.proyecto_vn.domain.model.User;
 import com.juanma.proyecto_vn.infrastructure.persistence.entity.UserEntity;
+
+import java.util.ArrayList;
 
 /**
  * Mapper para convertir entre entidades JPA y modelos de dominio para usuarios
  */
 @Component
 public class UserMapper {
+
+    @Autowired
+    private ProductMapper productMapper;
 
     /**
      * Convierte de entidad JPA a modelo de dominio
@@ -25,6 +31,9 @@ public class UserMapper {
                 .username(entity.getUsername())
                 .password(entity.getPassword())
                 .roles(entity.getRoles())
+                .wishlists(entity.getWishlists() != null ? entity.getWishlists().stream()
+                        .map(productMapper::toDomain)
+                        .toList() : new ArrayList<>())
                 .enabled(entity.isEnabled())
                 .accountNonLocked(entity.isAccountNonLocked())
                 .build();
@@ -44,6 +53,9 @@ public class UserMapper {
                 .password(domain.getPassword())
                 .username(domain.getUsername())
                 .roles(domain.getRoles())
+                .wishlists(domain.getWishlists() != null ? domain.getWishlists().stream()
+                        .map(productMapper::toEntity)
+                        .toList() : new ArrayList<>())
                 .enabled(domain.isEnabled())
                 .accountNonLocked(domain.isAccountNonLocked())
                 .build();

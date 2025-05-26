@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -24,6 +26,9 @@ import com.juanma.proyecto_vn.infrastructure.messaging.MetricsSender;
 import com.juanma.proyecto_vn.interfaces.rest.dtos.order.CreateOrderDto;
 import com.juanma.proyecto_vn.interfaces.rest.dtos.order.GetOrderDto;
 import com.juanma.proyecto_vn.interfaces.rest.mapper.OrderDtoMapper;
+
+import com.stripe.Stripe;
+import com.stripe.model.checkout.Session;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

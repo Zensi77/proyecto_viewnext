@@ -1,5 +1,6 @@
 package com.juanma.proyecto_vn.infrastructure.persistence.adapter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,7 +41,7 @@ public class UserRepositoryAdapter implements UserRepository {
     public Optional<User> findByEmail(String email) {
         Optional<UserEntity> userEntityOpt = jpaUserRepository.findByEmail(email);
         if (userEntityOpt.isEmpty()) {
-            throw new ResourceNotFoundException("Usuario no encontrado");
+            return null;
         }
         return userEntityOpt.map(userMapper::toDomain);
     }
@@ -57,7 +58,9 @@ public class UserRepositoryAdapter implements UserRepository {
     @Override
     public User save(User user, boolean isAdmin) {
         UserEntity userEntity = userMapper.toEntity(user);
-        if (isAdmin){
+
+        userEntity.setWishlists(new ArrayList<>());
+        if (isAdmin) {
             userEntity.getRoles().add(jpaRoleRepository.findByAuthority(RoleType.ROLE_ADMIN));
         } else {
             userEntity.getRoles().add(jpaRoleRepository.findByAuthority(RoleType.ROLE_USER));
@@ -80,14 +83,18 @@ public class UserRepositoryAdapter implements UserRepository {
                 }
             }
         }
-
         userEntity.setEmail(user.getEmail());
         userEntity.setUsername(user.getUsername());
-        if (user.getPassword()!= null) {
+        if (user.getPassword() != null) {
             userEntity.setPassword(user.getPassword());
         }
         userEntity.setEnabled(user.isEnabled());
         userEntity.setAccountNonLocked(user.isAccountNonLocked());
+
+        // Actualizar la wishlist
+        if (user.getWishlists() != null) {
+            userEntity.setWishlists(userMapper.toEntity(user).getWishlists());
+        }
 
         UserEntity savedUserEntity = jpaUserRepository.save(userEntity);
         return userMapper.toDomain(savedUserEntity);

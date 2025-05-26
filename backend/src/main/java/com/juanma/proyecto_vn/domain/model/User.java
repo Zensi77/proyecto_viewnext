@@ -1,8 +1,6 @@
 package com.juanma.proyecto_vn.domain.model;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import com.juanma.proyecto_vn.infrastructure.persistence.entity.Role;
 
@@ -24,6 +22,7 @@ public class User {
     private String password;
     private String username;
     private Set<Role> roles = new HashSet<>();
+    private List<Product> wishlists = new ArrayList<>();
     private boolean enabled;
     private boolean accountNonLocked;
 }

@@ -54,19 +54,23 @@ export class AuthService {
 
   // Iniciar sesión con email y contraseña
   signIn(user: User) {
+    console.log('user', user);
+
     const url = environment.base_url + environment.sign_in;
 
     this.loading.set(true);
     this._http.post<UserResponse>(url, user).subscribe({
       next: (res) => {
+        console.log(res);
+
         sessionStorage.setItem('token', res.token || '');
         this.user.set(res.user);
         Swal.fire({
           icon: 'success',
-          text: `Bienvenido, ${res.user.username}`,
+          text: `Bienvenido, ${res.user.username || res.user.email}`,
         });
         this.loading.set(false);
-        if (res.user.roles[0].authority === Role.admin) {
+        if (res.user.roles[0]?.authority === Role.admin) {
           this._router.navigate(['/admin']);
         } else {
           this._router.navigate(['/']);
@@ -110,7 +114,7 @@ export class AuthService {
   get isAdmin() {
     const user = this.user();
     if (user) {
-      return user.roles[0].authority === Role.admin;
+      return user.roles[0]?.authority === Role.admin;
     }
     return false;
   }

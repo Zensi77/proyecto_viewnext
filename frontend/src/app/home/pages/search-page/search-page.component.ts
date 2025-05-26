@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './search-page.component.html',
   styles: ``,
 })
-export class SearchPageComponent {
+export default class SearchPageComponent {
   private readonly _route = inject(ActivatedRoute);
   private readonly _sharedService = inject(SharedDataService);
 

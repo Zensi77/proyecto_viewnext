@@ -22,7 +22,7 @@ import Swal from 'sweetalert2';
   templateUrl: './checkout-page.component.html',
   styleUrl: './checkout-page.component.scss',
 })
-export class CheckoutPageComponent {
+export default class CheckoutPageComponent {
   private readonly _homeService = inject(HomeService);
   private readonly _sharedService = inject(SharedDataService);
 

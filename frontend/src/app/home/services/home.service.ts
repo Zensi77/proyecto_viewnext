@@ -20,6 +20,7 @@ export class HomeService {
   categories = signal<Category[]>([]);
   providers = signal<Provider[]>([]);
   orders = signal<OrderResponse[]>([]);
+  whisList = signal<Product[]>([]);
 
   constructor() {
     this.getCategories();
@@ -117,6 +118,32 @@ export class HomeService {
     this._http.put(url, {}).subscribe({
       next: () => {
         this.getOrders();
+      },
+    });
+  }
+
+  getWishList() {
+    const url = environment.base_url + environment.get_wishlist;
+
+    this._http.get<Product[]>(url).subscribe({
+      next: (res) => {
+        this.whisList.set(res);
+      },
+      error: (err) => {
+        console.error(err);
+      },
+    });
+  }
+
+  modifyWishList(productId: string) {
+    const url = environment.base_url + environment.modify_wishlist + productId;
+
+    this._http.post<Product>(url, {}).subscribe({
+      next: (res) => {
+        this.getWishList();
+      },
+      error: (err) => {
+        console.error(err);
       },
     });
   }

@@ -1,9 +1,6 @@
 package com.juanma.proyecto_vn.interfaces.rest.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.juanma.proyecto_vn.domain.model.Product;
 import com.juanma.proyecto_vn.domain.service.IProductService;
+import com.juanma.proyecto_vn.domain.service.IUserService;
 import com.juanma.proyecto_vn.interfaces.rest.dtos.product.CreateProductDto;
 import com.juanma.proyecto_vn.interfaces.rest.dtos.product.GetProductDto;
 import com.juanma.proyecto_vn.interfaces.rest.mapper.ProductDtoMapper;
@@ -40,12 +38,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequestMapping("/api/v1/products")
 @Slf4j
 public class ProductController {
-
     @Autowired
     private IProductService productService;
 
     @Autowired
     private ProductDtoMapper productDtoMapper;
+
+    @Autowired
+    private IUserService userService;
 
     @GetMapping("/")
     public ResponseEntity<Object> getAllProducts(
@@ -57,7 +57,8 @@ public class ProductController {
             @RequestParam(required = false) Double filterPriceMin,
             @RequestParam(required = false) Double filterPriceMax,
             @RequestParam(required = false) String filterName,
-            @RequestParam(required = false) List<String> filterCategory) {
+            @RequestParam(required = false) List<String> filterCategory,
+            HttpServletRequest request) {
 
         // Crear un mapa de filtros simplificado con todos los parámetros
         Map<String, Object> filters = new HashMap<>();
@@ -81,15 +82,20 @@ public class ProductController {
 
         // Convertimos el objeto Page<Product> a una lista de DTOs
         if (result.containsKey("products")) {
+            // Obtener el ID del usuario si está autenticado
+            String userId = null;
+            if (request.getAttribute("userId") != null) {
+                userId = request.getAttribute("userId").toString();
+            }
+
+            final String finalUserId = userId; // Variable final para usar en lambda
+
             @SuppressWarnings("unchecked")
             Page<Product> productPage = (Page<Product>) result.get("products");
-            List<GetProductDto> productDtos = productPage.getContent().stream()
-                    .map(productDtoMapper::toDto)
-                    .collect(Collectors.toList());
+            List<GetProductDto> productDtos = productDtoMapper.toDtoList(productPage.getContent(), finalUserId);
 
             result.put("products", productDtos);
         }
-
         return ResponseEntity.ok(result);
     }
 
@@ -100,20 +106,36 @@ public class ProductController {
     }
 
     @GetMapping("/random")
-    public ResponseEntity<Object> getRandomProducts(@RequestParam int quantity) {
-        List<Product> products = productService.getRandomProducts(quantity);
-        List<GetProductDto> dtos = products.stream()
-                .map(product -> {
-                    try {
-                        return productDtoMapper.toDto(product);
-                    } catch (Exception e) {
-                        log.error("Error al mapear producto aleatorio {}: {}", product.getId(), e.getMessage());
-                        return null;
-                    }
-                })
-                .filter(dto -> dto != null)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
+    public ResponseEntity<Object> getRandomProducts(@RequestParam int quantity, HttpServletRequest request) {
+        try {
+            List<Product> products = productService.getRandomProducts(quantity);
+
+            // Obtener el ID del usuario si está autenticado
+            String userId = null;
+            if (request.getAttribute("userId") != null) {
+                userId = request.getAttribute("userId").toString();
+            }
+
+            final String finalUserId = userId;
+
+            List<GetProductDto> dtos = products.stream()
+                    .map(product -> {
+                        try {
+                            return productDtoMapper.toDto(product, finalUserId);
+                        } catch (Exception e) {
+                            log.error("Error al mapear producto aleatorio {}: {}", product.getId(), e.getMessage());
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(dtos);
+        } catch (Exception e) {
+            log.error("Error al obtener productos aleatorios: {}", e.getMessage());
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "Error al obtener productos aleatorios: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
     }
 
     @GetMapping("/{id}")
@@ -128,7 +150,7 @@ public class ProductController {
             throw new ResourceNotFoundException("No se encontró el producto con ID: " + id);
         }
 
-        GetProductDto dto = productDtoMapper.toDto(product);
+        GetProductDto dto = productDtoMapper.toDto(product, userId);
         return ResponseEntity.ok(dto);
     }
 
@@ -153,7 +175,7 @@ public class ProductController {
                     UUID.fromString(createProductDto.getCategory()),
                     UUID.fromString(createProductDto.getProvider()));
 
-            GetProductDto responseDto = productDtoMapper.toDto(createdProduct);
+            GetProductDto responseDto = productDtoMapper.toDto(createdProduct, null);
             return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             log.warn("Datos inválidos al crear producto: {}", e.getMessage());
@@ -180,42 +202,26 @@ public class ProductController {
             return ResponseEntity.badRequest().body(errors);
         }
 
-        try {
-            Product updatedProduct = productService.updateProduct(
-                    id,
-                    updateProductDto.getName(),
-                    updateProductDto.getPrice(),
-                    updateProductDto.getImage(),
-                    updateProductDto.getStock(),
-                    updateProductDto.getDescription(),
-                    UUID.fromString(updateProductDto.getCategory()),
-                    UUID.fromString(updateProductDto.getProvider()));
+        Product updatedProduct = productService.updateProduct(
+                id,
+                updateProductDto.getName(),
+                updateProductDto.getPrice(),
+                updateProductDto.getImage(),
+                updateProductDto.getStock(),
+                updateProductDto.getDescription(),
+                UUID.fromString(updateProductDto.getCategory()),
+                UUID.fromString(updateProductDto.getProvider()));
 
-            GetProductDto responseDto = productDtoMapper.toDto(updatedProduct);
-            return ResponseEntity.ok(responseDto);
-        } catch (IllegalArgumentException e) {
-            log.warn("Datos inválidos al actualizar producto {}: {}", id, e.getMessage());
-            Map<String, String> error = new HashMap<>();
-            error.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(error);
-        } catch (ResourceNotFoundException e) {
-            log.warn("Producto no encontrado al actualizar: {}", e.getMessage());
-            Map<String, String> error = new HashMap<>();
-            error.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-        } catch (Exception e) {
-            log.error("Error al actualizar producto {}: {}", id, e.getMessage());
-            Map<String, String> error = new HashMap<>();
-            error.put("message", "Error al actualizar el producto: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-        }
+        GetProductDto responseDto = productDtoMapper.toDto(updatedProduct, null);
+        return ResponseEntity.ok(responseDto);
+
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable UUID id) {
         try {
             Product deletedProduct = productService.deleteProduct(id);
-            GetProductDto responseDto = productDtoMapper.toDto(deletedProduct);
+            GetProductDto responseDto = productDtoMapper.toDto(deletedProduct, null);
             return ResponseEntity.ok(responseDto);
         } catch (ResourceNotFoundException e) {
             log.warn("Producto no encontrado al eliminar: {}", e.getMessage());
@@ -226,6 +232,77 @@ public class ProductController {
             log.error("Error al eliminar producto {}: {}", id, e.getMessage());
             Map<String, String> error = new HashMap<>();
             error.put("message", "Error al eliminar el producto: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    /**
+     * Obtiene la lista de productos favoritos del usuario autenticado
+     */
+    @GetMapping("/wishlist")
+    public ResponseEntity<?> getWishlist(HttpServletRequest request) {
+        String userIdStr = (String) request.getAttribute("userId");
+        if (userIdStr == null) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "Usuario no autenticado");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        }
+
+        UUID userId = UUID.fromString(userIdStr);
+
+        try {
+            List<Product> wishlist = userService.getUserWishlist(userId);
+
+            // Usamos el nuevo método optimizado para convertir la lista completa
+            List<GetProductDto> wishlistDtos = productDtoMapper.toDtoList(wishlist, userId.toString());
+
+            return ResponseEntity.ok(wishlistDtos);
+        } catch (Exception e) {
+            log.error("Error al obtener wishlist: {}", e.getMessage());
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "Error al obtener la lista de favoritos: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    /**
+     * Añade o elimina un producto de la wishlist del usuario autenticado
+     */
+    @PostMapping("/wishlist/{productId}")
+    public ResponseEntity<?> toggleWishlist(@PathVariable UUID productId, HttpServletRequest request) {
+        UUID userId = (UUID) request.getAttribute("userId");
+        if (userId == null) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "Usuario no autenticado");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+        }
+
+        try {
+            // Obtenemos solo los IDs de la wishlist para una verificación más eficiente
+            Set<UUID> wishlistIds = userService.getUserWishlistIds(userId);
+            boolean isInWishlist = wishlistIds.contains(productId);
+            Map<String, Object> response = new HashMap<>();
+
+            // Si ya está en la wishlist, lo eliminamos
+            if (isInWishlist) {
+                boolean removed = userService.removeFromWishlist(userId, productId);
+                response.put("action", "removed");
+                response.put("success", removed);
+                response.put("message", "Producto eliminado de favoritos");
+            }
+            // Si no está en la wishlist, lo añadimos
+            else {
+                boolean added = userService.addToWishlist(userId, productId);
+                response.put("action", "added");
+                response.put("success", added);
+                response.put("message", "Producto añadido a favoritos");
+            }
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error al modificar wishlist: {}", e.getMessage());
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "Error al modificar la lista de favoritos: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }

@@ -18,6 +18,7 @@ export interface Product {
   stock: number;
   provider: Provider;
   category: Category;
+  isLiked: boolean;
 }
 
 export interface SearchProduct {

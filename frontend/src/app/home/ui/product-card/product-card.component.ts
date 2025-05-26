@@ -3,11 +3,13 @@ import {
   Component,
   inject,
   Input,
+  signal,
 } from '@angular/core';
 import { Product } from '../../interfaces/Data.interface';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { SharedDataService } from '../../../shared/services/shared-data.service';
+import { HomeService } from '../../services/home.service';
 
 @Component({
   selector: 'product-card',
@@ -50,6 +52,7 @@ import { SharedDataService } from '../../../shared/services/shared-data.service'
       <!-- Botones -->
       <div class="mt-4 md:mt-6 flex flex-col lg:flex-row items-center gap-2.5">
         <!-- Favoritos -->
+        @if (product.isLiked){
         <button
           type="button"
           aria-label="Añadir a favoritos"
@@ -71,6 +74,30 @@ import { SharedDataService } from '../../../shared/services/shared-data.service'
             />
           </svg>
         </button>
+        } @else {
+        <button
+          type="button"
+          (click)="updateWishList(product.id)"
+          aria-label="Añadir a favoritos"
+          class="w-full lg:w-auto inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
+          data-tooltip-target="favourites-tooltip-3"
+        >
+          <svg
+            class="h-5 w-5"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 6C6.5 1 1 8 5.8 13l6.2 7 6.2-7C23 8 17.5 1 12 6Z"
+            />
+          </svg>
+        </button>
+        }
 
         <div
           id="favourites-tooltip-3"
@@ -84,7 +111,10 @@ import { SharedDataService } from '../../../shared/services/shared-data.service'
         <button
           (click)="addToCart(product.id)"
           type="button"
-          class="w-full lg:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 sm:px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-300"
+          class="w-full lg:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 sm:px-5 py-2.5 cursor-pointer text-sm font-medium text-white hover:bg-primary-700 transition-colors duration-300 "
+          [ngClass]="{
+            'animate__animated animate__heartBeat ': buttonClicked()
+          }"
         >
           <svg
             class="h-5 w-5"
@@ -108,17 +138,29 @@ import { SharedDataService } from '../../../shared/services/shared-data.service'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductCardComponent {
+  private readonly _homeService = inject(HomeService);
   private readonly _sharedService = inject(SharedDataService);
   private readonly _router = inject(Router);
 
   @Input({ required: true }) product!: Product;
 
+  buttonClicked = signal(false);
+
   addToCart(productId: string) {
+    this.buttonClicked.set(true);
+    setTimeout(() => {
+      this.buttonClicked.set(false);
+    }, 1000);
+
     if (this._sharedService.cart() === null) {
       this._router.navigate(['/auth/sign-in']);
       return;
     }
 
     this._sharedService.addProductToCart(productId);
+  }
+
+  updateWishList(productId: string) {
+    this._homeService.modifyWishList(productId);
   }
 }

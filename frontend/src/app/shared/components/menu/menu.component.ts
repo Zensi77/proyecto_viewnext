@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { MenuItem } from 'primeng/api';
@@ -59,15 +59,7 @@ export class MenuComponent implements OnInit {
         label: 'Lista de deseos',
         icon: 'pi pi-heart',
         replaceUrl: true,
-        routerLink: '/stats',
-      },
-      {
-        label: 'Admin Panel',
-        icon: 'pi pi-cog',
-        routerLink: '/admin',
-        visible:
-          this._user() != null &&
-          this._user()?.roles[0].authority === Role.admin,
+        routerLink: '/wishlist',
       },
     ];
   }

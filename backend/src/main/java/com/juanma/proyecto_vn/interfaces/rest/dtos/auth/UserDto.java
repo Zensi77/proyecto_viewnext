@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.juanma.proyecto_vn.infrastructure.persistence.entity.Role;
+import com.juanma.proyecto_vn.interfaces.rest.dtos.product.GetProductDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -12,6 +13,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
