@@ -241,14 +241,12 @@ public class ProductController {
      */
     @GetMapping("/wishlist")
     public ResponseEntity<?> getWishlist(HttpServletRequest request) {
-        String userIdStr = (String) request.getAttribute("userId");
-        if (userIdStr == null) {
+        UUID userId = (UUID) request.getAttribute("userId");
+        if (userId == null) {
             Map<String, String> error = new HashMap<>();
             error.put("message", "Usuario no autenticado");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
         }
-
-        UUID userId = UUID.fromString(userIdStr);
 
         try {
             List<Product> wishlist = userService.getUserWishlist(userId);

@@ -29,7 +29,13 @@ export default class HomePageComponent {
 
   hora = new Date().getHours();
   words = [
-    `${this.hora < 12 ? 'Buenos días' : 'Buenas tardes'}`,
+    `${
+      this.hora < 12
+        ? 'Buenos días'
+        : this.hora < 18
+        ? 'Buenas tardes'
+        : 'Buenas noches'
+    }, `,
     'Bienvenido a TecnoShop',
     'Encuentra lo que buscas',
   ];

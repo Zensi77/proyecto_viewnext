@@ -25,7 +25,7 @@ public class CartDtoMapper {
     /**
      * Convierte un modelo de dominio a un DTO para la API
      */
-    public CartDto toDto(Cart cart) {
+    public CartDto toDto(Cart cart, String userId) {
         if (cart == null) {
             return null;
         }
@@ -33,7 +33,7 @@ public class CartDtoMapper {
         List<GetProductCartDto> productCartDtos = new ArrayList<>();
         if (cart.getItems() != null && !cart.getItems().isEmpty()) {
             productCartDtos = cart.getItems().stream()
-                    .map(this::mapCartItemToDto)
+                    .map(item -> mapCartItemToDto(item, userId))
                     .collect(Collectors.toList());
         }
 
@@ -47,9 +47,9 @@ public class CartDtoMapper {
     /**
      * Mapea un CartItem a un GetProductCartDto
      */
-    private GetProductCartDto mapCartItemToDto(CartItem item) {
+    private GetProductCartDto mapCartItemToDto(CartItem item, String userId) {
         return GetProductCartDto.builder()
-                .product(productDtoMapper.toDto(item.getProduct()))
+                .product(productDtoMapper.toDto(item.getProduct(), userId))
                 .quantity(item.getQuantity())
                 .build();
     }

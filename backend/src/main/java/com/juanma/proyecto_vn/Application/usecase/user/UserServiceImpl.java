@@ -193,8 +193,8 @@ public class UserServiceImpl implements IUserService {
                 User user = userOpt.get();
 
                 // Inicializar la lista de deseos si es nula
-                if (user.getWishlists() == null) {
-                        user.setWishlists(new ArrayList<>());
+                if (user.getWishlists() == null || !(user.getWishlists() instanceof ArrayList)) {
+                        user.setWishlists(new ArrayList<>(user.getWishlists() != null ? user.getWishlists() : Collections.emptyList()));
                 }
 
                 // Verificar si el producto ya está en la wishlist
@@ -227,6 +227,7 @@ public class UserServiceImpl implements IUserService {
                 }
 
                 // Eliminar el producto de la wishlist
+                user.setWishlists(new ArrayList<>(user.getWishlists())); // Asegurarse de que sea una lista mutable
                 boolean removed = user.getWishlists().removeIf(p -> p.getId().equals(productId));
 
                 if (removed) {

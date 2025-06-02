@@ -2,12 +2,10 @@ import { CommonModule } from '@angular/common';
 import {
   Component,
   computed,
-  effect,
   EventEmitter,
   inject,
   Input,
   OnChanges,
-  OnInit,
   Output,
 } from '@angular/core';
 import { SharedDataService } from '../../services/shared-data.service';

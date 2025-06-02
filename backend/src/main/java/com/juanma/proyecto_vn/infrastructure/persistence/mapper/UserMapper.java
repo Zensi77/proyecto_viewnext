@@ -7,6 +7,7 @@ import com.juanma.proyecto_vn.domain.model.User;
 import com.juanma.proyecto_vn.infrastructure.persistence.entity.UserEntity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Mapper para convertir entre entidades JPA y modelos de dominio para usuarios
@@ -33,7 +34,7 @@ public class UserMapper {
                 .roles(entity.getRoles())
                 .wishlists(entity.getWishlists() != null ? entity.getWishlists().stream()
                         .map(productMapper::toDomain)
-                        .toList() : new ArrayList<>())
+                        .toList() : Collections.emptyList())
                 .enabled(entity.isEnabled())
                 .accountNonLocked(entity.isAccountNonLocked())
                 .build();
@@ -55,7 +56,7 @@ public class UserMapper {
                 .roles(domain.getRoles())
                 .wishlists(domain.getWishlists() != null ? domain.getWishlists().stream()
                         .map(productMapper::toEntity)
-                        .toList() : new ArrayList<>())
+                        .toList() : Collections.emptyList())
                 .enabled(domain.isEnabled())
                 .accountNonLocked(domain.isAccountNonLocked())
                 .build();

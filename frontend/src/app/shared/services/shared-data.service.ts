@@ -30,23 +30,9 @@ export class SharedDataService {
 
   getCart() {
     const url = environment.base_url + environment.get_cart;
-    return this._http.get<CartResponse>(url).subscribe(
-      (res) => {
-        this.cart.set(res);
-      },
-      (err) => {
-        this._authService.signOut();
-        console.error(err);
-        if (err.status === 500) {
-          Swal.fire({
-            icon: 'error',
-            text: 'Error, al obtener el carrito, por favor, inténtelo más tarde',
-            showCloseButton: true,
-            confirmButtonText: 'Aceptar',
-          });
-        }
-      }
-    );
+    return this._http.get<CartResponse>(url).subscribe((res) => {
+      this.cart.set(res);
+    });
   }
 
   setProductNames(names: ProductName[]) {

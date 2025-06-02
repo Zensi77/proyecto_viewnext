@@ -32,6 +32,8 @@ export default class CheckoutPageComponent {
   randomProducts: Product[] = [];
 
   constructor() {
+    console.log(this.cart());
+
     this._homeService.getRandomProducts(3).subscribe((res) => {
       this.randomProducts = res as Product[];
     });
@@ -48,6 +50,11 @@ export default class CheckoutPageComponent {
 
   removeFromCart(productId: string) {
     this._sharedService.deleteProductFromCart(productId);
+  }
+
+  updateWishList(productId: string) {
+    this._homeService.modifyWishList(productId);
+    this._sharedService.getCart();
   }
 
   applyDiscount() {

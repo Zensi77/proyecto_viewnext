@@ -93,7 +93,7 @@ public class UserRepositoryAdapter implements UserRepository {
 
         // Actualizar la wishlist
         if (user.getWishlists() != null) {
-            userEntity.setWishlists(userMapper.toEntity(user).getWishlists());
+            userEntity.setWishlists(new ArrayList<>(userMapper.toEntity(user).getWishlists()));
         }
 
         UserEntity savedUserEntity = jpaUserRepository.save(userEntity);
