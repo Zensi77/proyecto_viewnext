@@ -39,7 +39,6 @@ public class MetricsSender {
 
     /**
      * Envía un evento de funnel a la cola de métricas.
-     * 
      * conversion_rate = order_created / checkout_started × 100%
      * cart_abandonment_rate = (add_to_cart – checkout_started) / add_to_cart × 100%
      * cart_completion_rate = checkout_started / add_to_cart × 100%
@@ -51,7 +50,6 @@ public class MetricsSender {
      */
     public void sendFunnelEvent(String event, String userId, Map<String, Object> extra) {
         Map<String, Object> metric = new HashMap<>();
-        metric.put("id", "FUNNEL_EVENT");
         metric.put("event", event);
         metric.put("timestamp", Instant.now().toString());
         metric.put("user_id", userId);

@@ -17,7 +17,7 @@ public class ELKSender {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objMapper = new ObjectMapper();
 
-    @Value("${elk.url}")
+    @Value("${elk-url}")
     private String ELKURL;
 
     @Value("${elk.mapping.directory}")

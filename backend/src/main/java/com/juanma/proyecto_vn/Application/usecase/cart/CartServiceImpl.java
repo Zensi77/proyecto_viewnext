@@ -99,12 +99,6 @@ public class CartServiceImpl implements ICartService {
             throw new UsernameNotFoundException("El usuario no existe.");
         }
 
-        if (cartItem.getProduct() != null && cartItem.getProduct().getId() != null) {
-            metricsService.sendFunnelEvent("add_to_cart", user.get().getId().toString(), Map.of(
-                    "product_id", cartItem.getProduct().getId().toString(),
-                    "quantity", cartItem.getQuantity()));
-        }
-
         Cart cart = cartRepository.findByUserId(user.get().getId());
         if (cart == null) {
             log.debug("Carrito no encontrado para el usuario. Creando nuevo carrito.");
@@ -150,6 +144,10 @@ public class CartServiceImpl implements ICartService {
         Cart updatedCart = cartRepository.save(cart);
         log.info("Carrito actualizado para el usuario: {}", email);
 
+        metricsService.sendFunnelEvent("add_to_cart", user.get().getId().toString(), Map.of(
+                "product_id", cartItem.getProduct().getId(),
+                "quantity", cartItem.getQuantity()));
+
         return updatedCart;
     }
 
@@ -160,12 +158,6 @@ public class CartServiceImpl implements ICartService {
 
         if (user.isEmpty()) {
             throw new UsernameNotFoundException("El usuario no existe.");
-        }
-
-        if (cartItem.getProduct() != null && cartItem.getProduct().getId() != null) {
-            metricsService.sendFunnelEvent("delete_to_cart", user.get().getId().toString(), Map.of(
-                    "product_id", cartItem.getProduct().getId().toString(),
-                    "quantity", cartItem.getQuantity()));
         }
 
         Product prod = productRepository.findById(cartItem.getProduct().getId());

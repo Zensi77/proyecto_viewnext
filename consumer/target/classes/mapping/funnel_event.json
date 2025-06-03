@@ -19,14 +19,11 @@
             "quantity": {
                 "type": "long"
             },
-            "order_id": {
-                "type": "keyword"
+            "order_total": {
+                "type": "float"
             },
             "items_count": {
                 "type": "long"
-            },
-            "average_price": {
-                "type": "float"
             },
             "payment_method": {
                 "type": "keyword"

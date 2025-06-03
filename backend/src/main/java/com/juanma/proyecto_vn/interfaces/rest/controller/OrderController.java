@@ -95,7 +95,6 @@ public class OrderController {
         }
 
         String email = authentication.getName();
-        long start = System.currentTimeMillis();
 
         try {
             // Convertir DTO a modelo de dominio
@@ -107,19 +106,9 @@ public class OrderController {
             // Convertir resultado a DTO
             GetOrderDto responseDto = orderDtoMapper.toDto(createdOrder);
 
-            long processingTimeMs = System.currentTimeMillis() - start;
-            metricsService.sendFunnelEvent("order_created_api", email,
-                    Map.of("processingTimeMs", processingTimeMs,
-                            "orderId", createdOrder.getId().toString()));
-
             return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
         } catch (Exception e) {
-            long processingTimeMs = System.currentTimeMillis() - start;
             log.error("Error al crear pedido: {}", e.getMessage());
-
-            metricsService.sendFunnelEvent("order_creation_failed", email,
-                    Map.of("error", e.getMessage(),
-                            "processingTimeMs", processingTimeMs));
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al crear pedido: " + e.getMessage());

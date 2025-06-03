@@ -32,7 +32,7 @@ public class ConsumerApplication implements CommandLineRunner {
 		String queueName = "metrics-queue";
 
 		try (ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(brokerURL);
-				Connection connection = factory.createConnection("test", "test")) {
+			 Connection connection = factory.createConnection("test", "test")) {
 
 			connection.start();
 
@@ -40,14 +40,14 @@ public class ConsumerApplication implements CommandLineRunner {
 			Destination destination = session.createQueue(queueName);
 
 			MessageConsumer consumer = session.createConsumer(destination);
-			System.out.println(">>> Esperando mensajes en cola '" + queueName + "'...");
+			System.out.println("[ READY ] Esperando mensajes en cola '" + queueName + "'...");
 
 			while (true) {
 				Message msg = consumer.receive(5000);
-				try {
-					Thread.sleep(5000);
-				} catch (InterruptedException ex) {
-				}
+				// try {
+				// 	Thread.sleep(5000);
+				// } catch (InterruptedException ex) {
+				// }
 
 				if (msg != null) {
 					System.out.println(msg.getBody(Map.class));
@@ -66,7 +66,7 @@ public class ConsumerApplication implements CommandLineRunner {
 				}
 			}
 		} catch (JMSException e) {
-			e.printStackTrace();
+			System.err.println("Error al conectar con el broker de ActiveMQ Artemis: " + e.getMessage());
 		}
 	}
 }

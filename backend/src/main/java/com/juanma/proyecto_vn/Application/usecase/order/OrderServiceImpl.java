@@ -105,7 +105,6 @@ public class OrderServiceImpl implements IOrderService {
 
             // Enviar métricas
             metricsService.sendFunnelEvent("order_created", user.getId().toString(), Map.of(
-                    "order_id", savedOrder.getId().toString(),
                     "order_total", savedOrder.getTotalPrice(),
                     "items_count", savedOrder.getItems().size(),
                     "payment_method", savedOrder.getPaymentMethod().toString()));
@@ -127,8 +126,6 @@ public class OrderServiceImpl implements IOrderService {
 
         // Enviar métricas
         metricsService.sendFunnelEvent("order_cancelled", order.getUserId().toString(), Map.of(
-                "order_id", order.getId().toString(),
-                "user_id", order.getUserId().toString(),
                 "order_total", order.getTotalPrice(),
                 "items_count", order.getItems().size(),
                 "payment_method", order.getPaymentMethod().toString()));
