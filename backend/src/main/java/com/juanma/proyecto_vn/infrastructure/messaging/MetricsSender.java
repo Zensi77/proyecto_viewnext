@@ -50,6 +50,7 @@ public class MetricsSender {
      */
     public void sendFunnelEvent(String event, String userId, Map<String, Object> extra) {
         Map<String, Object> metric = new HashMap<>();
+        metric.put("id", "FUNNEL_EVENT");
         metric.put("event", event);
         metric.put("timestamp", Instant.now().toString());
         metric.put("user_id", userId);
@@ -68,6 +69,7 @@ public class MetricsSender {
         Map<String, Object> metric = new HashMap<>();
         metric.put("id", "PERFORMANCE_EVENT");
         metric.put("event", event);
+        metric.put("url", url);
         metric.put("timestamp", Instant.now().toString());
         metric.put("user_id", userId);
         // todo: meter en extra el status code si hay un error

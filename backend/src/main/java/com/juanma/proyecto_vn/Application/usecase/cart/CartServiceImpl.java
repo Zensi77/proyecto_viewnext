@@ -99,6 +99,10 @@ public class CartServiceImpl implements ICartService {
             throw new UsernameNotFoundException("El usuario no existe.");
         }
 
+        metricsService.sendFunnelEvent("add_to_cart", user.get().getId().toString(), Map.of(
+                "product_id", cartItem.getProduct().getId().toString(),
+                "quantity", cartItem.getQuantity()));
+
         Cart cart = cartRepository.findByUserId(user.get().getId());
         if (cart == null) {
             log.debug("Carrito no encontrado para el usuario. Creando nuevo carrito.");
@@ -144,10 +148,6 @@ public class CartServiceImpl implements ICartService {
         Cart updatedCart = cartRepository.save(cart);
         log.info("Carrito actualizado para el usuario: {}", email);
 
-        metricsService.sendFunnelEvent("add_to_cart", user.get().getId().toString(), Map.of(
-                "product_id", cartItem.getProduct().getId(),
-                "quantity", cartItem.getQuantity()));
-
         return updatedCart;
     }
 
@@ -159,6 +159,10 @@ public class CartServiceImpl implements ICartService {
         if (user.isEmpty()) {
             throw new UsernameNotFoundException("El usuario no existe.");
         }
+
+        metricsService.sendFunnelEvent("add_to_cart", user.get().getId().toString(), Map.of(
+                "product_id", cartItem.getProduct().getId().toString(),
+                "quantity", cartItem.getQuantity()));
 
         Product prod = productRepository.findById(cartItem.getProduct().getId());
         if (prod == null || prod.getPrice() == null) {
@@ -207,7 +211,7 @@ public class CartServiceImpl implements ICartService {
 
         // Registrar evento para analíticas
         metricsService.sendFunnelEvent("remove_from_cart", user.get().getId().toString(), Map.of(
-                "product_id", productId));
+                "product_id", productId.toString()));
 
         // Obtener el carrito
         Cart cart = cartRepository.findByUserId(user.get().getId());

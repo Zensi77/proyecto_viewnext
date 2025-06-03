@@ -24,8 +24,11 @@ public class MdcFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest req,
             HttpServletResponse res,
             FilterChain chain) throws ServletException, IOException {
+        String clientIp = req.getRemoteAddr();
         String requestId = UUID.randomUUID().toString();
+
         MDC.put("requestId", requestId);
+        MDC.put("clientIp", clientIp);
         try {
             chain.doFilter(req, res);
         } finally {
