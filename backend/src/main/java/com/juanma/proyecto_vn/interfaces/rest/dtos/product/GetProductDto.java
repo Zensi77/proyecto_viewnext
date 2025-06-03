@@ -23,4 +23,5 @@ public class GetProductDto {
     private int stock;
     private ProviderDto provider;
     private CategoryResponseDto category;
+    private boolean isLiked;
 }

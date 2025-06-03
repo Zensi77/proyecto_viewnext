@@ -52,7 +52,7 @@ public class CartController {
         String email = authentication.getName();
         Cart cart = cartService.getCartByUserId(email);
         log.debug("Carrito obtenido: {}", cart);
-        CartDto cartDto = cartDtoMapper.toDto(cart);
+        CartDto cartDto = cartDtoMapper.toDto(cart, String.valueOf(cart.getUser().getId()));
 
         log.info("Carrito obtenido para usuario: {}", email);
         return ResponseEntity.ok(cartDto);
@@ -77,7 +77,7 @@ public class CartController {
         // Convertir DTO a objeto de dominio CartItem
         CartItem cartItem = convertToCartItem(productCartDto);
         Cart updatedCart = cartService.addProductToCart(cartItem, authentication.getName());
-        CartDto responseDto = cartDtoMapper.toDto(updatedCart);
+        CartDto responseDto = cartDtoMapper.toDto(updatedCart, String.valueOf(updatedCart.getUser().getId()));
 
         log.info("Producto añadido al carrito del usuario: {}", authentication.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
@@ -119,7 +119,7 @@ public class CartController {
         // Convertir DTO a objeto de dominio CartItem
         CartItem cartItem = convertToCartItem(productCartDto);
         Cart updatedCart = cartService.updateProductInCart(cartItem, authentication.getName());
-        CartDto responseDto = cartDtoMapper.toDto(updatedCart);
+        CartDto responseDto = cartDtoMapper.toDto(updatedCart, String.valueOf(updatedCart.getUser().getId()));
 
         log.info("Producto actualizado en el carrito del usuario: {}", authentication.getName());
         return ResponseEntity.ok(responseDto);

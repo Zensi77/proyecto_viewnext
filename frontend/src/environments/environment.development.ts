@@ -16,6 +16,8 @@ export const environment = {
   create_product: 'api/v1/products/',
   update_product: 'api/v1/products/',
   delete_product: 'api/v1/products/',
+  get_wishlist: 'api/v1/products/wishlist',
+  modify_wishlist: 'api/v1/products/wishlist/',
 
   get_all_categories: 'api/v1/categories/',
   get_category: 'api/v1/categories/',

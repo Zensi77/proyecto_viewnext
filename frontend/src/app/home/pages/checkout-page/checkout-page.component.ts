@@ -22,7 +22,7 @@ import Swal from 'sweetalert2';
   templateUrl: './checkout-page.component.html',
   styleUrl: './checkout-page.component.scss',
 })
-export class CheckoutPageComponent {
+export default class CheckoutPageComponent {
   private readonly _homeService = inject(HomeService);
   private readonly _sharedService = inject(SharedDataService);
 
@@ -32,6 +32,8 @@ export class CheckoutPageComponent {
   randomProducts: Product[] = [];
 
   constructor() {
+    console.log(this.cart());
+
     this._homeService.getRandomProducts(3).subscribe((res) => {
       this.randomProducts = res as Product[];
     });
@@ -48,6 +50,11 @@ export class CheckoutPageComponent {
 
   removeFromCart(productId: string) {
     this._sharedService.deleteProductFromCart(productId);
+  }
+
+  updateWishList(productId: string) {
+    this._homeService.modifyWishList(productId);
+    this._sharedService.getCart();
   }
 
   applyDiscount() {

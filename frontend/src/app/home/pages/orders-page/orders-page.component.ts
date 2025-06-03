@@ -1,6 +1,13 @@
-import { Component, computed, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { HomeService } from '../../services/home.service';
-import { ProductOrder } from '../../interfaces/order.interface';
+import { OrderResponse, ProductOrder } from '../../interfaces/order.interface';
 import { CommonModule } from '@angular/common';
 import { OrderStatusDirective } from '../../../shared/directives/OrderStatus.directive';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -10,6 +17,8 @@ import { ButtonModule } from 'primeng/button';
 import { Dialog } from 'primeng/dialog';
 import { RouterLink } from '@angular/router';
 import { paymentMethodPipe } from '../../../shared/pipes/paymentMethod.pipe';
+import { FormsModule } from '@angular/forms';
+import { DropdownModule } from 'primeng/dropdown';
 
 @Component({
   imports: [
@@ -21,23 +30,61 @@ import { paymentMethodPipe } from '../../../shared/pipes/paymentMethod.pipe';
     Dialog,
     RouterLink,
     paymentMethodPipe,
+    FormsModule,
+    DropdownModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './orders-page.component.html',
   styles: ``,
 })
-export class OrdersPageComponent implements OnInit {
+export default class OrdersPageComponent implements OnInit {
   private readonly _homeService = inject(HomeService);
 
-  orders = computed(() => this._homeService.orders());
+  allOrders = computed(() => this._homeService.orders());
+  filteredOrders = signal<OrderResponse[]>([]);
+
+  // Opciones para el selector de estado de pedido
+  orderStatusOptions = [
+    { label: 'Todos los pedidos', value: 'ALL' },
+    { label: 'En proceso', value: 'PENDING' },
+    { label: 'Cancelado', value: 'CANCELLED' },
+  ];
+
+  // Valores seleccionados
+  selectedStatus: string = 'ALL';
 
   constructor(
     private confirmationService: ConfirmationService,
     private messageService: MessageService
-  ) {}
+  ) {
+    effect(() => {
+      this.filterOrders();
+    });
+  }
 
   ngOnInit(): void {
     this._homeService.getOrders();
+  }
+  filterOrders(): void {
+    const orders = this.allOrders();
+
+    // Si no hay órdenes, salimos
+    if (!orders || orders.length === 0) {
+      this.filteredOrders.set([]);
+      return;
+    }
+
+    // Filtramos por estado
+    let filtered = [...orders];
+
+    if (this.selectedStatus !== 'ALL') {
+      filtered = filtered.filter(
+        (order) => order.status === this.selectedStatus
+      );
+    }
+
+    // Actualizamos las órdenes filtradas
+    this.filteredOrders.set(filtered);
   }
 
   cancelOrder(event: Event, orderId: string) {
@@ -73,7 +120,6 @@ export class OrdersPageComponent implements OnInit {
     this.showOrderDetails = !this.showOrderDetails;
     this.orderToShow = order;
   }
-
   animationClass(index: number) {
     index = Math.min(index, 5);
     return `animate__animated animate__fadeIn `;

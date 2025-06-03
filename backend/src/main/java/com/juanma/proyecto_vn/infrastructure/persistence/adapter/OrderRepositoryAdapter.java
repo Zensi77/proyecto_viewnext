@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import com.juanma.proyecto_vn.infrastructure.persistence.entity.ProductOrderEntity;
 import com.juanma.proyecto_vn.infrastructure.persistence.repository.JpaProductRepository;
 import com.juanma.proyecto_vn.interfaces.rest.advice.customExceptions.ResourceNotFoundException;
-import com.juanma.proyecto_vn.interfaces.rest.mapper.OrderDtoMapper;
 import org.springframework.stereotype.Component;
 
 import com.juanma.proyecto_vn.domain.model.Order;
@@ -30,7 +29,6 @@ public class OrderRepositoryAdapter implements OrderRepository {
     private final JpaOrderRepository jpaOrderRepository;
     private final JpaProductRepository jpaProductRepository;
     private final OrderMapper orderMapper;
-    private final OrderDtoMapper orderDtoMapper;
 
     @Override
     public Order save(Order order) {
@@ -40,7 +38,6 @@ public class OrderRepositoryAdapter implements OrderRepository {
                 .status(order.getStatus())
                 .paymentMethod(order.getPaymentMethod())
                 .build();
-
 
         OrderEntity orderSaved = jpaOrderRepository.save(orderMapper.toEntity(orderToSave));
 

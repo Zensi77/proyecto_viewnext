@@ -38,7 +38,7 @@ import { SharedDataService } from '../../../shared/services/shared-data.service'
 }
   `,
 })
-export class ProductPageComponent {
+export default class ProductPageComponent {
   private readonly _route = inject(ActivatedRoute);
   private readonly _homeService = inject(HomeService);
   private readonly _sharedService = inject(SharedDataService);

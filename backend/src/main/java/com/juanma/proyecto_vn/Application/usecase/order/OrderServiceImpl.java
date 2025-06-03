@@ -5,6 +5,9 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.juanma.proyecto_vn.domain.model.*;
+import com.stripe.Stripe;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -31,6 +34,14 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class OrderServiceImpl implements IOrderService {
+
+    @Value("${stripe.api.key}")
+    private String apiKey;
+
+    @PostConstruct()
+    public void init() {
+        Stripe.apiKey = apiKey;
+    }
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;

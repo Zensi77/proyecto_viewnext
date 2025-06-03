@@ -3,6 +3,7 @@ import {
   inject,
   Input,
   OnChanges,
+  OnDestroy,
   OnInit,
   SimpleChange,
   SimpleChanges,
@@ -43,7 +44,7 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './search-result.component.html',
   styles: ``,
 })
-export class SearchResultComponent implements OnInit, OnChanges {
+export class SearchResultComponent implements OnInit, OnChanges, OnDestroy {
   private readonly _homeService = inject(HomeService);
   private readonly _route = inject(ActivatedRoute);
   private sliderSubject = new Subject<number>();
@@ -52,10 +53,10 @@ export class SearchResultComponent implements OnInit, OnChanges {
   loading: boolean = false;
   productsSearch: SearchProductResponse | null = null;
   orderBy = [
-    { name: 'Menores precio primero', value: 'price', order: 'asc' },
-    { name: 'Mayores precio primero', value: 'price', order: 'desc' },
-    { name: 'A - Z', value: 'name', order: 'asc' },
-    { name: 'Z - A', value: 'name', order: 'desc' },
+    { name: 'Menores precio primero', value: 'price-asc' },
+    { name: 'Mayores precio primero', value: 'price-desc' },
+    { name: 'A - Z', value: 'name-asc' },
+    { name: 'Z - A', value: 'name-desc' },
   ];
 
   @Input({ required: true }) rangePrices: number[] = [0, 3000];
@@ -165,6 +166,8 @@ export class SearchResultComponent implements OnInit, OnChanges {
 
   getProducts() {
     this.loading = true;
+    console.log('searchParams', this.searchParams);
+
     this._homeService.searchProducts(this.searchParams).subscribe({
       next: (res) => {
         this.productsSearch = res;
@@ -189,20 +192,25 @@ export class SearchResultComponent implements OnInit, OnChanges {
   }
 
   onOrderByChange($event: SelectChangeEvent) {
-    this.clearOrderBy();
-
-    if ($event.value.value === 'price') {
+    if ($event.value === 'price-asc') {
       this.searchParams.sortBy = 'price';
-      this.searchParams.orderBy = $event.value.order;
-    } else if ($event.value.value === 'name') {
+      this.searchParams.orderBy = 'asc';
+    } else if ($event.value === 'price-desc') {
+      this.searchParams.sortBy = 'price';
+      this.searchParams.orderBy = 'desc';
+    } else if ($event.value === 'name-asc') {
       this.searchParams.sortBy = 'name';
-      this.searchParams.orderBy = $event.value.order;
+      this.searchParams.orderBy = 'asc';
+    } else if ($event.value === 'name-desc') {
+      this.searchParams.sortBy = 'name';
+      this.searchParams.orderBy = 'desc';
     } else {
       this.searchParams.sortBy = 'id';
-      this.searchParams.orderBy = $event.value.order;
+      this.searchParams.orderBy = 'asc';
     }
-    this.searchParams.page = 0;
+
     this.getProducts();
+    this.searchParams.page = 0;
   }
 
   clearOrderBy() {
@@ -210,5 +218,10 @@ export class SearchResultComponent implements OnInit, OnChanges {
     this.searchParams.orderBy = 'asc';
 
     this.getProducts();
+  }
+
+  ngOnDestroy(): void {
+    this.sliderSubject.unsubscribe();
+    this.rangePricesSubject.unsubscribe();
   }
 }

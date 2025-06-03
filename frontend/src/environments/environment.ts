@@ -16,6 +16,8 @@ export const environment = {
   create_product: 'products/',
   update_product: 'products/',
   delete_product: 'products/',
+  get_wishlist: 'products/wishlist',
+  modify_wishlist: 'products/wishlist/',
 
   get_all_categories: 'categories/',
   get_category: 'categories/',

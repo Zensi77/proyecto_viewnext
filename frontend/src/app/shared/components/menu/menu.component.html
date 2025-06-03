@@ -1,11 +1,16 @@
 <div class="fixed top-0 w-full px-4 py-1 card shadow-3xl z-100">
-  <p-menubar [model]="items" [baseZIndex]="1000" class="bg-white dark:bg-gray-800">
+  <p-menubar
+    [model]="items"
+    [baseZIndex]="1000"
+    class="bg-white dark:bg-gray-800"
+  >
     <ng-template #item let-item let-root="root">
       <a
         pRipple
         class="flex items-center p-menubar-item-link"
         [routerLink]="item.routerLink"
-        routerLinkActive="active-route-class"
+        routerLinkActive="bg-green-300/70 rounded-md text-primary shadow-2"
+        [routerLinkActiveOptions]="{ exact: true }"
       >
         <i *ngIf="item.icon" [ngClass]="item.icon + ' mr-2'"></i>
         <span>{{ item.label }}</span>
@@ -27,15 +32,6 @@
     </ng-template>
     <ng-template #end>
       <div class="flex items-center gap-4">
-        <!-- <i
-          id="darkMode"
-          class="cursor-pointer"
-          [ngClass]="getIconMode()"
-          tabindex="0"
-          (click)="toogleDarkMode()"
-          (keydown.enter)="toogleDarkMode()"
-          (keydown.space)="toogleDarkMode()"
-        ></i> -->
         <i
           class="cursor-pointer"
           tabindex="0"
@@ -43,13 +39,19 @@
           (click)="actionLogged()"
         ></i>
 
-        <i
-          class="text-2xl cursor pointer pi pi-shopping-cart cart-icon"
-          style="font-size: 1.3rem"
-          pBadge
-          (click)="actionCart()"
+        <p-overlay-badge
           [value]="(cart()?.products)!.length"
-        ></i>
+          [style]="{ 'margin-left': '1rem' }"
+          [severity]="'success'"
+          [badgeDisabled]="!cart()?.products?.length"
+          [badgeSize]="'small'"
+        >
+          <i
+            class="cursor-pointer pi pi-shopping-cart"
+            style="font-size: 1.2rem; padding: 0"
+            (click)="actionCart()"
+          ></i>
+        </p-overlay-badge>
         <app-cart [showCart]="showCart" (showCartChange)="showCartChange()" />
       </div>
     </ng-template>

@@ -17,7 +17,7 @@ import { ProductsLayerComponent } from '../../components/home-page/products-laye
   templateUrl: './home-page.component.html',
   styleUrls: ['./home-page.component.scss'],
 })
-export class HomePageComponent {
+export default class HomePageComponent {
   private readonly _route = inject(ActivatedRoute);
   private readonly _sharedService = inject(SharedDataService);
 
@@ -29,7 +29,13 @@ export class HomePageComponent {
 
   hora = new Date().getHours();
   words = [
-    `${this.hora < 12 ? 'Buenos días' : 'Buenas tardes'}`,
+    `${
+      this.hora < 12
+        ? 'Buenos días'
+        : this.hora < 18
+        ? 'Buenas tardes'
+        : 'Buenas noches'
+    }, `,
     'Bienvenido a TecnoShop',
     'Encuentra lo que buscas',
   ];

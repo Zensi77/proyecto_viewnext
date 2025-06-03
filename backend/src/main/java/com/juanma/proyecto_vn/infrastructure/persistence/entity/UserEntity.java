@@ -37,7 +37,7 @@ public class UserEntity extends BaseEntity implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Role> roles = new HashSet<>();
 
     @Column(name = "enabled", nullable = false, columnDefinition = "boolean default true")
@@ -50,7 +50,13 @@ public class UserEntity extends BaseEntity implements UserDetails {
     private CartEntity cart;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<OrderEntity> orders;
+    private List<OrderEntity> orders = new ArrayList<>();
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "user_wishlist",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id"))
+    private List<ProductEntity> wishlists = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
