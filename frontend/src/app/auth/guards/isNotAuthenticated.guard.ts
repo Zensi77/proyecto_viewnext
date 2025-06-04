@@ -9,13 +9,13 @@ export const isNotAuthenticatedGuard: CanActivateFn = () => {
   return new Promise((resolve) => {
     const checkUser = () => {
       const isLoading = authService.loading();
-      const isLogged = authService.userLogged();
+      const user = authService.user();
 
       if (isLoading) {
         setTimeout(checkUser, 100);
-      } else if (isLogged) {
+      } else if (user) {
+        router.navigateByUrl('/');
         resolve(false);
-        router.navigate(['/dashboard']);
       } else {
         resolve(true);
       }

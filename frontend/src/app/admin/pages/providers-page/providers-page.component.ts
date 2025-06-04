@@ -109,9 +109,7 @@ export class ProvidersPageComponent {
               summary: 'Proveedor eliminado',
             });
           },
-          error: (err) => {
-            console.log('error', err);
-
+          error: () => {
             this.messageService.add({
               severity: 'error',
               summary: 'Error',

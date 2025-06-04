@@ -1,3 +1,4 @@
+import { isAuthenticatedGuard } from '../auth/guards/isAuthenticated.guard';
 import { NamesResolver } from './resolvers/products-names.resolver';
 
 export default [
@@ -23,14 +24,18 @@ export default [
     path: 'checkout',
     loadComponent: () =>
       import('./pages/checkout-page/checkout-page.component'),
+    canActivate: [isAuthenticatedGuard],
   },
+
   {
     path: 'orders',
     loadComponent: () => import('./pages/orders-page/orders-page.component'),
+    canActivate: [isAuthenticatedGuard],
   },
   {
     path: 'wishlist',
     loadComponent: () =>
       import('./pages/wishList-page/wishList-page.component'),
+    canActivate: [isAuthenticatedGuard],
   },
 ];

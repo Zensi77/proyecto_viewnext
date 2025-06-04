@@ -57,8 +57,6 @@ export class PaymentFormComponent {
   }
 
   createOrder() {
-    console.log(this.cart);
-
     this._homeService
       .createOrder({
         productOrder: this.cart!.products,

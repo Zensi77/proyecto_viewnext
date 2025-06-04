@@ -7,4 +7,4 @@ import { RouterModule } from '@angular/router';
   styleUrls: [],
   imports: [RouterModule],
 })
-export class NotFoundComponent {}
+export default class NotFoundComponent {}

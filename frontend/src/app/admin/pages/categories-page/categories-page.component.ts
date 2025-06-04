@@ -89,9 +89,7 @@ export class CategoriesPageComponent {
               summary: 'Categoria eliminada',
             });
           },
-          error: (err) => {
-            console.log('error', err);
-
+          error: () => {
             this.messageService.add({
               severity: 'error',
               summary: 'Error',

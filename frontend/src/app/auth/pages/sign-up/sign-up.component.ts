@@ -66,8 +66,6 @@ export default class SignUpComponent {
   onSubmit() {
     if (!this.registerForm.valid) return this.registerForm.markAllAsTouched();
 
-    console.log(this.registerForm.value);
-
     const email = this.registerForm.get('email')?.value as string;
     const password = this.registerForm.get('password')?.value as string;
     const username = this.registerForm.get('username')?.value as string;

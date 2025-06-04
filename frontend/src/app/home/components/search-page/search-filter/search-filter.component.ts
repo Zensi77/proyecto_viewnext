@@ -45,8 +45,6 @@ export class SearchFilterComponent implements OnInit {
 
   ngOnInit(): void {
     this._route.queryParams.subscribe((params) => {
-      console.log('params', params);
-
       const category = params['category'] || null;
       const provider = params['provider'] || null;
 

@@ -12,7 +12,6 @@ import { Router, RouterLink, RouterModule } from '@angular/router';
 import { AuthService } from '../../../auth/services/auth.service';
 import { CartComponent } from '../cart/cart.component';
 import { SharedDataService } from '../../services/shared-data.service';
-import { Role } from '../../../auth/interfaces/user.interface';
 
 @Component({
   selector: 'app-menu',
@@ -71,6 +70,8 @@ export class MenuComponent implements OnInit {
   actionLogged() {
     if (this._user() != null) {
       this._authService.signOut();
+      this._sharedService.cart.set(null);
+      this._router.navigateByUrl('/');
     } else {
       this._router.navigateByUrl('/auth/sign-in');
     }

@@ -54,15 +54,11 @@ export class AuthService {
 
   // Iniciar sesión con email y contraseña
   signIn(user: User) {
-    console.log('user', user);
-
     const url = environment.base_url + environment.sign_in;
 
     this.loading.set(true);
     this._http.post<UserResponse>(url, user).subscribe({
       next: (res) => {
-        console.log(res);
-
         sessionStorage.setItem('token', res.token || '');
         this.user.set(res.user);
         Swal.fire({

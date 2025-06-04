@@ -27,6 +27,9 @@
             },
             "payment_method": {
                 "type": "keyword"
+            },
+            "location": {
+                "type": "geo_point"
             }
         }
     }

@@ -11,7 +11,7 @@
       ></button>
       <input
         [(ngModel)]="query"
-        (ngModelChange)="searchProducts($event)"
+        (ngModelChange)="searchProducts()"
         type="text"
         placeholder="Buscar productos..."
         class="p-2"
@@ -61,7 +61,7 @@
                 Editar
               </button>
               <p-button
-                (click)="onDeleteProduct($event, product.id)"
+                (click)="onDeleteProduct(product.id)"
                 severity="danger"
                 label="Eliminar"
               >

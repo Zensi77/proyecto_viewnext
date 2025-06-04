@@ -166,7 +166,6 @@ export class SearchResultComponent implements OnInit, OnChanges, OnDestroy {
 
   getProducts() {
     this.loading = true;
-    console.log('searchParams', this.searchParams);
 
     this._homeService.searchProducts(this.searchParams).subscribe({
       next: (res) => {

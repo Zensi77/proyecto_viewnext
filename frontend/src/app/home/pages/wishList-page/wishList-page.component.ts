@@ -32,7 +32,6 @@ export default class WishListPageComponent implements OnInit {
 
   ngOnInit(): void {
     this._homeService.getWishList();
-    console.log('WishList', this.wishList());
   }
 
   updateWishList(productId: string) {

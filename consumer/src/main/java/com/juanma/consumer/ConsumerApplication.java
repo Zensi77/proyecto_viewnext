@@ -5,6 +5,7 @@ import org.springframework.boot.CommandLineRunner; // :contentReference[oaicite:
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import javax.jms.Connection;
@@ -57,6 +58,10 @@ public class ConsumerApplication implements CommandLineRunner {
 					if (index.equals(EventEnum.ORDER_EVENT.name())) {
 						sender.sentoELK(data, EventEnum.ORDER_EVENT);
 					} else if (index.equals(EventEnum.FUNNEL_EVENT.name())) {
+						data.put("location", Arrays.asList(data.get("lng"), data.get("lat")));						data.remove("lat");
+						data.remove("lat");
+						data.remove("lng");
+
 						sender.sentoELK(data, EventEnum.FUNNEL_EVENT);
 					} else if (index.equals(EventEnum.PERFORMANCE_EVENT.name())) {
 						sender.sentoELK(data, EventEnum.PERFORMANCE_EVENT);

@@ -84,7 +84,6 @@ export class ProductPageComponent implements OnInit {
       index >= itemsLoaded - threshold &&
       this.search.currentPage < this.search.totalPages - 1
     ) {
-      console.log('Scroll cerca del final, cargando más...');
       this.loadMore();
     }
   }
@@ -97,12 +96,12 @@ export class ProductPageComponent implements OnInit {
         this.paginateParams.page = this.search.currentPage + 1;
       },
       error: () => {
-        console.log('Error al obtener los productos');
+        console.error('Error al obtener los productos');
       },
     });
   }
 
-  searchProducts(event: Event) {
+  searchProducts() {
     this.querySubject.next(this.query);
   }
 
@@ -126,7 +125,7 @@ export class ProductPageComponent implements OnInit {
     this.showProductDialog = true;
   }
 
-  onDeleteProduct(event: Event, productId: string) {
+  onDeleteProduct(productId: string) {
     Swal.fire({
       title: '¿Estás seguro?',
       icon: 'warning',
@@ -149,7 +148,7 @@ export class ProductPageComponent implements OnInit {
             this.loadMore();
           },
           error: (err) => {
-            console.log('Error al eliminar el producto', err);
+            console.error('Error al eliminar el producto', err);
           },
         });
       }

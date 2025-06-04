@@ -24,7 +24,6 @@ export class ProductsLayerComponent {
 
   constructor() {
     this._homeService.getRandomProducts(8).subscribe((data: Product[]) => {
-      console.log('Products fetched:', data);
       this.products = data;
     });
   }
